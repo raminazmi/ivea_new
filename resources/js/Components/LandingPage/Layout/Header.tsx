@@ -59,7 +59,7 @@ const Header = () => {
                         <div className="flex items-center gap-3 md:gap-6">
                             {isAuthenticated ? (
                                 <Link
-                                    href={isAdmin ? "/dashboard" : "/dashboard"}
+                                    href={isAdmin ? "/admin/dashboard" : "/dashboard"}
                                     className="flex items-center text-gray-300 hover:text-white transition whitespace-nowrap"
                                 >
                                     <FaTachometerAlt className="ml-1 text-xs" />

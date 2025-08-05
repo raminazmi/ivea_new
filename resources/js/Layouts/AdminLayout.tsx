@@ -48,7 +48,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const menuItems = [
-        { name: 'الرئيسية', icon: FaHome, href: '/dashboard', active: route().current('admin.dashboard') },
+        { name: 'الرئيسية', icon: FaHome, href: '/admin/dashboard', active: route().current('admin.dashboard') },
         { name: 'المنتجات', icon: FaBriefcase, href: '/admin/products', active: route().current('admin.products.*') },
         { name: 'الفئات', icon: FaUsers, href: '/admin/categories', active: route().current('admin.categories.*') },
         { name: 'المقالات', icon: FaNewspaper, href: '/admin/articles', active: route().current('admin.articles.*') },
