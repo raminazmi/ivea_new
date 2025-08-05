@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
@@ -15,13 +16,12 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
-            return redirect()->route('login');
+        if (!Auth::check()) {
+            return \Redirect::route('login');
         }
-
-        $user = auth()->user();
+        $user = Auth::user();
         if (!$user->is_admin ?? false) {
-            abort(403, 'غير مصرح لك بالوصول لهذه الصفحة');
+            \Abort::abort(403, 'غير مصرح لك بالوصول لهذه الصفحة');
         }
 
         return $next($request);
