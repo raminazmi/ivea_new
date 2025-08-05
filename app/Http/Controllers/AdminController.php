@@ -8,6 +8,7 @@ use App\Models\Contact;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AdminController extends Controller
@@ -37,7 +38,7 @@ class AdminController extends Controller
             'recentJobs' => $recentJobs,
             'recentApplications' => $recentApplications,
             'recentProducts' => $recentProducts,
-            'user' => auth()->user(),
+            'user' => Auth::user(),
         ]);
     }
 
@@ -50,7 +51,7 @@ class AdminController extends Controller
 
         return Inertia::render('Admin/Jobs/Index', [
             'jobs' => $jobs,
-            'user' => auth()->user(),
+            'user' => Auth::user(),
         ]);
     }
 
@@ -63,7 +64,7 @@ class AdminController extends Controller
 
         return Inertia::render('Admin/Applications/Index', [
             'applications' => $applications,
-            'user' => auth()->user(),
+            'user' => Auth::user(),
         ]);
     }
 
@@ -79,7 +80,7 @@ class AdminController extends Controller
 
         return Inertia::render('Admin/Contacts/Index', [
             'contacts' => $contacts,
-            'user' => auth()->user(),
+            'user' => Auth::user(),
         ]);
     }
 
@@ -95,7 +96,7 @@ class AdminController extends Controller
         $application = JobApplication::findOrFail($id);
         $application->update(['status' => $request->status]);
 
-        return response()->json([
+        return \Response::json([
             'success' => true,
             'message' => 'تم تحديث حالة التقديم بنجاح'
         ]);
@@ -113,7 +114,7 @@ class AdminController extends Controller
         $contact = Contact::findOrFail($id);
         $contact->update(['status' => $request->status]);
 
-        return response()->json([
+        return \Response::json([
             'success' => true,
             'message' => 'تم تحديث حالة الرسالة بنجاح'
         ]);
