@@ -346,6 +346,7 @@ const ContactForm = () => {
         <Toast
           message={toast.message}
           type={toast.type}
+          isVisible={toast.isVisible}
           onClose={hideToast}
         />
       )}

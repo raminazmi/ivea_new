@@ -242,7 +242,7 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories }) => {
                                             type="checkbox"
                                             className="rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                                             checked={data.is_published}
-                                            onChange={(e) => setData('is_published', e.target.checked as boolean)}
+                                            onChange={(e) => setData('is_published', e.target.checked)}
                                         />
                                         <span className="mr-2 text-sm text-gray-600">منشورة</span>
                                     </label>
@@ -252,7 +252,7 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories }) => {
                                             type="checkbox"
                                             className="rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                                             checked={data.featured}
-                                            onChange={(e) => setData('featured', e.target.checked as boolean)}
+                                            onChange={(e) => setData('featured', e.target.checked)}
                                         />
                                         <span className="mr-2 text-sm text-gray-600">مميزة</span>
                                     </label>

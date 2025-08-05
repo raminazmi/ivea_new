@@ -4,7 +4,8 @@ import ColorSwatch from './ColorSwatch';
 interface ColorSelectorProps {
     colors: string[];
     selectedColor: number;
-    onColorChange: (index: number) => void;
+    onColorChange?: (index: number) => void;
+    onColorSelect?: (index: number) => void;
     colorNames?: string[];
     title?: string;
     className?: string;
@@ -14,6 +15,7 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({
     colors,
     selectedColor,
     onColorChange,
+    onColorSelect,
     colorNames = [],
     title = "اختر اللون",
     className = ""
@@ -26,7 +28,7 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({
                     {colors.map((color, index) => (
                         <button
                             key={index}
-                            onClick={() => onColorChange(index)}
+                            onClick={() => (onColorSelect || onColorChange)?.(index)}
                             title={`اختيار اللون ${colorNames[index] || index + 1}`}
                             className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColor === index
                                 ? 'border-blue-600 scale-110'

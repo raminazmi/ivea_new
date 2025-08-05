@@ -2,6 +2,8 @@ import React from 'react';
 
 interface PriceDisplayProps {
     price: number | string;
+    finalPrice?: number;
+    hasDiscount?: boolean;
     discount?: number;
     showLabel?: boolean;
     label?: string;
@@ -10,6 +12,8 @@ interface PriceDisplayProps {
 
 const PriceDisplay: React.FC<PriceDisplayProps> = ({
     price,
+    finalPrice: propFinalPrice,
+    hasDiscount,
     discount,
     showLabel = true,
     label = "السعر يبدأ من",
@@ -17,7 +21,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
 }) => {
     // تحويل price إلى رقم
     const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
-    const finalPrice = discount ? numericPrice - (numericPrice * discount / 100) : numericPrice;
+    const finalPrice = propFinalPrice || (discount ? numericPrice - (numericPrice * discount / 100) : numericPrice);
 
     return (
         <div className={`space-y-2 ${className}`}>
@@ -34,7 +38,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
                     className="w-6 h-6"
                 />
             </div>
-            {discount && (
+            {(discount || hasDiscount) && (
                 <div className="text-sm text-gray-500 line-through">
                     {numericPrice.toFixed(0)} ر.س
                 </div>
