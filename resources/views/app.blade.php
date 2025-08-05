@@ -73,7 +73,15 @@
     <!-- Scripts -->
     @routes
     @viteReactRefresh
+    @production
+    @php
+    $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
+    @endphp
+    <link rel="stylesheet" href="{{ asset('build/' . $manifest['resources/js/app.tsx']['css'][0]) }}">
+    <script type="module" src="{{ asset('build/' . $manifest['resources/js/app.tsx']['file']) }}"></script>
+    @else
     @vite(['resources/js/app.tsx', "resources/js/Pages/{$page['component']}.tsx"])
+    @endproduction
     @inertiaHead
 </head>
 
