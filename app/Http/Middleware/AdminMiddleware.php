@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
@@ -16,18 +15,13 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // التحقق من أن المستخدم مسجل دخول
-        if (!Auth::check()) {
-            return \Redirect::route('login');
+        if (!auth()->check()) {
+            return redirect()->route('login');
         }
 
-        // التحقق من أن المستخدم مدير (يمكن تعديل هذا حسب نظام الصلاحيات)
-        $user = Auth::user();
-
-        // يمكن إضافة منطق إضافي للتحقق من الصلاحيات هنا
-        // مثال: التحقق من role أو permissions
+        $user = auth()->user();
         if (!$user->is_admin ?? false) {
-            \Abort::abort(403, 'غير مصرح لك بالوصول لهذه الصفحة');
+            abort(403, 'غير مصرح لك بالوصول لهذه الصفحة');
         }
 
         return $next($request);
