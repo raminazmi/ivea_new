@@ -1,0 +1,143 @@
+/* Custom Slider Styles */
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.slider::-webkit-slider-track {
+    background: #e5e7eb;
+    height: 8px;
+    border-radius: 4px;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #f59e0b;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    background: #d97706;
+    transform: scale(1.1);
+}
+
+.slider::-moz-range-track {
+    background: #e5e7eb;
+    height: 8px;
+    border-radius: 4px;
+    border: none;
+}
+
+.slider::-moz-range-thumb {
+    background: #f59e0b;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+    background: #d97706;
+    transform: scale(1.1);
+}
+
+/* Price Range Container */
+.price-range-container {
+    position: relative;
+    padding: 0 10px;
+}
+
+.price-range-container .slider:first-child {
+    z-index: 2;
+}
+
+.price-range-container .slider:last-child {
+    z-index: 1;
+}
+
+/* Color Swatch Styles */
+.color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #e5e7eb;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.color-swatch:hover {
+    transform: scale(1.1);
+    border-color: #f59e0b;
+}
+
+.color-swatch.selected {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+}
+
+/* Filter Section Animations */
+.filter-section {
+    transition: all 0.3s ease;
+}
+
+.filter-section.collapsed {
+    max-height: 0;
+    overflow: hidden;
+}
+
+.filter-section.expanded {
+    max-height: 500px;
+    overflow: visible;
+}
+
+/* Active Filter Tags */
+.active-filter-tag {
+    transition: all 0.2s ease;
+}
+
+.active-filter-tag:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .color-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .slider::-webkit-slider-thumb {
+        height: 18px;
+        width: 18px;
+    }
+    
+    .slider::-moz-range-thumb {
+        height: 18px;
+        width: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .color-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .active-filter-tag {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+} 
