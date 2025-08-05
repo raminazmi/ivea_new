@@ -73,12 +73,7 @@
     <!-- Scripts -->
     @routes
     @viteReactRefresh
-    @if (app()->environment('production'))
-    <link rel="stylesheet" href="{{ mix('build/assets/app.css') }}">
-    <script src="{{ mix('build/assets/app.js') }}" defer></script>
-    @else
-    @vite(['resources/js/app.tsx'])
-    @endif
+    @vite(['resources/js/app.tsx', "resources/js/Pages/{$page['component']}.tsx"])
     @inertiaHead
 </head>
 
