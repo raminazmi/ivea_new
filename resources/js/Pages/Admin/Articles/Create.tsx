@@ -23,8 +23,8 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories }) => {
         author_bio: '',
         meta_description: '',
         meta_keywords: '',
-        is_published: true,
-        featured: false,
+        is_published: true as boolean,
+        featured: false as boolean,
         sort_order: 0
     });
 
