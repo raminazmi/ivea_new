@@ -5,6 +5,7 @@
         "moduleResolution": "node",
         "strict": true,
         "jsx": "react-jsx",
+        "noEmit": true,
         "baseUrl": "./resources/js",
         "paths": {
             "@/*": [
