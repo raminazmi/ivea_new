@@ -3,43 +3,29 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Article;
 use App\Models\Job;
 use App\Models\JobApplication;
 use App\Models\Contact;
-use App\Models\Product;
-use App\Models\Category;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AdminController extends Controller
 {
-    /**
-     * Display the admin dashboard.
-     */
     public function dashboard()
     {
         $stats = [
+            'totalProducts' => Product::count(),
+            'totalCategories' => Category::count(),
+            'totalArticles' => Article::count(),
             'totalJobs' => Job::count(),
             'totalApplications' => JobApplication::count(),
             'totalContacts' => Contact::count(),
-            'activeJobs' => Job::where('status', 'active')->count(),
-            'totalProducts' => Product::count(),
-            'totalCategories' => Category::count(),
-            'activeProducts' => Product::where('status', 'active')->count(),
-            'activeCategories' => Category::where('status', 'active')->count(),
         ];
 
-        $recentJobs = Job::latest()->take(5)->get();
-        $recentApplications = JobApplication::with('job')->latest()->take(5)->get();
-        $recentProducts = Product::with('category')->latest()->take(5)->get();
-
         return Inertia::render('Admin/Dashboard', [
-            'stats' => $stats,
-            'recentJobs' => $recentJobs,
-            'recentApplications' => $recentApplications,
-            'recentProducts' => $recentProducts,
-            'user' => Auth::user(),
+            'stats' => $stats
         ]);
     }
 

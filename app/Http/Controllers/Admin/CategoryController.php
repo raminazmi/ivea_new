@@ -5,174 +5,116 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of categories for admin
-     */
     public function index(Request $request)
     {
         $query = Category::withCount('products');
 
-        // Search
-        if ($request->has('search') && !empty($request->search)) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
+        // Apply search filter
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        // Filter by status
-        if ($request->has('status') && $request->status !== 'all') {
+        // Apply status filter
+        if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
 
-        $categories = $query->ordered()->paginate(15);
+        $categories = $query->orderBy('sort_order', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Admin/Categories/Index', [
             'categories' => $categories,
-            'filters' => $request->only(['search', 'status']),
-            'user' => auth()->user()
+            'filters' => $request->only(['search', 'status'])
         ]);
     }
 
-    /**
-     * Show the form for creating a new category
-     */
     public function create()
     {
-        return Inertia::render('Admin/Categories/Create', [
-            'user' => auth()->user()
-        ]);
+        return Inertia::render('Admin/Categories/Create');
     }
 
-    /**
-     * Store a newly created category
-     */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|string',
             'status' => 'required|in:active,inactive',
             'sort_order' => 'nullable|integer|min:0',
-            'color' => 'nullable|string|regex:/^#[0-9A-F]{6}$/i',
-        ], [
-            'name.required' => 'اسم الفئة مطلوب',
-            'name.unique' => 'اسم الفئة مستخدم بالفعل',
-            'status.required' => 'الحالة مطلوبة',
-            'color.regex' => 'لون غير صحيح، يجب أن يكون بتنسيق #RRGGBB',
         ]);
 
-        try {
-            Category::create($request->validated());
+        // Generate slug from name
+        $validated['slug'] = \Str::slug($validated['name']);
 
-            return redirect()->route('admin.categories.index')
-                ->with('success', 'تم إنشاء الفئة بنجاح');
-        } catch (\Exception $e) {
-            return back()->with('error', 'حدث خطأ أثناء إنشاء الفئة');
-        }
+        Category::create($validated);
+
+        return redirect()->route('admin.categories.index')
+            ->with('success', 'تم إنشاء الفئة بنجاح');
     }
 
-    /**
-     * Show the form for editing the specified category
-     */
-    public function edit($id)
+    public function show(Category $category)
     {
-        $category = Category::findOrFail($id);
+        $category->load('products');
+        
+        return Inertia::render('Admin/Categories/Show', [
+            'category' => $category
+        ]);
+    }
 
+    public function edit(Category $category)
+    {
         return Inertia::render('Admin/Categories/Edit', [
-            'category' => $category,
-            'user' => auth()->user()
+            'category' => $category
         ]);
     }
 
-    /**
-     * Update the specified category
-     */
-    public function update(Request $request, $id)
+    public function update(Request $request, Category $category): RedirectResponse
     {
-        $category = Category::findOrFail($id);
-
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $id,
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|string',
             'status' => 'required|in:active,inactive',
             'sort_order' => 'nullable|integer|min:0',
-            'color' => 'nullable|string|regex:/^#[0-9A-F]{6}$/i',
-        ], [
-            'name.required' => 'اسم الفئة مطلوب',
-            'name.unique' => 'اسم الفئة مستخدم بالفعل',
-            'status.required' => 'الحالة مطلوبة',
-            'color.regex' => 'لون غير صحيح، يجب أن يكون بتنسيق #RRGGBB',
         ]);
 
-        try {
-            $category->update($request->validated());
+        // Generate slug from name
+        $validated['slug'] = \Str::slug($validated['name']);
 
+        $category->update($validated);
+
+        return redirect()->route('admin.categories.index')
+            ->with('success', 'تم تحديث الفئة بنجاح');
+    }
+
+    public function destroy(Category $category): RedirectResponse
+    {
+        // Check if category has products
+        if ($category->products()->count() > 0) {
             return redirect()->route('admin.categories.index')
-                ->with('success', 'تم تحديث الفئة بنجاح');
-        } catch (\Exception $e) {
-            return back()->with('error', 'حدث خطأ أثناء تحديث الفئة');
+                ->with('error', 'لا يمكن حذف الفئة لأنها تحتوي على منتجات');
         }
+
+        $category->delete();
+
+        return redirect()->route('admin.categories.index')
+            ->with('success', 'تم حذف الفئة بنجاح');
     }
 
-    /**
-     * Remove the specified category
-     */
-    public function destroy($id)
+    public function updateStatus(Request $request, Category $category): RedirectResponse
     {
-        try {
-            $category = Category::findOrFail($id);
+        $validated = $request->validate([
+            'status' => 'required|in:active,inactive'
+        ]);
 
-            // Check if category has products
-            if ($category->products()->count() > 0) {
-                return response()->json([
-                    'error' => 'لا يمكن حذف الفئة لأنها تحتوي على منتجات'
-                ], 400);
-            }
+        $category->update($validated);
 
-            $category->delete();
-
-            return response()->json(['success' => 'تم حذف الفئة بنجاح']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'حدث خطأ أثناء حذف الفئة'], 500);
-        }
-    }
-
-    /**
-     * Update category status
-     */
-    public function updateStatus(Request $request, $id)
-    {
-        try {
-            $category = Category::findOrFail($id);
-            $category->update(['status' => $request->status]);
-
-            return response()->json(['success' => 'تم تحديث حالة الفئة بنجاح']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'حدث خطأ أثناء تحديث الحالة'], 500);
-        }
-    }
-
-    /**
-     * Get category statistics
-     */
-    public function stats()
-    {
-        $stats = [
-            'total' => Category::count(),
-            'active' => Category::where('status', 'active')->count(),
-            'inactive' => Category::where('status', 'inactive')->count(),
-            'with_products' => Category::has('products')->count(),
-            'empty' => Category::doesntHave('products')->count(),
-        ];
-
-        return response()->json($stats);
+        return redirect()->back()
+            ->with('success', 'تم تحديث حالة الفئة بنجاح');
     }
 }

@@ -5,42 +5,39 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Contact;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 
 class ContactController extends Controller
 {
-    /**
-     * Display a listing of contacts for admin.
-     */
     public function index()
     {
-        $contacts = Contact::latest()->get();
-
-        // Debug: Log the contacts data
-        \Log::info('Contacts data:', ['count' => $contacts->count(), 'data' => $contacts->toArray()]);
+        $contacts = Contact::orderBy('created_at', 'desc')->get();
 
         return Inertia::render('Admin/Contacts/Index', [
-            'contacts' => $contacts,
-            'user' => Auth::user(),
+            'contacts' => $contacts
         ]);
     }
 
-    /**
-     * Update contact status.
-     */
-    public function updateContactStatus(Request $request, $id)
+    public function updateStatus(Request $request, $id): RedirectResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'status' => 'required|in:pending,read,replied'
         ]);
 
         $contact = Contact::findOrFail($id);
-        $contact->update(['status' => $request->status]);
+        $contact->update($validated);
 
-        return \Response::json([
-            'success' => true,
-            'message' => 'تم تحديث حالة الرسالة بنجاح'
-        ]);
+        return redirect()->back()
+            ->with('success', 'تم تحديث حالة الرسالة بنجاح');
+    }
+
+    public function destroy($id): RedirectResponse
+    {
+        $contact = Contact::findOrFail($id);
+        $contact->delete();
+
+        return redirect()->back()
+            ->with('success', 'تم حذف الرسالة بنجاح');
     }
 }

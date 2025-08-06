@@ -11,16 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('job_applications', function (Blueprint $table) {
+        Schema::create('contacts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('job_id')->constrained()->onDelete('cascade');
             $table->string('first_name');
             $table->string('last_name');
             $table->string('email');
             $table->string('phone');
-            $table->text('cover_letter')->nullable();
-            $table->string('cv_file');
-            $table->enum('status', ['pending', 'reviewed', 'accepted', 'rejected'])->default('pending');
+            $table->string('subject');
+            $table->text('message');
+            $table->string('category');
+            $table->enum('status', ['pending', 'read', 'replied'])->default('pending');
+            $table->json('files')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('job_applications');
+        Schema::dropIfExists('contacts');
     }
-};
+}; 

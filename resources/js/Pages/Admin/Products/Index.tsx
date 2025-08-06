@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { HiPlus, HiPencil, HiTrash, HiEye, HiStar, HiTag, HiFire, HiClock } from 'react-icons/hi';
+import ConfirmModal from '@/Components/Common/ConfirmModal';
+import Toast from '@/Components/Common/Toast';
+import { HiPlus, HiPencil, HiTrash, HiEye, HiStar, HiTag, HiFire, HiClock, HiSearch, HiFilter } from 'react-icons/hi';
 
 interface Product {
     id: number;
@@ -35,6 +37,20 @@ interface ProductsProps {
 const Products: React.FC<ProductsProps> = ({ products }) => {
     const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
     const [tabStats, setTabStats] = useState<any>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [showFilters, setShowFilters] = useState(false);
+    const [toast, setToast] = useState<{
+        message: string;
+        type: 'success' | 'error';
+        isVisible: boolean;
+    }>({
+        message: '',
+        type: 'success',
+        isVisible: false
+    });
 
     useEffect(() => {
         fetchTabStats();
@@ -113,6 +129,50 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
         }
     };
 
+    const handleDeleteClick = (product: Product) => {
+        setProductToDelete(product);
+        setShowDeleteModal(true);
+    };
+
+    const handleDeleteConfirm = () => {
+        if (productToDelete) {
+            router.delete(route('admin.products.destroy', productToDelete.id), {
+                onSuccess: () => {
+                    setShowDeleteModal(false);
+                    setProductToDelete(null);
+                    setToast({
+                        message: 'تم حذف المنتج بنجاح',
+                        type: 'success',
+                        isVisible: true
+                    });
+                },
+                onError: () => {
+                    setToast({
+                        message: 'حدث خطأ أثناء حذف المنتج',
+                        type: 'error',
+                        isVisible: true
+                    });
+                }
+            });
+        }
+    };
+
+    const handleSearch = () => {
+        router.get(route('admin.products.index'), {
+            search: searchTerm,
+            status: statusFilter,
+        });
+    };
+
+    const handleBulkDelete = () => {
+        if (selectedProducts.length === 0) return;
+        
+        if (confirm(`هل أنت متأكد من حذف ${selectedProducts.length} منتج محدد؟`)) {
+            // Implement bulk delete functionality
+            console.log('Bulk delete:', selectedProducts);
+        }
+    };
+
     return (
         <AdminLayout>
             <Head title="إدارة المنتجات" />
@@ -120,48 +180,101 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
             <div className="py-6">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 bg-white border-b border-gray-200">
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-bold text-gray-900">إدارة المنتجات</h2>
-                                <Link
-                                    href={route('admin.products.create')}
-                                    className="bg-primary-yellow text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors flex items-center gap-2"
-                                >
-                                    <HiPlus className="w-5 h-5" />
-                                    إضافة منتج جديد
-                                </Link>
+                        <div className="p-4 sm:p-6 bg-white border-b border-gray-200">
+                            {/* Header */}
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">إدارة المنتجات</h2>
+                                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                    <Link
+                                        href={route('admin.products.create')}
+                                        className="bg-primary-yellow text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+                                    >
+                                        <HiPlus className="w-4 h-4" />
+                                        إضافة منتج جديد
+                                    </Link>
+                                    <button
+                                        onClick={() => setShowFilters(!showFilters)}
+                                        className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+                                    >
+                                        <HiFilter className="w-4 h-4" />
+                                        الفلاتر
+                                    </button>
+                                </div>
                             </div>
+
+                            {/* Filters */}
+                            {showFilters && (
+                                <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">البحث</label>
+                                            <div className="relative">
+                                                <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                                <input
+                                                    type="text"
+                                                    value={searchTerm}
+                                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                                    placeholder="اسم المنتج..."
+                                                    className="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-primary-yellow focus:border-transparent"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">الحالة</label>
+                                            <select
+                                                value={statusFilter}
+                                                onChange={(e) => setStatusFilter(e.target.value)}
+                                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-yellow focus:border-transparent"
+                                                title="فلتر الحالة"
+                                                aria-label="فلتر الحالة"
+                                            >
+                                                <option value="all">الكل</option>
+                                                <option value="active">نشط</option>
+                                                <option value="inactive">غير نشط</option>
+                                            </select>
+                                        </div>
+                                        <div className="flex items-end">
+                                            <button
+                                                onClick={handleSearch}
+                                                className="w-full bg-primary-yellow text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
+                                            >
+                                                تطبيق الفلاتر
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Tab Statistics */}
                             {tabStats && (
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                                     <div className="bg-blue-50 p-4 rounded-lg">
                                         <div className="flex items-center gap-2">
                                             <HiStar className="w-5 h-5 text-blue-600" />
-                                            <span className="font-semibold text-blue-900">المميزة</span>
+                                            <span className="font-semibold text-blue-900 text-sm">المميزة</span>
                                         </div>
-                                        <p className="text-2xl font-bold text-blue-900">{tabStats.featured}</p>
+                                        <p className="text-xl font-bold text-blue-900">{tabStats.featured}</p>
                                     </div>
                                     <div className="bg-green-50 p-4 rounded-lg">
                                         <div className="flex items-center gap-2">
                                             <HiClock className="w-5 h-5 text-green-600" />
-                                            <span className="font-semibold text-green-900">الجديدة</span>
+                                            <span className="font-semibold text-green-900 text-sm">الجديدة</span>
                                         </div>
-                                        <p className="text-2xl font-bold text-green-900">{tabStats.new}</p>
+                                        <p className="text-xl font-bold text-green-900">{tabStats.new}</p>
                                     </div>
                                     <div className="bg-orange-50 p-4 rounded-lg">
                                         <div className="flex items-center gap-2">
                                             <HiTag className="w-5 h-5 text-orange-600" />
-                                            <span className="font-semibold text-orange-900">العروض</span>
+                                            <span className="font-semibold text-orange-900 text-sm">العروض</span>
                                         </div>
-                                        <p className="text-2xl font-bold text-orange-900">{tabStats.offers}</p>
+                                        <p className="text-xl font-bold text-orange-900">{tabStats.offers}</p>
                                     </div>
                                     <div className="bg-red-50 p-4 rounded-lg">
                                         <div className="flex items-center gap-2">
                                             <HiFire className="w-5 h-5 text-red-600" />
-                                            <span className="font-semibold text-red-900">الأكثر مبيعاً</span>
+                                            <span className="font-semibold text-red-900 text-sm">الأكثر مبيعاً</span>
                                         </div>
-                                        <p className="text-2xl font-bold text-red-900">{tabStats.bestsellers}</p>
+                                        <p className="text-xl font-bold text-red-900">{tabStats.bestsellers}</p>
                                     </div>
                                 </div>
                             )}
@@ -169,44 +282,54 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                             {/* Bulk Actions */}
                             {selectedProducts.length > 0 && (
                                 <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                                    <h3 className="font-semibold mb-3">إجراءات جماعية ({selectedProducts.length} منتج محدد)</h3>
-                                    <div className="flex flex-wrap gap-2">
-                                        <button
-                                            onClick={() => handleBulkTabSettings('featured', 'set')}
-                                            className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
-                                        >
-                                            تعيين كمميزة
-                                        </button>
-                                        <button
-                                            onClick={() => handleBulkTabSettings('featured', 'unset')}
-                                            className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600"
-                                        >
-                                            إلغاء التميز
-                                        </button>
-                                        <button
-                                            onClick={() => handleBulkTabSettings('is_offer', 'set')}
-                                            className="bg-orange-500 text-white px-3 py-1 rounded text-sm hover:bg-orange-600"
-                                        >
-                                            تعيين كعرض
-                                        </button>
-                                        <button
-                                            onClick={() => handleBulkTabSettings('is_offer', 'unset')}
-                                            className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600"
-                                        >
-                                            إلغاء العرض
-                                        </button>
-                                        <button
-                                            onClick={() => handleBulkTabSettings('is_bestseller', 'set')}
-                                            className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
-                                        >
-                                            تعيين كأكثر مبيعاً
-                                        </button>
-                                        <button
-                                            onClick={() => handleBulkTabSettings('is_bestseller', 'unset')}
-                                            className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600"
-                                        >
-                                            إلغاء الأكثر مبيعاً
-                                        </button>
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                        <h3 className="font-semibold text-gray-900">
+                                            إجراءات جماعية ({selectedProducts.length} منتج محدد)
+                                        </h3>
+                                        <div className="flex flex-wrap gap-2">
+                                            <button
+                                                onClick={() => handleBulkTabSettings('featured', 'set')}
+                                                className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
+                                            >
+                                                تعيين كمميزة
+                                            </button>
+                                            <button
+                                                onClick={() => handleBulkTabSettings('featured', 'unset')}
+                                                className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600 transition-colors"
+                                            >
+                                                إلغاء التميز
+                                            </button>
+                                            <button
+                                                onClick={() => handleBulkTabSettings('is_offer', 'set')}
+                                                className="bg-orange-500 text-white px-3 py-1 rounded text-sm hover:bg-orange-600 transition-colors"
+                                            >
+                                                تعيين كعرض
+                                            </button>
+                                            <button
+                                                onClick={() => handleBulkTabSettings('is_offer', 'unset')}
+                                                className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600 transition-colors"
+                                            >
+                                                إلغاء العرض
+                                            </button>
+                                            <button
+                                                onClick={() => handleBulkTabSettings('is_bestseller', 'set')}
+                                                className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-colors"
+                                            >
+                                                تعيين كأكثر مبيعاً
+                                            </button>
+                                            <button
+                                                onClick={() => handleBulkTabSettings('is_bestseller', 'unset')}
+                                                className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600 transition-colors"
+                                            >
+                                                إلغاء الأكثر مبيعاً
+                                            </button>
+                                            <button
+                                                onClick={handleBulkDelete}
+                                                className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors"
+                                            >
+                                                حذف المحدد
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -216,7 +339,7 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
                                         <tr>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 <input
                                                     type="checkbox"
                                                     checked={selectedProducts.length === products.data.length}
@@ -226,27 +349,27 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                                     aria-label="تحديد جميع المنتجات"
                                                 />
                                             </th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 المنتج
                                             </th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="hidden md:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 السعر
                                             </th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="hidden lg:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 الحالة
                                             </th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 التبويبات
                                             </th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 الإجراءات
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {products.data.map((product) => (
-                                            <tr key={product.id}>
-                                                <td className="px-6 py-4 whitespace-nowrap">
+                                            <tr key={product.id} className="hover:bg-gray-50">
+                                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                                                     <input
                                                         type="checkbox"
                                                         checked={selectedProducts.includes(product.id)}
@@ -256,7 +379,7 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                                         aria-label={`تحديد المنتج ${product.name}`}
                                                     />
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="flex-shrink-0 h-10 w-10">
                                                             <img
@@ -265,17 +388,20 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                                                 alt={product.name}
                                                             />
                                                         </div>
-                                                        <div className="mr-4">
-                                                            <div className="text-sm font-medium text-gray-900">
+                                                        <div className="mr-3 sm:mr-4">
+                                                            <div className="text-sm font-medium text-gray-900 truncate max-w-32 sm:max-w-none">
                                                                 {product.name}
                                                             </div>
-                                                            <div className="text-sm text-gray-500">
+                                                            <div className="text-sm text-gray-500 truncate max-w-32 sm:max-w-none">
                                                                 {product.brand}
+                                                            </div>
+                                                            <div className="md:hidden text-sm text-gray-900">
+                                                                {product.price} ريال
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-900">
                                                         {product.price} ريال
                                                     </div>
@@ -285,7 +411,7 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                                         </div>
                                                     )}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
                                                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${product.status === 'active'
                                                         ? 'bg-green-100 text-green-800'
                                                         : 'bg-red-100 text-red-800'
@@ -293,8 +419,8 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                                         {product.status === 'active' ? 'نشط' : 'غير نشط'}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex gap-2">
+                                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex gap-1 sm:gap-2">
                                                         <button
                                                             onClick={() => handleTabSettings(product.id, 'featured', !product.featured)}
                                                             className={`p-1 rounded ${product.featured ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'}`}
@@ -323,27 +449,26 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                                         </div>
                                                     )}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                    <div className="flex gap-2">
+                                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    <div className="flex gap-1 sm:gap-2">
                                                         <Link
                                                             href={route('admin.products.show', product.id)}
-                                                            className="text-blue-600 hover:text-blue-900"
+                                                            className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
+                                                            title="عرض"
                                                         >
                                                             <HiEye className="w-4 h-4" />
                                                         </Link>
                                                         <Link
                                                             href={route('admin.products.edit', product.id)}
-                                                            className="text-green-600 hover:text-green-900"
+                                                            className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
+                                                            title="تعديل"
                                                         >
                                                             <HiPencil className="w-4 h-4" />
                                                         </Link>
                                                         <button
-                                                            onClick={() => {
-                                                                if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
-                                                                    router.delete(route('admin.products.destroy', product.id));
-                                                                }
-                                                            }}
-                                                            className="text-red-600 hover:text-red-900"
+                                                            onClick={() => handleDeleteClick(product)}
+                                                            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                                                            title="حذف"
                                                             aria-label="حذف المنتج"
                                                         >
                                                             <HiTrash className="w-4 h-4" />
@@ -355,10 +480,55 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                     </tbody>
                                 </table>
                             </div>
+
+                            {/* Pagination */}
+                            {products.last_page > 1 && (
+                                <div className="mt-6 flex justify-center">
+                                    <nav className="flex space-x-2 rtl:space-x-reverse">
+                                        {Array.from({ length: products.last_page }, (_, i) => i + 1).map((page) => (
+                                            <button
+                                                key={page}
+                                                onClick={() => router.get(route('admin.products.index'), { page })}
+                                                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                                    page === products.current_page
+                                                        ? 'bg-primary-yellow text-gray-900'
+                                                        : 'bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                                                }`}
+                                            >
+                                                {page}
+                                            </button>
+                                        ))}
+                                    </nav>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmModal
+                isOpen={showDeleteModal}
+                onClose={() => {
+                    setShowDeleteModal(false);
+                    setProductToDelete(null);
+                }}
+                onConfirm={handleDeleteConfirm}
+                title="تأكيد الحذف"
+                message={`هل أنت متأكد من حذف المنتج "${productToDelete?.name}"؟ لا يمكن التراجع عن هذا الإجراء.`}
+                confirmText="حذف"
+                cancelText="إلغاء"
+                type="danger"
+            />
+
+            {toast.isVisible && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    isVisible={toast.isVisible}
+                    onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+                />
+            )}
         </AdminLayout>
     );
 };

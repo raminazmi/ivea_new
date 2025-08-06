@@ -70,21 +70,28 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Categories
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
+    Route::patch('categories/{id}/status', [App\Http\Controllers\Admin\CategoryController::class, 'updateStatus'])->name('categories.update-status');
 
     // Articles
     Route::resource('articles', App\Http\Controllers\Admin\ArticleController::class);
 
     // Tools
     Route::resource('tools', App\Http\Controllers\Admin\ToolController::class);
+    Route::patch('tools/{id}/toggle-published', [App\Http\Controllers\Admin\ToolController::class, 'togglePublished'])->name('tools.toggle-published');
+    Route::patch('tools/{id}/toggle-featured', [App\Http\Controllers\Admin\ToolController::class, 'toggleFeatured'])->name('tools.toggle-featured');
 
     // Jobs
-    Route::get('jobs', [App\Http\Controllers\Admin\JobController::class, 'index'])->name('jobs.index');
+    Route::resource('jobs', App\Http\Controllers\Admin\JobController::class);
 
     // Applications
     Route::get('applications', [App\Http\Controllers\Admin\JobController::class, 'applications'])->name('applications.index');
+    Route::put('applications/{id}/status', [App\Http\Controllers\Admin\JobController::class, 'updateApplicationStatus'])->name('applications.update-status');
+    Route::delete('applications/{id}', [App\Http\Controllers\Admin\JobController::class, 'deleteApplication'])->name('applications.destroy');
 
     // Contacts
     Route::get('contacts', [App\Http\Controllers\Admin\ContactController::class, 'index'])->name('contacts.index');
+    Route::put('contacts/{id}/status', [App\Http\Controllers\Admin\ContactController::class, 'updateStatus'])->name('contacts.update-status');
+    Route::delete('contacts/{id}', [App\Http\Controllers\Admin\ContactController::class, 'destroy'])->name('contacts.destroy');
 });
 
 // Cart routes

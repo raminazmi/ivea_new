@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jobs', function (Blueprint $table) {
+        Schema::create('tools', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->text('description');
-            $table->enum('type', ['full-time', 'part-time', 'contract']);
+            $table->string('slug')->unique();
             $table->string('category');
-            $table->string('location')->nullable();
-            $table->enum('status', ['active', 'inactive', 'closed'])->default('active');
+            $table->text('content');
+            $table->boolean('is_published')->default(true);
+            $table->boolean('featured')->default(false);
+            $table->integer('sort_order')->default(0);
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jobs');
+        Schema::dropIfExists('tools');
     }
 };

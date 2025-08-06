@@ -30,15 +30,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const menuItems = [
-        { name: 'الرئيسية', icon: FaHome, href: '/admin/dashboard', active: route().current('admin.dashboard') },
-        { name: 'المنتجات', icon: FaBriefcase, href: '/admin/products', active: route().current('admin.products.*') },
-        { name: 'الفئات', icon: FaUsers, href: '/admin/categories', active: route().current('admin.categories.*') },
-        { name: 'المقالات', icon: FaNewspaper, href: '/admin/articles', active: route().current('admin.articles.*') },
-        { name: 'أدوات وإرشادات', icon: FaTools, href: '/admin/tools', active: route().current('admin.tools.*') },
-        { name: 'الوظائف', icon: FaBriefcase, href: '/admin/jobs', active: route().current('admin.jobs.*') },
-        { name: 'التقديمات', icon: FaUsers, href: '/admin/applications', active: route().current('admin.applications.*') },
-        { name: 'الرسائل', icon: FaEnvelope, href: '/admin/contacts', active: route().current('admin.contacts.*') },
-        { name: 'الإعدادات', icon: FaCog, href: '/admin/settings', active: route().current('admin.settings.*') },
+        { name: 'الرئيسية', icon: FaHome, href: route('admin.dashboard'), active: route().current('admin.dashboard') },
+        { name: 'المنتجات', icon: FaBriefcase, href: route('admin.products.index'), active: route().current('admin.products.*') },
+        { name: 'الفئات', icon: FaUsers, href: route('admin.categories.index'), active: route().current('admin.categories.*') },
+        { name: 'المقالات', icon: FaNewspaper, href: route('admin.articles.index'), active: route().current('admin.articles.*') },
+        { name: 'أدوات وإرشادات', icon: FaTools, href: route('admin.tools.index'), active: route().current('admin.tools.*') },
+        { name: 'الوظائف', icon: FaBriefcase, href: route('admin.jobs.index'), active: route().current('admin.jobs.*') },
+        { name: 'التقديمات', icon: FaUsers, href: route('admin.applications.index'), active: route().current('admin.applications.*') },
+        { name: 'الرسائل', icon: FaEnvelope, href: route('admin.contacts.index'), active: route().current('admin.contacts.*') },
     ];
 
     return (

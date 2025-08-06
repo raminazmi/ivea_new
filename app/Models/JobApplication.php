@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class JobApplication extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'job_id',
         'first_name',
@@ -16,22 +18,15 @@ class JobApplication extends Model
         'cover_letter',
         'cv_file',
         'status',
-        'notes'
     ];
 
-    /**
-     * Get the job that owns the application.
-     */
-    public function job(): BelongsTo
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    public function job()
     {
         return $this->belongsTo(Job::class);
-    }
-
-    /**
-     * Get the full name attribute.
-     */
-    public function getFullNameAttribute()
-    {
-        return $this->first_name . ' ' . $this->last_name;
     }
 }
