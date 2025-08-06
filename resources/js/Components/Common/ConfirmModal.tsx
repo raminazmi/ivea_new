@@ -1,5 +1,5 @@
 import React from 'react';
-import { HiExclamationTriangle, HiX } from 'react-icons/hi';
+import { HiExclamationCircle, HiX } from 'react-icons/hi';
 
 interface ConfirmModalProps {
     isOpen: boolean;
@@ -69,7 +69,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                     <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <div className="sm:flex sm:items-start">
                             <div className={`mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full sm:mx-0 sm:h-10 sm:w-10 ${styles.iconBg}`}>
-                                <HiExclamationTriangle className={`h-6 w-6 ${styles.icon}`} />
+                                <HiExclamationCircle className={`h-6 w-6 ${styles.icon}`} />
                             </div>
                             <div className="mt-3 text-center sm:mt-0 sm:mr-4 sm:text-right">
                                 <h3 className="text-lg leading-6 font-medium text-gray-900">
