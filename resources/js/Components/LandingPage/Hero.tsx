@@ -312,7 +312,7 @@ const Hero: React.FC = () => {
 
                     <div ref={heroContentRef} className="w-full lg:w-1/2 text-center lg:text-right pr-0 lg:pr-4">
                         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#0D1D25] mb-3 md:mb-4 leading-tight">
-                            الانؤسجام المثالي..
+                            الانسجام المثالي..
                         </h1>
                         <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-[#424242] mb-4 sm:mb-6 md:mb-8 font-medium">
                             راحة وأناقة في كل تفاصيل التصميم
