@@ -10,3 +10,22 @@ yarn-error.log
 .idea
 .DS_Store
 /resources/views/app.blade.php
+
+# استثناء ملفات .htaccess
+/.htaccess
+/public/.htaccess
+
+# استثناء ملفات .js المولدة من TypeScript
+/resources/js/**/*.js
+
+# استثناء ملفات manifest.json المولدة
+/public/build/manifest.json
+
+# استثناء ملفات الكاش
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+
+# استثناء ملفات التكوين المحلية
+/config/vite.php
