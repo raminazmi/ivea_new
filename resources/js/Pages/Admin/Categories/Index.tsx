@@ -28,8 +28,8 @@ interface CategoriesIndexProps {
 }
 
 const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, user }) => {
-    const [searchTerm, setSearchTerm] = useState(filters.search || '');
-    const [statusFilter, setStatusFilter] = useState(filters.status || 'all');
+    const [searchTerm, setSearchTerm] = useState(filters?.search ?? '');
+    const [statusFilter, setStatusFilter] = useState(filters?.status ?? 'all');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
     const [showFilters, setShowFilters] = useState(false);
@@ -100,7 +100,24 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
 
     return (
         <AdminLayout user={user}>
-            <Head title="إدارة الفئات" />
+            <Head title="إدارة الفئات">
+                <style>{`
+                    .categories-table::-webkit-scrollbar {
+                        height: 8px;
+                    }
+                    .categories-table::-webkit-scrollbar-track {
+                        background: #f9fafb;
+                        border-radius: 4px;
+                    }
+                    .categories-table::-webkit-scrollbar-thumb {
+                        background: #d1d5db;
+                        border-radius: 4px;
+                    }
+                    .categories-table::-webkit-scrollbar-thumb:hover {
+                        background: #9ca3af;
+                    }
+                `}</style>
+            </Head>
 
             <div className="p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -166,145 +183,128 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
                     </div>
                 )}
 
-                <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        الفئة
-                                    </th>
-                                    <th className="hidden md:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        الوصف
-                                    </th>
-                                    <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        عدد المنتجات
-                                    </th>
-                                    <th className="hidden lg:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        الترتيب
-                                    </th>
-                                    <th className="hidden md:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        الحالة
-                                    </th>
-                                    <th className="hidden lg:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        التاريخ
-                                    </th>
-                                    <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        الإجراءات
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {categories.data.map((category) => (
-                                    <tr key={category.id} className="hover:bg-gray-50">
-                                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
-                                            <div>
-                                                <div className="text-sm font-medium text-gray-900 truncate max-w-32 sm:max-w-none">
-                                                    {category.name}
+                <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div className="p-4 sm:p-6 bg-white border-b border-gray-200">
+                        {/* Table */}
+                        <div className="overflow-x-auto border border-gray-200 rounded-lg categories-table" style={{
+                            scrollbarWidth: 'thin',
+                            scrollbarColor: '#d1d5db #f9fafb'
+                        }}>
+                            <table className="min-w-full divide-y divide-gray-200 table-fixed">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            الفئة
+                                        </th>
+                                        <th className="hidden md:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            الوصف
+                                        </th>
+                                        <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            عدد المنتجات
+                                        </th>
+                                        <th className="hidden lg:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            الترتيب
+                                        </th>
+                                        <th className="hidden md:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            الحالة
+                                        </th>
+                                        <th className="hidden lg:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            التاريخ
+                                        </th>
+                                        <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            الإجراءات
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {categories.data.map((category) => (
+                                        <tr key={category.id} className="hover:bg-gray-50">
+                                            <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                                <div>
+                                                    <div className="text-sm font-medium text-gray-900 truncate max-w-32 sm:max-w-none">
+                                                        {category.name}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500 truncate max-w-32 sm:max-w-none">
+                                                        {category.slug}
+                                                    </div>
+                                                    <div className="md:hidden text-sm text-gray-500">
+                                                        {category.description || '-'}
+                                                    </div>
+                                                    <div className="md:hidden mt-1">
+                                                        {getStatusBadge(category.status)}
+                                                    </div>
                                                 </div>
-                                                <div className="text-sm text-gray-500 truncate max-w-32 sm:max-w-none">
-                                                    {category.slug}
-                                                </div>
-                                                <div className="md:hidden text-sm text-gray-500">
+                                            </td>
+                                            <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                <div className="max-w-xs truncate">
                                                     {category.description || '-'}
                                                 </div>
-                                                <div className="md:hidden mt-1">
-                                                    {getStatusBadge(category.status)}
+                                            </td>
+                                            <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                                                    {category.products_count}
+                                                </span>
+                                            </td>
+                                            <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                {category.sort_order}
+                                            </td>
+                                            <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
+                                                {getStatusBadge(category.status)}
+                                            </td>
+                                            <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {new Date(category.created_at).toLocaleDateString('ar-SA')}
+                                            </td>
+                                            <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                                                    <Link
+                                                        href={`/admin/categories/${category.id}/edit`}
+                                                        className="text-primary-yellow hover:text-yellow-600 p-1 rounded hover:bg-yellow-50 flex items-center gap-1"
+                                                        title="تعديل"
+                                                    >
+                                                        <HiPencil className="w-4 h-4" />
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => handleDeleteClick(category)}
+                                                        className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 flex items-center gap-1"
+                                                        title="حذف"
+                                                    >
+                                                        <HiTrash className="w-4 h-4" />
+                                                    </button>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            <div className="max-w-xs truncate">
-                                                {category.description || '-'}
-                                            </div>
-                                        </td>
-                                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
-                                                {category.products_count}
-                                            </span>
-                                        </td>
-                                        <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {category.sort_order}
-                                        </td>
-                                        <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
-                                            {getStatusBadge(category.status)}
-                                        </td>
-                                        <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {new Date(category.created_at).toLocaleDateString('ar-SA')}
-                                        </td>
-                                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
-                                                <Link
-                                                    href={`/admin/categories/${category.id}`}
-                                                    className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 flex items-center gap-1"
-                                                    title="عرض"
-                                                >
-                                                    <HiEye className="w-4 h-4" />
-                                                    <span className="hidden sm:inline">عرض</span>
-                                                </Link>
-                                                <Link
-                                                    href={`/admin/categories/${category.id}/edit`}
-                                                    className="text-primary-yellow hover:text-yellow-600 p-1 rounded hover:bg-yellow-50 flex items-center gap-1"
-                                                    title="تعديل"
-                                                >
-                                                    <HiPencil className="w-4 h-4" />
-                                                    <span className="hidden sm:inline">تعديل</span>
-                                                </Link>
-                                                <button
-                                                    onClick={() => handleStatusChange(category.id, category.status === 'active' ? 'inactive' : 'active')}
-                                                    className={`${category.status === 'active'
-                                                        ? 'text-red-600 hover:text-red-800'
-                                                        : 'text-green-600 hover:text-green-800'
-                                                        } p-1 rounded hover:bg-gray-50 flex items-center gap-1`}
-                                                    title={category.status === 'active' ? 'إيقاف' : 'تفعيل'}
-                                                >
-                                                    <span className="hidden sm:inline">
-                                                        {category.status === 'active' ? 'إيقاف' : 'تفعيل'}
-                                                    </span>
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteClick(category)}
-                                                    className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 flex items-center gap-1"
-                                                    title="حذف"
-                                                >
-                                                    <HiTrash className="w-4 h-4" />
-                                                    <span className="hidden sm:inline">حذف</span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {categories.data.length === 0 && (
+                            <div className="text-center py-12">
+                                <p className="text-gray-500 text-lg">لا توجد فئات متاحة</p>
+                            </div>
+                        )}
                     </div>
 
-                    {categories.data.length === 0 && (
-                        <div className="text-center py-12">
-                            <p className="text-gray-500 text-lg">لا توجد فئات متاحة</p>
+                    {/* Pagination */}
+                    {categories.last_page > 1 && (
+                        <div className="m-4 flex justify-center">
+                            <nav className="flex space-x-2 rtl:space-x-reverse">
+                                {Array.from({ length: categories.last_page }, (_, i) => i + 1).map((page) => (
+                                    <button
+                                        key={page}
+                                        onClick={() => router.get(route('admin.categories.index'), { ...filters, page })}
+                                        className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${page === categories.current_page
+                                            ? 'bg-primary-yellow text-gray-900'
+                                            : 'bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                                            }`}
+                                    >
+                                        {page}
+                                    </button>
+                                ))}
+                            </nav>
                         </div>
                     )}
                 </div>
-
-                {/* Pagination */}
-                {categories.last_page > 1 && (
-                    <div className="mt-6 flex justify-center">
-                        <nav className="flex space-x-2 rtl:space-x-reverse">
-                            {Array.from({ length: categories.last_page }, (_, i) => i + 1).map((page) => (
-                                <button
-                                    key={page}
-                                    onClick={() => router.get(route('admin.categories.index'), { ...filters, page })}
-                                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                        page === categories.current_page
-                                            ? 'bg-primary-yellow text-gray-900'
-                                            : 'bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-                                    }`}
-                                >
-                                    {page}
-                                </button>
-                            ))}
-                        </nav>
-                    </div>
-                )}
             </div>
 
             {/* Delete Confirmation Modal */}

@@ -16,8 +16,12 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->enum('type', ['full-time', 'part-time', 'contract']);
+            $table->string('salary_range')->nullable();
             $table->string('category');
             $table->string('location')->nullable();
+            $table->text('requirements')->nullable();
+            $table->text('benefits')->nullable();
+            $table->date('deadline')->nullable();
             $table->enum('status', ['active', 'inactive', 'closed'])->default('active');
             $table->timestamps();
         });

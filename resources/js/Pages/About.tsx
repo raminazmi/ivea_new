@@ -20,46 +20,48 @@ const About: React.FC = () => {
                     linkedin: 'https://linkedin.com',
                 }}
             />
-            <section className="py-12 md:py-16 lg:py-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12 items-start">
-                        <div className="flex justify-end">
-                            <div className="relative">
-                                <img
-                                    src="/images/curtain1.png"
-                                    alt="ستائر أنيقة"
-                                    className="w-full max-w-sm md:max-w-md max-h-80 md:max-h-96 rounded-lg shadow-lg"
-                                />
+            <div className="container mx-auto px-2 sm:px-4 lg:px-8">
+                <section className="py-12 md:py-16 lg:py-20">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12 items-start">
+                            <div className="flex justify-end">
+                                <div className="relative">
+                                    <img
+                                        src="/images/curtain1.png"
+                                        alt="ستائر أنيقة"
+                                        className="w-full max-w-sm md:max-w-md max-h-80 md:max-h-96 rounded-lg shadow-lg"
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="text-start col-span-2 mt-8 lg:mt-10">
-                            <SectionTitle
-                                text="من نحن:"
-                                size="3xl"
-                                align="start"
-                            />
-                            <div className="mt-4 md:mt-6 text-base md:text-lg text-gray-700 leading-relaxed space-y-3 md:space-y-4">
-                                <p>
-                                    نحن فريق متخصص في تصميم وتنفيذ الحلول الداخلية عالية الجودة،
-                                    نقدم مجموعة متنوعة من الستائر والأثاث والديكورات الخشبية بأعلى معايير الجودة.
-                                </p>
-                                <p>
-                                    نركز على التفاصيل لتحويل المساحات إلى تصاميم فنية تعكس ذوق العميل،
-                                    ونلتزم بالاحترافية من التصميم إلى التركيب.
-                                </p>
-                                <p>
-                                    نسعى لخلق بيئات داخلية تجمع بين الجمال والوظائف العملية،
-                                    لتوفير تجربة فريدة لعملائنا الكرام.
-                                </p>
+                            <div className="text-start col-span-2 mt-8 lg:mt-10">
+                                <SectionTitle
+                                    text="من نحن:"
+                                    size="3xl"
+                                    align="start"
+                                />
+                                <div className="mt-4 md:mt-6 text-base md:text-lg text-gray-700 leading-relaxed space-y-3 md:space-y-4">
+                                    <p>
+                                        نحن فريق متخصص في تصميم وتنفيذ الحلول الداخلية عالية الجودة،
+                                        نقدم مجموعة متنوعة من الستائر والأثاث والديكورات الخشبية بأعلى معايير الجودة.
+                                    </p>
+                                    <p>
+                                        نركز على التفاصيل لتحويل المساحات إلى تصاميم فنية تعكس ذوق العميل،
+                                        ونلتزم بالاحترافية من التصميم إلى التركيب.
+                                    </p>
+                                    <p>
+                                        نسعى لخلق بيئات داخلية تجمع بين الجمال والوظائف العملية،
+                                        لتوفير تجربة فريدة لعملائنا الكرام.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-            <section className="py-10 md:py-12 lg:py-14 bg-gray-50">
+                </section>
+            </div>
+            <section className="py-10 md:py-12 lg:py-14 px-2 sm:px-4 lg:px-12 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16">
                         <div className="">
                             <div className="mt-6 md:mt-8 flex justify-center">
                                 <img
@@ -104,7 +106,9 @@ const About: React.FC = () => {
                     </div>
                 </div>
             </section>
-            <ContactUs />
+            <div className="container mx-auto px-2 sm:px-4 lg:px-8">
+                <ContactUs />
+            </div>
         </AppLayout>
     );
 };

@@ -56,7 +56,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts 
             id: product.id,
             name: product.name,
             price: product.finalPrice,
-            quantity: 1,
             image: product.image,
         }));
     };

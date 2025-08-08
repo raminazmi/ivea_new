@@ -12,10 +12,14 @@ class ContactController extends Controller
 {
     public function index()
     {
-        $contacts = Contact::orderBy('created_at', 'desc')->get();
+        $contacts = Contact::orderBy('created_at', 'desc')->paginate(15);
 
         return Inertia::render('Admin/Contacts/Index', [
-            'contacts' => $contacts
+            'contacts' => $contacts,
+            'filters' => [
+                'search' => request('search', ''),
+                'status' => request('status', 'all'),
+            ],
         ]);
     }
 

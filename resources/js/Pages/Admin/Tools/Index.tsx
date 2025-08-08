@@ -116,7 +116,7 @@ const ToolsIndex: React.FC<ToolsIndexProps> = ({ tools }) => {
     const filteredTools = tools.filter(tool => {
         const matchesSearch = tool.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             tool.category.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = statusFilter === 'all' || 
+        const matchesStatus = statusFilter === 'all' ||
             (statusFilter === 'published' && tool.isPublished) ||
             (statusFilter === 'draft' && !tool.isPublished);
 
@@ -214,9 +214,6 @@ const ToolsIndex: React.FC<ToolsIndexProps> = ({ tools }) => {
                                             <th className="hidden md:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 مميز
                                             </th>
-                                            <th className="hidden lg:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                الترتيب
-                                            </th>
                                             <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 الإجراءات
                                             </th>
@@ -289,9 +286,6 @@ const ToolsIndex: React.FC<ToolsIndexProps> = ({ tools }) => {
                                                             </>
                                                         )}
                                                     </button>
-                                                </td>
-                                                <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {tool.sortOrder}
                                                 </td>
                                                 <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                     <div className="flex gap-1 sm:gap-2">

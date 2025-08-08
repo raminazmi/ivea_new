@@ -33,7 +33,10 @@ interface Contact {
 }
 
 interface ContactsIndexProps {
-    contacts: Contact[] | null | undefined;
+    contacts: {
+        data: Contact[];
+        // باقي خصائص pagination إذا احتجت
+    } | null | undefined;
     user?: {
         id: number;
         name: string;
@@ -61,7 +64,7 @@ const ContactsIndex: React.FC<ContactsIndexProps> = ({ contacts, user }) => {
         isVisible: false
     });
 
-    const contactsArray = Array.isArray(contacts) ? contacts : [];
+    const contactsArray = Array.isArray(contacts?.data) ? contacts.data : [];
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -164,12 +167,7 @@ const ContactsIndex: React.FC<ContactsIndexProps> = ({ contacts, user }) => {
     return (
         <AdminLayout title="إدارة الرسائل" user={currentUser}>
             <div className="space-y-6">
-                {process.env.NODE_ENV === 'development' && (
-                    <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-                        <p>Debug: Contacts count: {contactsArray.length}</p>
-                        <p>Original contacts type: {typeof contacts}</p>
-                    </div>
-                )}
+
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h1 className="text-xl sm:text-2xl font-bold text-gray-900">إدارة الرسائل</h1>
@@ -494,4 +492,4 @@ const ContactsIndex: React.FC<ContactsIndexProps> = ({ contacts, user }) => {
     );
 };
 
-export default ContactsIndex; 
+export default ContactsIndex;

@@ -24,28 +24,27 @@ const Projects: React.FC = () => {
                     linkedin: 'https://linkedin.com',
                 }}
             />
-
-            <section className="py-10 md:py-12 lg:py-14">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-12 md:mb-16">
-                        <SectionTitle
-                            text="ما هو أسلوب التصميم الخاص بي؟"
-                            size="3xl"
-                            align="center"
-                        />
-                        <div className="mt-6 md:mt-8 max-w-4xl mx-auto">
-                            <p className="text-base md:text-lg text-gray-700 leading-relaxed">
-                                لست متأكدًا مما إذا كان أسلوبك وهميًا أم فخمًا أم عصريًا؟ تساعدك اختباراتنا على اكتشاف أسلوبك الفريد في التصميم. بمجرد حصولك على نتائجك الشخصية، سيساعدك فريقنا الموهوب من المصممين في تصميم منزل تحب العيش فيه.
-                            </p>
+            <div className="container mx-auto px-2 sm:px-4 lg:px-8">
+                <section className="py-10 md:py-12 lg:py-14">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-12 md:mb-16">
+                            <SectionTitle
+                                text="ما هو أسلوب التصميم الخاص بي؟"
+                                size="3xl"
+                                align="center"
+                            />
+                            <div className="mt-6 md:mt-8 max-w-4xl mx-auto">
+                                <p className="text-base md:text-lg text-gray-700 leading-relaxed">
+                                    لست متأكدًا مما إذا كان أسلوبك وهميًا أم فخمًا أم عصريًا؟ تساعدك اختباراتنا على اكتشاف أسلوبك الفريد في التصميم. بمجرد حصولك على نتائجك الشخصية، سيساعدك فريقنا الموهوب من المصممين في تصميم منزل تحب العيش فيه.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            <ProjectShowcase />
-
+                </section>
+                <ProjectShowcase />
+            </div>
             <section className="py-12 md:py-16 lg:py-20 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
                     <div className="text-center mb-12 md:mb-16">
                         <SectionTitle
                             text="فئات المشاريع"
@@ -151,7 +150,9 @@ const Projects: React.FC = () => {
                     </div>
                 </div>
             </section>
-            <ContactUs />
+            <div className="container mx-auto px-2 sm:px-4 lg:px-8">
+                <ContactUs />
+            </div>
         </AppLayout>
     );
 };

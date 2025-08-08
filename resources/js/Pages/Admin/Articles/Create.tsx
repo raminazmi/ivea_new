@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import InputError from '@/Components/InputError';
@@ -6,15 +6,20 @@ import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import PrimaryButton from '@/Components/PrimaryButton';
 
-interface CreateArticleProps {
-    categories: string[];
+interface Category {
+    id: number;
+    name: string;
 }
 
-const CreateArticle: React.FC<CreateArticleProps> = ({ categories }) => {
+interface CreateArticleProps {
+    categories: Category[];
+}
+
+const CreateArticle: React.FC<CreateArticleProps> = ({ categories = [] }) => {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         content: '',
-        category: '',
+        category_id: '',
         image: null as File | null,
         date: new Date().toISOString().split('T')[0],
         read_time: 5,
@@ -25,13 +30,9 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories }) => {
         meta_keywords: '',
         is_published: true as boolean,
         featured: false as boolean,
-        sort_order: 0
+        sort_order: 0,
+        slug: ''
     });
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        post(route('admin.articles.store'));
-    };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -45,7 +46,18 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories }) => {
         }
     };
 
-
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const slug = data.title
+            .trim()
+            .replace(/\s+/g, '-')
+            .replace(/[^\w\-]+/g, '')
+            .toLowerCase();
+        setData('slug', slug);
+        post(route('admin.articles.store'), {
+            forceFormData: true
+        });
+    };
 
     return (
         <AdminLayout>
@@ -74,23 +86,23 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories }) => {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="category" value="الفئة" />
+                                        <InputLabel htmlFor="category_id" value="الفئة" />
                                         <select
                                             title="الفئة"
-                                            id="category"
+                                            id="category_id"
                                             className="mt-1 block w-full border-gray-300 focus:border-yellow-500 focus:ring-yellow-500 rounded-md shadow-sm"
-                                            value={data.category}
-                                            onChange={(e) => setData('category', e.target.value)}
+                                            value={data.category_id}
+                                            onChange={(e) => setData('category_id', e.target.value)}
                                             required
                                         >
                                             <option value="">اختر الفئة</option>
-                                            {categories.map((category) => (
-                                                <option key={category} value={category}>
-                                                    {category}
+                                            {categories.map((category: Category) => (
+                                                <option key={category.id} value={category.id}>
+                                                    {category.name}
                                                 </option>
                                             ))}
                                         </select>
-                                        <InputError message={errors.category} className="mt-2" />
+                                        <InputError message={errors.category_id} className="mt-2" />
                                     </div>
 
                                     <div>
@@ -242,7 +254,7 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories }) => {
                                             type="checkbox"
                                             className="rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                                             checked={data.is_published}
-                                            onChange={(e) => setData('is_published', e.target.checked)}
+                                            onChange={(e) => setData('is_published', e.target.checked ? true : false)}
                                         />
                                         <span className="mr-2 text-sm text-gray-600">منشورة</span>
                                     </label>
@@ -252,7 +264,7 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories }) => {
                                             type="checkbox"
                                             className="rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                                             checked={data.featured}
-                                            onChange={(e) => setData('featured', e.target.checked)}
+                                            onChange={(e) => setData('featured', e.target.checked ? true : false)}
                                         />
                                         <span className="mr-2 text-sm text-gray-600">مميزة</span>
                                     </label>
@@ -275,4 +287,4 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories }) => {
     );
 };
 
-export default CreateArticle; 
+export default CreateArticle;

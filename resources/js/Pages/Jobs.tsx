@@ -4,7 +4,10 @@ import AppLayout from '@/Components/LandingPage/Layout/AppLayout';
 import CoverSection from '@/Components/LandingPage/Layout/CoverSection';
 import Breadcrumb from '@/Components/Common/Breadcrumb';
 import JobCard from '@/Components/Jobs/JobCard';
+import JobCardSkeleton from '@/Components/Jobs/JobCardSkeleton';
 import CategoryTabs from '@/Components/Jobs/CategoryTabs';
+import Toast from '@/Components/Common/Toast';
+import ContactUs from '@/Components/LandingPage/ContactUs';
 
 interface Job {
   id: number;
@@ -27,11 +30,25 @@ interface JobsProps {
 const Jobs: React.FC<JobsProps> = ({ jobs, categories }) => {
   const [activeCategory, setActiveCategory] = useState('الكل');
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<{
+    isVisible: boolean;
+    message: string;
+    type: 'success' | 'error';
+  }>({
+    isVisible: false,
+    message: '',
+    type: 'success',
+  });
 
   const allCategories = ['الكل', ...categories];
   const filteredJobs = activeCategory === 'الكل'
     ? jobs
     : jobs.filter(job => job.category === activeCategory);
+
+  const pageSize = 8;
+  const totalPages = Math.ceil(filteredJobs.length / pageSize);
+  const paginatedJobs = filteredJobs.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const handleCategoryChange = (category: string) => {
     setActiveCategory(category);
@@ -39,12 +56,41 @@ const Jobs: React.FC<JobsProps> = ({ jobs, categories }) => {
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
 
   const handleApply = (jobId: number) => {
-    console.log('التقديم على الوظيفة:', jobId);
+    router.visit(route('jobs.apply', { id: jobId }), {
+      onSuccess: () => {
+        setToast({
+          isVisible: true,
+          message: 'تم فتح صفحة التقديم بنجاح',
+          type: 'success',
+        });
+      },
+      onError: () => {
+        setToast({
+          isVisible: true,
+          message: 'حدث خطأ أثناء فتح صفحة التقديم',
+          type: 'error',
+        });
+      },
+    });
   };
+
+  React.useEffect(() => {
+    // مثال لجلب الوظائف من API
+    setLoading(true);
+    fetch('/api/jobs')
+      .then(res => res.json())
+      .then(data => {
+        // هنا يمكنك تحديث الوظائف إذا كنت تجلبها ديناميكياً
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
   return (
     <AppLayout>
@@ -76,10 +122,11 @@ const Jobs: React.FC<JobsProps> = ({ jobs, categories }) => {
           activeCategory={activeCategory}
           onCategoryChange={handleCategoryChange}
         />
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
-          {filteredJobs.length > 0 ? (
-            filteredJobs.map((job) => (
+          {loading ? (
+            Array.from({ length: 8 }).map((_, i) => <JobCardSkeleton key={i} />)
+          ) : paginatedJobs.length > 0 ? (
+            paginatedJobs.map((job) => (
               <JobCard
                 key={job.id}
                 title={job.title}
@@ -101,8 +148,7 @@ const Jobs: React.FC<JobsProps> = ({ jobs, categories }) => {
             </div>
           )}
         </div>
-
-        {filteredJobs.length > 0 && (
+        {!loading && totalPages > 1 && (
           <div className="flex justify-center items-center space-x-2 rtl:space-x-reverse mt-8 md:mt-12">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
@@ -114,13 +160,22 @@ const Jobs: React.FC<JobsProps> = ({ jobs, categories }) => {
             >
               ‹
             </button>
-
-            <span className="px-3 py-2 text-gray-600 text-sm md:text-base">12 ... 3 2 1</span>
-
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1)}
+                className={`px-3 py-2 rounded-md text-sm md:text-base ${currentPage === i + 1
+                  ? 'bg-primary-yellow text-gray-900 font-bold'
+                  : 'text-gray-600 hover:bg-yellow-100'
+                  }`}
+              >
+                {i + 1}
+              </button>
+            ))}
             <button
               onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === 12}
-              className={`p-2 rounded-md transition-colors text-sm md:text-base ${currentPage === 12
+              disabled={currentPage === totalPages}
+              className={`p-2 rounded-md transition-colors text-sm md:text-base ${currentPage === totalPages
                 ? 'text-gray-400 cursor-not-allowed'
                 : 'text-gray-600 hover:text-primary-yellow'
                 }`}
@@ -129,6 +184,17 @@ const Jobs: React.FC<JobsProps> = ({ jobs, categories }) => {
             </button>
           </div>
         )}
+        {toast.isVisible && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            isVisible={toast.isVisible}
+            onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+          />
+        )}
+      </div>
+      <div className="container mx-auto px-2 sm:px-4 lg:px-8">
+        <ContactUs />
       </div>
     </AppLayout>
   );

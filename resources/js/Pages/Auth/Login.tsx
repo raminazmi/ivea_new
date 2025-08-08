@@ -149,18 +149,6 @@ const Login: React.FC = () => {
                                 )}
                             </button>
                         </div>
-
-                        <div className="text-center">
-                            <p className="text-sm text-gray-600">
-                                ليس لديك حساب؟{' '}
-                                <Link
-                                    href="/register"
-                                    className="font-medium text-primary-yellow hover:text-yellow-600 transition-colors duration-200"
-                                >
-                                    إنشاء حساب جديد
-                                </Link>
-                            </p>
-                        </div>
                     </form>
                 </div>
 

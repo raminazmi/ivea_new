@@ -30,7 +30,7 @@ const JobCard: React.FC<JobCardProps> = ({
     };
 
     return (
-        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-lg transition-shadow duration-300">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
             {/* Top Section */}
             <div className="flex justify-between items-start mb-3 sm:mb-4">
                 {/* Icon - Top Right */}
@@ -49,13 +49,13 @@ const JobCard: React.FC<JobCardProps> = ({
             </div>
 
             {/* Middle Section - Job Title with Highlight */}
-            <div className="mb-3 sm:mb-4">
-                <h3 className="text-base sm:text-lg font-bold text-primary-black mb-2 relative">
+            <div className="mb-2">
+                <h3 className="text-base sm:text-lg font-bold text-primary-black relative">
                     <SectionTitle
                         text={title}
                         size="lg"
                         align="center"
-                        className="mb-6 sm:mb-8 text-blue-600"
+                        className="mb-4 text-blue-600"
                     />
                 </h3>
             </div>
@@ -66,12 +66,14 @@ const JobCard: React.FC<JobCardProps> = ({
             </p>
 
             {/* Apply Button */}
-            <button
-                onClick={onApply}
-                className="w-full bg-primary-yellow hover:bg-yellow-500 text-primary-black font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-md transition duration-300 text-sm sm:text-base"
-            >
-                التقديم الآن
-            </button>
+            <div className="mt-auto">
+                <button
+                    onClick={onApply}
+                    className="w-full bg-primary-yellow hover:bg-yellow-500 text-primary-black font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-md transition duration-300 text-sm sm:text-base"
+                >
+                    التقديم الآن
+                </button>
+            </div>
         </div>
     );
 };

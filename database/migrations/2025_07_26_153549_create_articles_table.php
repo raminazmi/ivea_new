@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->longText('content');
-            $table->string('category');
+            $table->unsignedBigInteger('category_id');
             $table->string('image')->nullable();
             $table->date('date');
             $table->integer('read_time')->default(5);
@@ -29,6 +29,7 @@ return new class extends Migration
             $table->boolean('featured')->default(false);
             $table->integer('sort_order')->default(0);
             $table->timestamps();
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 
@@ -39,4 +40,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('articles');
     }
-}; 
+};

@@ -236,19 +236,19 @@ const Hero: React.FC = () => {
     };
 
     return (
-        <section className="bg-white py-6 sm:py-8 md:py-12 lg:py-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="bg-white py-4 sm:py-6 md:py-8 lg:pt-20">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Hero Section */}
                 <div
                     ref={heroRef}
                     data-section="hero"
-                    className="flex flex-col lg:flex-row-reverse items-center gap-6 sm:gap-8 lg:gap-12 xl:gap-16"
+                    className="flex flex-col lg:flex-row-reverse items-center gap-4 sm:gap-6 lg:gap-10 xl:gap-14"
                 >
                     <div ref={heroImageRef} className="w-full lg:w-1/2 relative">
                         <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg w-full" style={{
                             aspectRatio: '1/1.2',
-                            maxHeight: '400px',
-                            minHeight: '300px'
+                            maxHeight: '340px',
+                            minHeight: '220px'
                         }}>
                             <div className="relative w-full h-full overflow-hidden">
                                 {heroImages.map((image, index) => (
@@ -311,22 +311,22 @@ const Hero: React.FC = () => {
                     </div>
 
                     <div ref={heroContentRef} className="w-full lg:w-1/2 text-center lg:text-right pr-0 lg:pr-4">
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#0D1D25] mb-3 md:mb-4 leading-tight">
+                        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-[#0D1D25] mb-2 md:mb-3 leading-tight">
                             الانسجام المثالي..
                         </h1>
-                        <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-[#424242] mb-4 sm:mb-6 md:mb-8 font-medium">
+                        <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-[#424242] mb-3 sm:mb-4 md:mb-6 font-medium">
                             راحة وأناقة في كل تفاصيل التصميم
                         </p>
 
-                        <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 mb-6 sm:mb-8">
-                            <span className="text-[#0D1D25] px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-full transition-all duration-500 hover:bg-opacity-90 text-sm sm:text-base md:text-lg font-medium w-full sm:w-auto text-center border border-[#0D1D25] hover:scale-105 hover:shadow-md">
+                        <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-2 sm:gap-3 mb-4 sm:mb-6">
+                            <span className="text-[#0D1D25] px-3 sm:px-4 md:px-5 py-1.5 md:py-2 rounded-full transition-all duration-500 hover:bg-opacity-90 text-xs sm:text-sm md:text-base font-medium w-full sm:w-auto text-center border border-[#0D1D25] hover:scale-105 hover:shadow-md">
                                 استكشف عروضنا
                             </span>
                             <Link
                                 href="#"
                                 className="flex items-center justify-center gap-2 text-[#616161] font-medium transition-all duration-500 hover:scale-105"
                             >
-                                <FaWhatsapp className="text-2xl sm:text-3xl md:text-4xl text-white bg-[#4CAF50] hover:bg-[#3d8b40] rounded-full p-1 sm:p-1.5 md:p-2 transition-all duration-500 hover:scale-110" />
+                                <FaWhatsapp className="text-xl sm:text-2xl md:text-3xl text-white bg-[#4CAF50] hover:bg-[#3d8b40] rounded-full p-1 sm:p-1.5 md:p-2 transition-all duration-500 hover:scale-110" />
                                 <span className="text-xs sm:text-sm md:text-base">للإستشارة المجانية</span>
                             </Link>
                         </div>
@@ -400,7 +400,7 @@ const Hero: React.FC = () => {
                 <div
                     ref={categoriesRef}
                     data-section="categories"
-                    className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-6 px-2 sm:px-4 mt-32">
+                    className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14 sm:gap-8 lg:gap-6 px-2 sm:px-4 mt-32">
                     <div ref={categoriesContainerRef} className="contents">
                         {categories.map((category, index) => (
                             <div

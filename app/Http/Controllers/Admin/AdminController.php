@@ -62,9 +62,6 @@ class AdminController extends Controller
     {
         $contacts = Contact::latest()->get();
 
-        // Debug: Log the contacts data
-        \Log::info('Contacts data:', ['count' => $contacts->count(), 'data' => $contacts->toArray()]);
-
         return Inertia::render('Admin/Contacts/Index', [
             'contacts' => $contacts,
             'user' => Auth::user(),

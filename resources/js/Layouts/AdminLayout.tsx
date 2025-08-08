@@ -28,34 +28,33 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
     const { auth, user: pageUser } = usePage<PageProps>().props;
     const currentUser = user || pageUser || auth.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    // { name: 'أدوات وإرشادات', icon: FaTools, href: route('admin.tools.index'), active: route().current('admin.tools.*') },
 
     const menuItems = [
         { name: 'الرئيسية', icon: FaHome, href: route('admin.dashboard'), active: route().current('admin.dashboard') },
         { name: 'المنتجات', icon: FaBriefcase, href: route('admin.products.index'), active: route().current('admin.products.*') },
         { name: 'الفئات', icon: FaUsers, href: route('admin.categories.index'), active: route().current('admin.categories.*') },
         { name: 'المقالات', icon: FaNewspaper, href: route('admin.articles.index'), active: route().current('admin.articles.*') },
-        { name: 'أدوات وإرشادات', icon: FaTools, href: route('admin.tools.index'), active: route().current('admin.tools.*') },
         { name: 'الوظائف', icon: FaBriefcase, href: route('admin.jobs.index'), active: route().current('admin.jobs.*') },
         { name: 'التقديمات', icon: FaUsers, href: route('admin.applications.index'), active: route().current('admin.applications.*') },
         { name: 'الرسائل', icon: FaEnvelope, href: route('admin.contacts.index'), active: route().current('admin.contacts.*') },
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
             <Head title={title} />
-            
+
             {/* Sidebar */}
-            <div className={`h-screen fixed inset-y-0 right-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-                sidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
-            }`}>
+            <aside className={`h-screen fixed inset-y-0 right-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
+                }`}>
                 <div className="flex flex-col h-full">
                     {/* Logo */}
-                    <div className="flex items-center justify-center p-6 border-b border-gray-200">
+                    <div className="flex items-center justify-between p-4 px-3 border-b border-gray-200">
                         <Link href="/" className="flex items-center justify-center space-x-3 rtl:space-x-reverse">
-                            <img 
-                                src="/images/logo.png" 
-                                alt="إيفيا" 
-                                className="h-10 w-auto object-contain" 
+                            <img
+                                src="/images/logo.png"
+                                alt="إيفيا"
+                                className="h-10 w-auto object-contain"
                             />
                         </Link>
                         <button
@@ -75,11 +74,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    className={`flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                        item.active
-                                            ? 'bg-primary-yellow text-primary-black shadow-md'
-                                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                                    }`}
+                                    className={`flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${item.active
+                                        ? 'bg-primary-yellow text-primary-black shadow-md'
+                                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                        }`}
                                 >
                                     <Icon className="w-5 h-5" />
                                     <span>{item.name}</span>
@@ -110,12 +108,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
                         </Link>
                     </div>
                 </div>
-            </div>
+            </aside>
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col lg:mr-64">
                 {/* Header */}
-                <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+                <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40 w-full">
                     <div className="flex items-center justify-between px-6 py-4">
                         <div className="flex items-center space-x-4 rtl:space-x-reverse">
                             <button
@@ -125,11 +123,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
                             >
                                 <FaBars className="w-5 h-5" />
                             </button>
-                            <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+                            <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
                         </div>
                         <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                            <Link 
-                                href="/" 
+                            <Link
+                                href="/"
                                 className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200"
                             >
                                 العودة للموقع
@@ -139,14 +137,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
                 </header>
 
                 {/* Page Content */}
-                <main className="flex-1 p-6 overflow-y-auto">
-                    {children}
+                <main className="flex-1 p-4 sm:p-6 overflow-auto max-w-full w-full">
+                    <div className="w-full max-w-5xl mx-auto">
+                        {children}
+                    </div>
                 </main>
             </div>
 
             {/* Mobile Sidebar Overlay */}
             {sidebarOpen && (
-                <div 
+                <div
                     className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
                     onClick={() => setSidebarOpen(false)}
                 />

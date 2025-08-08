@@ -108,21 +108,21 @@ class Product extends Model
     public function scopeNew($query)
     {
         return $query->whereNotNull('published_at')
-                    ->where('published_at', '>=', now()->subDays(30))
-                    ->orderBy('published_at', 'desc');
+            ->where('published_at', '>=', now()->subDays(30))
+            ->orderBy('published_at', 'desc');
     }
 
     public function scopeOffers($query)
     {
         return $query->where('is_offer', true)
-                    ->whereNotNull('discount')
-                    ->where('discount', '>', 0);
+            ->whereNotNull('discount')
+            ->where('discount', '>', 0);
     }
 
     public function scopeBestsellers($query)
     {
         return $query->where('is_bestseller', true)
-                    ->orderBy('sales_count', 'desc');
+            ->orderBy('sales_count', 'desc');
     }
 
     // Accessors
@@ -187,13 +187,29 @@ class Product extends Model
         /** @var string|null $image */
         $image = $this->attributes['image'] ?? null;
 
+        // If images is a JSON string, decode it
+        if ($images && is_string($images)) {
+            // Clean up the JSON string by removing extra escapes
+            $cleanImages = str_replace('\\/', '/', $images);
+            $decodedImages = json_decode($cleanImages, true);
+            if (is_array($decodedImages)) {
+                return $decodedImages;
+            }
+        }
+
+        // If images is already an array
         if ($images && is_array($images)) {
             return $images;
         }
 
+        // If we have a main image, use it as the first image
+        if ($image) {
+            return [$image];
+        }
+
         // Fallback images
         return [
-            $image ?: '/images/curtain.png',
+            '/images/curtain.png',
             '/images/curtain1.png',
             '/images/curtain.png',
             '/images/curtain1.png'

@@ -10,7 +10,7 @@ interface Article {
     id: number;
     title: string;
     content: string;
-    category: string;
+    category_id: number;
     image: string | null;
     date: string;
     read_time: number;
@@ -22,34 +22,80 @@ interface Article {
     is_published: boolean;
     featured: boolean;
     sort_order: number;
+    slug: string | null;
+}
+
+interface Category {
+    id: number;
+    name: string;
 }
 
 interface EditArticleProps {
     article: Article;
-    categories: string[];
+    categories: Category[];
 }
 
-const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
-    const { data, setData, put, processing, errors } = useForm({
-        title: article.title,
-        content: article.content,
-        category: article.category,
+const EditArticle: React.FC<EditArticleProps> = ({ article, categories = [] }) => {
+    const { data, setData, post, processing, errors } = useForm({
+        title: article.title || '',
+        content: article.content || '',
+        category_id: String(article.category_id) || '',
         image: null as File | null,
-        date: article.date,
-        read_time: article.read_time,
+        date: article.date || '',
+        read_time: article.read_time || 5,
         author: article.author || '',
         author_image: null as File | null,
         author_bio: article.author_bio || '',
         meta_description: article.meta_description || '',
         meta_keywords: article.meta_keywords || '',
-        is_published: article.is_published,
-        featured: article.featured,
-        sort_order: article.sort_order
+        is_published: article.is_published || false,
+        featured: article.featured || false,
+        sort_order: article.sort_order || 0,
+        slug: article.slug || ''
     });
+
+    const [localErrors, setLocalErrors] = React.useState<{ [key: string]: string }>({});
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(route('admin.articles.update', article.id));
+        let errors: { [key: string]: string } = {};
+        if (!data.title || data.title.trim() === '') errors.title = 'العنوان مطلوب';
+        if (!data.category_id || data.category_id === '') errors.category_id = 'الفئة مطلوبة';
+        if (!data.content || data.content.trim() === '') errors.content = 'المحتوى مطلوب';
+        if (!data.date || data.date === '') errors.date = 'تاريخ النشر مطلوب';
+        if (!data.read_time || isNaN(Number(data.read_time))) errors.read_time = 'وقت القراءة مطلوب';
+        if (Object.keys(errors).length > 0) {
+            setLocalErrors(errors);
+            console.log('Local validation errors:', errors);
+            return;
+        } else {
+            setLocalErrors({});
+        }
+
+        const slug = data.title
+            .trim()
+            .replace(/\s+/g, '-')
+            .replace(/[^\w\-]+/g, '')
+            .toLowerCase();
+        const generateSlug = (title: string) => {
+            return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        };
+        setData('slug', generateSlug(data.title));
+        console.log('Generated slug:', slug);
+
+        console.log('Submitting form with data:', data);
+
+        post(route('admin.articles.update', article.id), {
+            forceFormData: true,
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: (page) => {
+                console.log('Update successful:', page);
+            },
+            onError: (errors) => {
+                console.log('Update errors:', errors);
+            }
+        });
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,8 +109,6 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
             setData('author_image', e.target.files[0]);
         }
     };
-
-
 
     return (
         <AdminLayout>
@@ -89,27 +133,27 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
                                             required
                                             title="عنوان المقالة"
                                         />
-                                        <InputError message={errors.title} className="mt-2" />
+                                        <InputError message={errors.title || localErrors.title} className="mt-2" />
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="category" value="الفئة" />
+                                        <InputLabel htmlFor="category_id" value="الفئة" />
                                         <select
-                                            title="الفئة"
-                                            id="category"
+                                            id="category_id"
                                             className="mt-1 block w-full border-gray-300 focus:border-yellow-500 focus:ring-yellow-500 rounded-md shadow-sm"
-                                            value={data.category}
-                                            onChange={(e) => setData('category', e.target.value)}
+                                            value={data.category_id}
+                                            onChange={(e) => setData('category_id', e.target.value)}
                                             required
+                                            title="الفئة"
                                         >
                                             <option value="">اختر الفئة</option>
                                             {categories.map((category) => (
-                                                <option key={category} value={category}>
-                                                    {category}
+                                                <option key={category.id} value={category.id}>
+                                                    {category.name}
                                                 </option>
                                             ))}
                                         </select>
-                                        <InputError message={errors.category} className="mt-2" />
+                                        <InputError message={errors.category_id || localErrors.category_id} className="mt-2" />
                                     </div>
 
                                     <div>
@@ -123,7 +167,7 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
                                             required
                                             title="تاريخ النشر"
                                         />
-                                        <InputError message={errors.date} className="mt-2" />
+                                        <InputError message={errors.date || localErrors.date} className="mt-2" />
                                     </div>
 
                                     <div>
@@ -135,11 +179,11 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
                                             max="60"
                                             className="mt-1 block w-full"
                                             value={data.read_time}
-                                            onChange={(e) => setData('read_time', parseInt(e.target.value))}
+                                            onChange={(e) => setData('read_time', Number(e.target.value) || 5)}
                                             required
                                             title="وقت القراءة"
                                         />
-                                        <InputError message={errors.read_time} className="mt-2" />
+                                        <InputError message={errors.read_time || localErrors.read_time} className="mt-2" />
                                     </div>
 
                                     <div>
@@ -163,7 +207,7 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
                                             min="0"
                                             className="mt-1 block w-full"
                                             value={data.sort_order}
-                                            onChange={(e) => setData('sort_order', parseInt(e.target.value))}
+                                            onChange={(e) => setData('sort_order', Number(e.target.value) || 0)}
                                             title="ترتيب العرض"
                                         />
                                         <InputError message={errors.sort_order} className="mt-2" />
@@ -173,18 +217,16 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
                                 <div>
                                     <InputLabel htmlFor="content" value="محتوى المقالة" />
                                     <textarea
-                                        title="content"
                                         id="content"
-                                        className="mt-1 block w-full border-gray-300 focus:border-yellow-500 focus:ring-yellow-500 rounded-md shadow-sm"
+                                        className="mt-1 block w-full border-gray-300 focus:border-yellow-500 focus:ring-yellow-500 rounded-md shadow-sm resize-y"
                                         rows={10}
                                         value={data.content}
                                         onChange={(e) => setData('content', e.target.value)}
                                         required
+                                        title="محتوى المقالة"
                                     />
-                                    <InputError message={errors.content} className="mt-2" />
+                                    <InputError message={errors.content || localErrors.content} className="mt-2" />
                                 </div>
-
-
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
@@ -195,12 +237,12 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
                                             </div>
                                         )}
                                         <input
-                                            title="image"
                                             id="image"
                                             type="file"
                                             accept="image/*"
-                                            className="mt-1 block w-full"
+                                            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100"
                                             onChange={handleImageChange}
+                                            title="صورة المقالة"
                                         />
                                         <InputError message={errors.image} className="mt-2" />
                                     </div>
@@ -213,12 +255,12 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
                                             </div>
                                         )}
                                         <input
-                                            title="author_image"
                                             id="author_image"
                                             type="file"
                                             accept="image/*"
-                                            className="mt-1 block w-full"
+                                            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100"
                                             onChange={handleAuthorImageChange}
+                                            title="صورة الكاتب"
                                         />
                                         <InputError message={errors.author_image} className="mt-2" />
                                     </div>
@@ -227,12 +269,12 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
                                 <div>
                                     <InputLabel htmlFor="author_bio" value="نبذة عن الكاتب" />
                                     <textarea
-                                        title="author_bio"
                                         id="author_bio"
-                                        className="mt-1 block w-full border-gray-300 focus:border-yellow-500 focus:ring-yellow-500 rounded-md shadow-sm"
+                                        className="mt-1 block w-full border-gray-300 focus:border-yellow-500 focus:ring-yellow-500 rounded-md shadow-sm resize-y"
                                         rows={3}
                                         value={data.author_bio}
                                         onChange={(e) => setData('author_bio', e.target.value)}
+                                        title="نبذة عن الكاتب"
                                     />
                                     <InputError message={errors.author_bio} className="mt-2" />
                                 </div>
@@ -246,6 +288,7 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
                                             className="mt-1 block w-full"
                                             value={data.meta_description}
                                             onChange={(e) => setData('meta_description', e.target.value)}
+                                            title="وصف الميتا"
                                         />
                                         <InputError message={errors.meta_description} className="mt-2" />
                                     </div>
@@ -258,6 +301,7 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
                                             className="mt-1 block w-full"
                                             value={data.meta_keywords}
                                             onChange={(e) => setData('meta_keywords', e.target.value)}
+                                            title="كلمات مفتاحية"
                                         />
                                         <InputError message={errors.meta_keywords} className="mt-2" />
                                     </div>
@@ -270,6 +314,7 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
                                             className="rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                                             checked={data.is_published}
                                             onChange={(e) => setData('is_published', e.target.checked)}
+                                            title="منشورة"
                                         />
                                         <span className="mr-2 text-sm text-gray-600">منشورة</span>
                                     </label>
@@ -280,6 +325,7 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
                                             className="rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-500 focus:ring-yellow-500"
                                             checked={data.featured}
                                             onChange={(e) => setData('featured', e.target.checked)}
+                                            title="مميزة"
                                         />
                                         <span className="mr-2 text-sm text-gray-600">مميزة</span>
                                     </label>
@@ -289,6 +335,7 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
                                     <PrimaryButton
                                         className="bg-yellow-400 hover:bg-yellow-500 text-gray-900"
                                         disabled={processing}
+                                        title="تحديث المقالة"
                                     >
                                         {processing ? 'جاري التحديث...' : 'تحديث المقالة'}
                                     </PrimaryButton>
@@ -302,4 +349,4 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories }) => {
     );
 };
 
-export default EditArticle; 
+export default EditArticle;

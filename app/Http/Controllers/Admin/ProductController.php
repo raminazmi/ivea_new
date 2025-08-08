@@ -12,14 +12,45 @@ use Inertia\Inertia;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $query = Product::with('category');
+
+        // Apply search filter
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('brand', 'like', '%' . $request->search . '%')
+                    ->orWhere('sku', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Apply status filter
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        // Apply category filter
+        if ($request->filled('category') && $request->category !== 'all') {
+            $query->where('category_id', $request->category);
+        }
+
+        // Apply tab filter
+        if ($request->filled('tab') && $request->tab !== 'all') {
+            $query->where('tab', $request->tab);
+        }
+
+        $products = $query->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        // Get categories for filter dropdown
+        $categories = Category::active()->ordered()->get();
 
         return Inertia::render('Admin/Products/Index', [
-            'products' => $products
+            'products' => $products,
+            'categories' => $categories,
+            'filters' => $request->only(['search', 'status', 'category', 'tab'])
         ]);
     }
 
@@ -66,17 +97,27 @@ class ProductController extends Controller
             'dimensions.depth' => 'nullable|string',
         ]);
 
-        // Set default values
         $validated['featured'] = $validated['featured'] ?? false;
         $validated['images'] = $validated['images'] ?? [];
         $validated['colors'] = $validated['colors'] ?? [];
         $validated['specifications'] = $validated['specifications'] ?? [];
         $validated['dimensions'] = $validated['dimensions'] ?? [];
 
+        if (empty($validated['image']) && !empty($validated['images'])) {
+            $validated['image'] = $validated['images'][0];
+        }
+
         Product::create($validated);
 
         return redirect()->route('admin.products.index')
             ->with('success', 'تم إنشاء المنتج بنجاح');
+    }
+
+    public function show(Product $product)
+    {
+        return Inertia::render('Admin/Products/Show', [
+            'product' => $product
+        ]);
     }
 
     public function edit(Product $product)

@@ -7,6 +7,7 @@ import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import ColorSwatch from '@/Components/Common/ColorSwatch';
+import ImageUpload from '@/Components/Admin/ImageUpload';
 
 interface EditProductProps {
     product: {
@@ -75,24 +76,12 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
         }
     });
 
-    const [newImage, setNewImage] = useState('');
     const [newColor, setNewColor] = useState('');
     const [newFeature, setNewFeature] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         put(route('admin.products.update', product.id));
-    };
-
-    const addImage = () => {
-        if (newImage.trim()) {
-            setData('images', [...data.images, newImage.trim()]);
-            setNewImage('');
-        }
-    };
-
-    const removeImage = (index: number) => {
-        setData('images', data.images.filter((_, i) => i !== index));
     };
 
     const addColor = () => {
@@ -122,6 +111,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
             features: data.specifications.features.filter((_, i) => i !== index)
         });
     };
+
+
 
     return (
         <AdminLayout>
@@ -312,46 +303,13 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                     </div>
                                 </div>
 
-                                <div>
-                                    <InputLabel value="صور المنتج" />
-                                    <div className="mt-2 space-y-2">
-                                        <div className="flex gap-2">
-                                            <TextInput
-                                                type="text"
-                                                placeholder="رابط الصورة"
-                                                className="flex-1"
-                                                value={newImage}
-                                                onChange={(e) => setNewImage(e.target.value)}
-                                                title="أدخل رابط الصورة"
-                                            />
-                                            <SecondaryButton type="button" onClick={addImage}>
-                                                إضافة
-                                            </SecondaryButton>
-                                        </div>
-                                        {data.images.length > 0 && (
-                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                                {data.images.map((image, index) => (
-                                                    <div key={index} className="relative">
-                                                        <img
-                                                            src={image}
-                                                            alt={`صورة ${index + 1}`}
-                                                            className="w-full h-20 object-cover rounded"
-                                                        />
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => removeImage(index)}
-                                                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
-                                                            title={`حذف الصورة ${index + 1}`}
-                                                        >
-                                                            ×
-                                                        </button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <InputError message={errors.images} className="mt-2" />
-                                </div>
+                                <ImageUpload
+                                    images={data.images}
+                                    onImagesChange={(images) => setData('images', images)}
+                                    onMainImageChange={(image) => setData('image', image)}
+                                    mainImage={data.image}
+                                    error={errors.images}
+                                />
 
                                 <div>
                                     <InputLabel value="الألوان المتوفرة" />

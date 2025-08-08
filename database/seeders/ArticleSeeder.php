@@ -26,7 +26,7 @@ class ArticleSeeder extends Seeder
             </p>
 
             <div class="my-8 text-center">
-                <img src="/images/pepole.png" alt="صورة منتصف المقالة" class="mx-auto max-w-md rounded-lg shadow-lg">
+                <img src="/images/pepole.png" alt="صورة منتصف المقالة">
             </div>
 
             <div class="bg-gray-50 p-8 rounded-lg my-8">
@@ -53,7 +53,7 @@ class ArticleSeeder extends Seeder
                     </div>
                 </div>
             </div>',
-            'category' => 'التطوير العقاري',
+            'category_id' => 1,
             'image' => '/images/pepole.png',
             'date' => Carbon::now(),
             'read_time' => 8,
@@ -78,7 +78,7 @@ class ArticleSeeder extends Seeder
             <p class="mb-6 leading-relaxed">
                 من أهم هذه التقنيات استخدام المواد الصديقة للبيئة، والاعتماد على الطاقة المتجددة، وتطبيق معايير البناء الأخضر التي تضمن كفاءة استهلاك الطاقة والمياه.
             </p>',
-            'category' => 'تقنيات البناء',
+            'category_id' => 2,
             'image' => '/images/building1.png',
             'date' => Carbon::now()->subDays(2),
             'read_time' => 5,
@@ -103,7 +103,7 @@ class ArticleSeeder extends Seeder
             <p class="mb-6 leading-relaxed">
                 يجب أن يتم الاختيار بناءً على عدة معايير منها: نوع التربة، الظروف المناخية، الميزانية المتاحة، والتصميم المطلوب.
             </p>',
-            'category' => 'مواد البناء',
+            'category_id' => 3,
             'image' => '/images/building2.png',
             'date' => Carbon::now()->subDays(5),
             'read_time' => 6,
@@ -128,7 +128,7 @@ class ArticleSeeder extends Seeder
             <p class="mb-6 leading-relaxed">
                 من العناصر الأساسية للتخطيط الناجح: دراسة السوق، تحليل المنافسين، تحديد الفئة المستهدفة، والتخطيط المالي الدقيق.
             </p>',
-            'category' => 'تخطيط المشاريع',
+            'category_id' => 4,
             'image' => '/images/building3.png',
             'date' => Carbon::now()->subDays(8),
             'read_time' => 7,
@@ -153,7 +153,7 @@ class ArticleSeeder extends Seeder
             <p class="mb-6 leading-relaxed">
                 من المبادئ الأساسية للتصميم الداخلي الناجح: التناسق في الألوان، التوزيع الجيد للمساحات، والاهتمام بالإضاءة والتهوية.
             </p>',
-            'category' => 'التصميم الداخلي',
+            'category_id' => 5,
             'image' => '/images/building4.png',
             'date' => Carbon::now()->subDays(10),
             'read_time' => 4,

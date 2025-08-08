@@ -25,6 +25,11 @@ interface Product {
     };
 }
 
+interface Category {
+    id: number;
+    name: string;
+}
+
 interface ProductsProps {
     products: {
         data: Product[];
@@ -32,15 +37,19 @@ interface ProductsProps {
         last_page: number;
         total: number;
     };
+    categories: Category[];
+    filters: any;
 }
 
-const Products: React.FC<ProductsProps> = ({ products }) => {
+const Products: React.FC<ProductsProps> = ({ products, categories, filters }) => {
     const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
     const [tabStats, setTabStats] = useState<any>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [productToDelete, setProductToDelete] = useState<Product | null>(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
+    const [searchTerm, setSearchTerm] = useState(filters.search || '');
+    const [statusFilter, setStatusFilter] = useState(filters.status || 'all');
+    const [categoryFilter, setCategoryFilter] = useState(filters.category || 'all');
+    const [tabFilter, setTabFilter] = useState(filters.tab || 'all');
     const [showFilters, setShowFilters] = useState(false);
     const [toast, setToast] = useState<{
         message: string;
@@ -161,25 +170,68 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
         router.get(route('admin.products.index'), {
             search: searchTerm,
             status: statusFilter,
+            category: categoryFilter,
+            tab: tabFilter,
         });
+    };
+
+    const handleClearFilters = () => {
+        setSearchTerm('');
+        setStatusFilter('all');
+        setCategoryFilter('all');
+        setTabFilter('all');
+        router.get(route('admin.products.index'));
     };
 
     const handleBulkDelete = () => {
         if (selectedProducts.length === 0) return;
-        
+
         if (confirm(`هل أنت متأكد من حذف ${selectedProducts.length} منتج محدد؟`)) {
             // Implement bulk delete functionality
-            console.log('Bulk delete:', selectedProducts);
+            // Handle bulk delete
         }
     };
 
     return (
         <AdminLayout>
-            <Head title="إدارة المنتجات" />
+            <Head title="إدارة المنتجات">
+                <style>{`
+                    .table-container {
+                        width:100%;
+                        overflow-x: auto;
+                        -webkit-overflow-scrolling: touch;
+                        scrollbar-width: thin;
+                        scrollbar-color: #d1d5db #f9fafb;
+                    }
+                    .table-container::-webkit-scrollbar {
+                        height: 8px;
+                    }
+                    .table-container::-webkit-scrollbar-track {
+                        background: #f9fafb;
+                        border-radius: 4px;
+                    }
+                    .table-container::-webkit-scrollbar-thumb {
+                        background: #d1d5db;
+                        border-radius: 4px;
+                    }
+                    .table-container::-webkit-scrollbar-thumb:hover {
+                        background: #9ca3af;
+                    }
+                    .products-table {
+                        width: 100%;
+                        min-width: 1000px; /* Ensures table is wide enough to trigger scroll on smaller screens */
+                    }
+                    @media (max-width: 640px) {
+                        .products-table {
+                            min-width: 800px; /* Adjust for smaller screens */
+                        }
+                    }
+                `}</style>
+            </Head>
 
             <div className="py-6">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div className="max-w-5xl sm:px-6 lg:px-8">
+                    <div className="w-[100%] bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-4 sm:p-6 bg-white border-b border-gray-200">
                             {/* Header */}
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -205,7 +257,7 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                             {/* Filters */}
                             {showFilters && (
                                 <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">البحث</label>
                                             <div className="relative">
@@ -214,7 +266,7 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                                     type="text"
                                                     value={searchTerm}
                                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                                    placeholder="اسم المنتج..."
+                                                    placeholder="اسم المنتج، العلامة التجارية، رمز العنصر..."
                                                     className="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-primary-yellow focus:border-transparent"
                                                 />
                                             </div>
@@ -233,12 +285,52 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                                 <option value="inactive">غير نشط</option>
                                             </select>
                                         </div>
-                                        <div className="flex items-end">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">الفئة</label>
+                                            <select
+                                                value={categoryFilter}
+                                                onChange={(e) => setCategoryFilter(e.target.value)}
+                                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-yellow focus:border-transparent"
+                                                title="فلتر الفئة"
+                                                aria-label="فلتر الفئة"
+                                            >
+                                                <option value="all">الكل</option>
+                                                {categories.map((category) => (
+                                                    <option key={category.id} value={category.id}>
+                                                        {category.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">التبويب</label>
+                                            <select
+                                                value={tabFilter}
+                                                onChange={(e) => setTabFilter(e.target.value)}
+                                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-yellow focus:border-transparent"
+                                                title="فلتر التبويب"
+                                                aria-label="فلتر التبويب"
+                                            >
+                                                <option value="all">الكل</option>
+                                                <option value="featured">مميز</option>
+                                                <option value="new">جديد</option>
+                                                <option value="bestsellers">الأكثر مبيعاً</option>
+                                                <option value="offers">عروض</option>
+                                            </select>
+                                        </div>
+                                        <div className="flex items-end gap-2">
                                             <button
                                                 onClick={handleSearch}
-                                                className="w-full bg-primary-yellow text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
+                                                className="flex-1 bg-primary-yellow text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
                                             >
                                                 تطبيق الفلاتر
+                                            </button>
+                                            <button
+                                                onClick={handleClearFilters}
+                                                className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                                                title="مسح الفلاتر"
+                                            >
+                                                مسح
                                             </button>
                                         </div>
                                     </div>
@@ -335,8 +427,8 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                             )}
 
                             {/* Products Table */}
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
+                            <div className="table-container border border-gray-200 rounded-lg">
+                                <table className="products-table divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
                                         <tr>
                                             <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -349,19 +441,22 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                                     aria-label="تحديد جميع المنتجات"
                                                 />
                                             </th>
-                                            <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-48">
                                                 المنتج
                                             </th>
-                                            <th className="hidden md:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="hidden md:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                                                الفئة
+                                            </th>
+                                            <th className="hidden lg:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                                                 السعر
                                             </th>
-                                            <th className="hidden lg:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="hidden xl:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                                                 الحالة
                                             </th>
-                                            <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                                                 التبويبات
                                             </th>
-                                            <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                                                 الإجراءات
                                             </th>
                                         </tr>
@@ -379,7 +474,7 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                                         aria-label={`تحديد المنتج ${product.name}`}
                                                     />
                                                 </td>
-                                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap w-48">
                                                     <div className="flex items-center">
                                                         <div className="flex-shrink-0 h-10 w-10">
                                                             <img
@@ -388,30 +483,38 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                                                 alt={product.name}
                                                             />
                                                         </div>
-                                                        <div className="mr-3 sm:mr-4">
-                                                            <div className="text-sm font-medium text-gray-900 truncate max-w-32 sm:max-w-none">
+                                                        <div className="mr-3 sm:mr-4 min-w-0 flex-1">
+                                                            <div className="text-sm font-medium text-gray-900 truncate max-w-32 sm:max-w-40 md:max-w-48" title={product.name}>
                                                                 {product.name}
                                                             </div>
-                                                            <div className="text-sm text-gray-500 truncate max-w-32 sm:max-w-none">
+                                                            <div className="text-sm text-gray-500 truncate max-w-32 sm:max-w-40 md:max-w-48" title={product.brand}>
                                                                 {product.brand}
                                                             </div>
-                                                            <div className="md:hidden text-sm text-gray-900">
+                                                            <div className="md:hidden text-sm text-gray-500 truncate max-w-32 sm:max-w-40" title={product.category?.name || 'غير محدد'}>
+                                                                {product.category?.name || 'غير محدد'}
+                                                            </div>
+                                                            <div className="lg:hidden text-sm text-gray-900">
                                                                 {product.price} ريال
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-900">
+                                                <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap w-32">
+                                                    <div className="text-sm text-gray-900 truncate" title={product.category?.name || 'غير محدد'}>
+                                                        {product.category?.name || 'غير محدد'}
+                                                    </div>
+                                                </td>
+                                                <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap w-24">
+                                                    <div className="text-sm text-gray-900 truncate">
                                                         {product.price} ريال
                                                     </div>
                                                     {product.discount && (
-                                                        <div className="text-sm text-green-600">
+                                                        <div className="text-sm text-green-600 truncate">
                                                             خصم {product.discount}%
                                                         </div>
                                                     )}
                                                 </td>
-                                                <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
+                                                <td className="hidden xl:table-cell px-6 py-4 whitespace-nowrap w-20">
                                                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${product.status === 'active'
                                                         ? 'bg-green-100 text-green-800'
                                                         : 'bg-red-100 text-red-800'
@@ -419,55 +522,55 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                                         {product.status === 'active' ? 'نشط' : 'غير نشط'}
                                                     </span>
                                                 </td>
-                                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex gap-1 sm:gap-2">
+                                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap w-32">
+                                                    <div className="flex gap-1 sm:gap-2 min-w-0">
                                                         <button
                                                             onClick={() => handleTabSettings(product.id, 'featured', !product.featured)}
-                                                            className={`p-1 rounded ${product.featured ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'}`}
+                                                            className={`p-1 rounded flex-shrink-0 ${product.featured ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'}`}
                                                             title="مميزة"
                                                         >
                                                             <HiStar className="w-4 h-4" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleTabSettings(product.id, 'is_offer', !product.is_offer)}
-                                                            className={`p-1 rounded ${product.is_offer ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600'}`}
+                                                            className={`p-1 rounded flex-shrink-0 ${product.is_offer ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600'}`}
                                                             title="عرض"
                                                         >
                                                             <HiTag className="w-4 h-4" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleTabSettings(product.id, 'is_bestseller', !product.is_bestseller)}
-                                                            className={`p-1 rounded ${product.is_bestseller ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'}`}
+                                                            className={`p-1 rounded flex-shrink-0 ${product.is_bestseller ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'}`}
                                                             title="أكثر مبيعاً"
                                                         >
                                                             <HiFire className="w-4 h-4" />
                                                         </button>
                                                     </div>
                                                     {product.sales_count > 0 && (
-                                                        <div className="text-xs text-gray-500 mt-1">
+                                                        <div className="text-xs text-gray-500 mt-1 truncate max-w-20">
                                                             مبيعات: {product.sales_count}
                                                         </div>
                                                     )}
                                                 </td>
-                                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                    <div className="flex gap-1 sm:gap-2">
+                                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium w-24">
+                                                    <div className="flex gap-1 sm:gap-2 min-w-0">
                                                         <Link
                                                             href={route('admin.products.show', product.id)}
-                                                            className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
+                                                            className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 flex-shrink-0"
                                                             title="عرض"
                                                         >
                                                             <HiEye className="w-4 h-4" />
                                                         </Link>
                                                         <Link
                                                             href={route('admin.products.edit', product.id)}
-                                                            className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
+                                                            className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50 flex-shrink-0"
                                                             title="تعديل"
                                                         >
                                                             <HiPencil className="w-4 h-4" />
                                                         </Link>
                                                         <button
                                                             onClick={() => handleDeleteClick(product)}
-                                                            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                                                            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 flex-shrink-0"
                                                             title="حذف"
                                                             aria-label="حذف المنتج"
                                                         >
@@ -488,12 +591,17 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
                                         {Array.from({ length: products.last_page }, (_, i) => i + 1).map((page) => (
                                             <button
                                                 key={page}
-                                                onClick={() => router.get(route('admin.products.index'), { page })}
-                                                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                                    page === products.current_page
-                                                        ? 'bg-primary-yellow text-gray-900'
-                                                        : 'bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-                                                }`}
+                                                onClick={() => router.get(route('admin.products.index'), {
+                                                    page,
+                                                    search: searchTerm,
+                                                    status: statusFilter,
+                                                    category: categoryFilter,
+                                                    tab: tabFilter,
+                                                })}
+                                                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${page === products.current_page
+                                                    ? 'bg-primary-yellow text-gray-900'
+                                                    : 'bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                                                    }`}
                                             >
                                                 {page}
                                             </button>

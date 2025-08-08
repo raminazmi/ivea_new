@@ -51,13 +51,19 @@ interface HomeProps extends PageProps {
 const Home: React.FC<HomeProps> = ({ featuredProducts, categories }) => {
     return (
         <AppLayout>
-            <Hero />
+            <div className="container mx-auto px-2 sm:px-4 lg:px-8">
+                <Hero />
+            </div>
             <FeaturedOffers />
-            <PreparingForSummer />
+            <div className="container mx-auto px-2 sm:px-4 lg:px-8">
+                <PreparingForSummer />
+            </div>
             <CategoryShowcase featuredProducts={featuredProducts} />
-            <SectionTitle text="قائمة المشاريع" />
-            <ProjectShowcase />
-            <ContactUs />
+            <div className="container mx-auto px-2 sm:px-4 lg:px-8">
+                <SectionTitle text="قائمة المشاريع" />
+                <ProjectShowcase />
+                <ContactUs />
+            </div>
         </AppLayout>
     );
 };

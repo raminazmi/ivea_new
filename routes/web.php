@@ -34,6 +34,7 @@ Route::get('/about', function () {
 Route::get('/projects', function () {
     return Inertia::render('Projects');
 })->name('projects');
+Route::get('/api/projects', [App\Http\Controllers\ProjectController::class, 'getAll'])->name('api.projects.all');
 
 // Products routes
 Route::get('/products', [App\Http\Controllers\ProductController::class, 'index'])->name('products');
@@ -57,6 +58,8 @@ Route::get('/jobs', [JobController::class, 'index'])->name('jobs');
 Route::get('/jobs/{id}', [JobController::class, 'show'])->name('jobs.show');
 Route::post('/jobs/apply', [JobController::class, 'apply'])->name('jobs.apply');
 Route::get('/jobs/category/{category}', [JobController::class, 'getByCategory'])->name('jobs.by-category');
+Route::get('/jobs/{id}/apply', [App\Http\Controllers\JobApplicationController::class, 'showApplyForm'])->name('jobs.apply');
+Route::post('/jobs/{id}/apply', [App\Http\Controllers\JobApplicationController::class, 'store'])->name('jobs.apply.submit');
 
 // Admin routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -68,13 +71,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('products/bulk-tab-settings', [App\Http\Controllers\Admin\ProductController::class, 'bulkUpdateTabSettings'])->name('products.bulk-tab-settings');
     Route::get('products/tab-statistics', [App\Http\Controllers\Admin\ProductController::class, 'getTabStatistics'])->name('products.tab-statistics');
 
+    // Image Upload
+    Route::post('upload/image', [App\Http\Controllers\Admin\ImageUploadController::class, 'upload'])->name('upload.image');
+    Route::post('upload/images', [App\Http\Controllers\Admin\ImageUploadController::class, 'uploadMultiple'])->name('upload.images');
+    Route::delete('upload/image', [App\Http\Controllers\Admin\ImageUploadController::class, 'delete'])->name('upload.delete');
+
     // Categories
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
     Route::patch('categories/{id}/status', [App\Http\Controllers\Admin\CategoryController::class, 'updateStatus'])->name('categories.update-status');
 
     // Articles
     Route::resource('articles', App\Http\Controllers\Admin\ArticleController::class);
-
+    Route::post('/admin/articles/{article}', [App\Http\Controllers\Admin\ArticleController::class, 'update'])->name('articles.update');
     // Tools
     Route::resource('tools', App\Http\Controllers\Admin\ToolController::class);
     Route::patch('tools/{id}/toggle-published', [App\Http\Controllers\Admin\ToolController::class, 'togglePublished'])->name('tools.toggle-published');
@@ -85,6 +93,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Applications
     Route::get('applications', [App\Http\Controllers\Admin\JobController::class, 'applications'])->name('applications.index');
+    Route::get('applications/{id}', [App\Http\Controllers\Admin\ApplicationController::class, 'show'])->name('applications.show');
     Route::put('applications/{id}/status', [App\Http\Controllers\Admin\JobController::class, 'updateApplicationStatus'])->name('applications.update-status');
     Route::delete('applications/{id}', [App\Http\Controllers\Admin\JobController::class, 'deleteApplication'])->name('applications.destroy');
 
@@ -95,7 +104,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 // Cart routes
-Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
-Route::post('/api/cart/items', [CartController::class, 'getCartItems'])->name('cart.items');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+Route::post('/cart/whatsapp', [CartController::class, 'sendToWhatsApp'])->name('cart.whatsapp');
+Route::get('/cart/items', [CartController::class, 'getCartItems'])->name('cart.items');
 
 require __DIR__ . '/auth.php';

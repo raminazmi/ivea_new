@@ -129,7 +129,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts })
     return (
         <div
             ref={sectionRef}
-            className="min-h-screen py-8 md:py-16 px-4 relative"
+            className="min-h-screen py-6 md:py-10 lg:py-16 px-4 lg:px-24 relative"
         >
             <div className="absolute inset-0 -z-10">
                 <img
@@ -139,17 +139,17 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts })
                 />
             </div>
 
-            <div className="max-w-7xl mx-auto relative z-10">
+            <div className="container mx-auto relative z-10">
                 <SectionTitle text="منتجاتنا المميزة" />
 
                 {/* Tabs */}
-                <div className="flex justify-center mb-8 md:mb-12">
-                    <div className="flex flex-wrap justify-center gap-2 md:gap-4">
+                <div className="flex justify-center mb-6 md:mb-8">
+                    <div className="flex flex-wrap justify-center gap-2 md:gap-3">
                         {tabs.map((tab) => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`px-4 md:px-6 py-2 md:py-3 rounded-full text-sm md:text-base font-medium transition-all duration-700 hover:duration-1000 ${activeTab === tab.id
+                                className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-700 hover:duration-1000 ${activeTab === tab.id
                                     ? 'bg-primary-yellow text-white shadow-lg'
                                     : 'bg-white/80 text-gray-700 hover:bg-white hover:shadow-md'
                                     }`}
@@ -161,7 +161,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts })
                 </div>
 
                 {/* Products Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
                     {loading ? (
                         // Show skeleton loading
                         Array.from({ length: 8 }).map((_, index) => (
@@ -174,8 +174,8 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts })
                         ))
                     ) : (
                         // Show empty state
-                        <div className="col-span-full text-center py-12">
-                            <p className="text-gray-500">لا توجد منتجات متاحة</p>
+                        <div className="col-span-full text-center py-8">
+                            <p className="text-gray-500 text-xs md:text-sm">لا توجد منتجات متاحة</p>
                         </div>
                     )}
                 </div>

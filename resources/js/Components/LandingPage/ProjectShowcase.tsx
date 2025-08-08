@@ -91,26 +91,26 @@ const ProjectShowcase = () => {
     return (
         <div
             ref={sectionRef}
-            className="py-4 md:pt-4 md:pb-16 px-4"
+            className="py-6 md:py-10 lg:py-16 px-2 sm:px-4"
         >
-            <div className="max-w-7xl mx-auto">
+            <div className="container mx-auto">
                 {/* Mobile View (1 column) */}
-                <div ref={mobileGridRef} className="grid grid-cols-1 gap-16 md:hidden">
+                <div ref={mobileGridRef} className="grid grid-cols-1 gap-8 md:hidden">
                     {projects.map((project) => (
-                        <div key={project.id} className="group relative overflow-visible rounded-3xl overflow-hidden bg-primary-gray shadow-lg flex flex-col transition-all duration-1000 hover:scale-105 hover:shadow-xl">
-                            <div className='flex flex-col justify-center gap-2 py-4 px-4'>
-                                <h3 className="text-sm font-bold mb-2">{project.title}</h3>
-                                <p className="mb-4 text-xs">{project.subtitle}</p>
-                                <button className="bg-white text-[#0D1F40] px-3 py-1 rounded-full font-bold text-sm transition-all duration-700 w-fit hover:bg-gray-100 hover:scale-105">
+                        <div key={project.id} className="group relative overflow-visible rounded-2xl overflow-hidden bg-primary-gray shadow-lg flex flex-col transition-all duration-1000 hover:scale-105 hover:shadow-xl">
+                            <div className='flex flex-col justify-center gap-2 py-3 px-3'>
+                                <h3 className="text-xs font-bold mb-1">{project.title}</h3>
+                                <p className="mb-2 text-xs">{project.subtitle}</p>
+                                <button className="bg-white text-[#0D1F40] px-2 py-1 rounded-full font-bold text-xs transition-all duration-700 w-fit hover:bg-gray-100 hover:scale-105">
                                     {project.buttonText}
                                 </button>
                             </div>
                             <div className={`relative overflow-visible flex justify-center 
-                                ${project.image === "/images/building4.png" ? '-mt-8' : '-mt-6 -mb-1'}`}>
+                                ${project.image === "/images/building4.png" ? '-mt-6' : '-mt-4 -mb-1'}`}>
                                 <img
                                     src={project.image}
                                     alt={project.title}
-                                    className={`${project.image === "/images/building4.png" ? 'w-32' : 'w-48'} h-32 object-contain transition-transform duration-1000 group-hover:scale-110`}
+                                    className={`${project.image === "/images/building4.png" ? 'w-24' : 'w-36'} h-20 object-contain transition-transform duration-1000 group-hover:scale-110`}
                                     style={{ zIndex: 10 }}
                                 />
                             </div>
@@ -119,21 +119,21 @@ const ProjectShowcase = () => {
                 </div>
 
                 {/* Desktop View (4 columns - Original Design) */}
-                <div ref={desktopGridRef} className="hidden md:grid grid-cols-4 gap-6">
+                <div ref={desktopGridRef} className="hidden md:grid grid-cols-4 gap-8">
                     {projects.map((project) => (
-                        <div key={project.id} className="group relative overflow-visible rounded-3xl overflow-hidden bg-primary-gray shadow-lg flex transition-all duration-1000 hover:scale-105 hover:shadow-xl">
-                            <div className='flex flex-col justify-center gap-2 py-2 p-4'>
-                                <h3 className="text-sm font-bold mb-2">{project.title}</h3>
-                                <p className="mb-4 text-xs">{project.subtitle}</p>
-                                <button className="bg-white text-[#0D1F40] px-2 py-1 rounded-full font-bold text-sm transition-all duration-700 w-fit hover:bg-gray-100 hover:scale-105">
+                        <div key={project.id} className="group relative overflow-visible rounded-2xl overflow-hidden bg-primary-gray shadow-lg flex transition-all duration-1000 hover:scale-105 hover:shadow-xl">
+                            <div className='flex flex-col justify-center gap-2 p-4'>
+                                <h3 className="text-[16px] font-bold mb-1">{project.title}</h3>
+                                <p className="mb-2 text-[14px]">{project.subtitle}</p>
+                                <button className="bg-white text-[#0D1F40] px-4 py-1 rounded-full font-bold text-sm transition-all duration-700 w-fit hover:bg-gray-100 hover:scale-105">
                                     {project.buttonText}
                                 </button>
                             </div>
-                            <div className={`${project.image == "/images/building4.png" ? '-mt-14' : '-mt-10 -mb-2'} relative overflow-visible`}>
+                            <div className={`${project.image == "/images/building4.png" ? '-mt-10' : '-mt-6 -mb-2'} relative overflow-visible`}>
                                 <img
                                     src={project.image}
                                     alt={project.title}
-                                    className={`${project.image == "/images/building4.png" ? 'w-40' : 'w-80'} h-[180px] object-contain transition-transform duration-1000 group-hover:scale-110`}
+                                    className={`${project.image == "/images/building4.png" ? 'w-32' : 'w-56'} h-[100px] object-contain transition-transform duration-1000 group-hover:scale-110`}
                                     style={{ zIndex: 10 }}
                                 />
                             </div>

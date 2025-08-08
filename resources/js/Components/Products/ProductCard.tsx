@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import ColorSwatch from '@/Components/Common/ColorSwatch';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '@/store/features/cartSlice';
+import { HiShoppingCart, HiCheck } from 'react-icons/hi';
+import { RootState } from '@/store';
 
 interface ProductCardProps {
     product: {
@@ -26,14 +30,24 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-    // استخدام الألوان من المنتج أو الألوان الافتراضية
     const colors = product.colors || ['#F0F7FF', '#FFEDED', '#FFF7ED'];
-
-    // تحديد السعر المعروض (السعر النهائي أو السعر العادي)
     const displayPrice = product.final_price || product.price;
-
-    // تحديد الخصم المعروض
     const displayDiscount = product.discount || (product.has_discount ? Math.round(((product.price - (product.final_price || product.price)) / product.price) * 100) : null);
+    const dispatch = useDispatch();
+    const items = useSelector((state: RootState) => state.cart.items);
+    const inCart = items.some(item => item.id === product.id);
+    const [added, setAdded] = useState(false);
+
+    const handleAddToCart = () => {
+        dispatch(addToCart({
+            id: product.id,
+            name: product.name,
+            price: displayPrice,
+            image: product.image,
+        }));
+        setAdded(true);
+        setTimeout(() => setAdded(false), 900);
+    };
 
     return (
         <div className="group transition-all duration-300 hover:-translate-y-1">
@@ -71,7 +85,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                                     عرض الخيارات
                                 </button>
                                 <button className="bg-primary-yellow text-gray-900 px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg font-medium hover:bg-yellow-400 transition-colors text-xs sm:text-sm">
-                                    عرض الخيارات
+                                    حجز استشارة
                                 </button>
                             </div>
                         </div>
@@ -81,7 +95,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 {/* Product Info */}
                 <div className="p-3 sm:p-4 text-start">
                     <Link href={`/products/${product.id}`} className="block">
-                        <h3 className="font-bold text-base sm:text-lg text-[#0D1F40] hover:text-blue-600 transition-colors">
+                        <h3 className="font-bold text-base sm:text-md text-[#0D1F40] hover:text-[#0D1D25] transition-colors">
                             {product.name}
                         </h3>
                     </Link>
@@ -117,13 +131,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                             </div>
                         </div>
                         <button
-                            className="bg-primary-yellow rounded-full p-1 sm:p-1.5 md:p-2 shadow-sm hover:bg-yellow-500 transition-colors"
-                            title="عرض تفاصيل المنتج"
-                            onClick={() => window.location.href = `/products/${product.id}`}
+                            className={`bg-primary-yellow rounded-full p-1 sm:p-1.5 md:p-2 shadow-sm flex items-center justify-center transition-colors duration-300 ${added ? 'bg-green-500 scale-110' : 'hover:bg-yellow-500'} ${inCart ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            title={inCart ? 'تمت إضافة المنتج للسلة' : 'إضافة المنتج للسلة'}
+                            onClick={inCart ? undefined : handleAddToCart}
+                            disabled={inCart}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-[#0D1F40]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
+                            {inCart ? (
+                                <span className="flex items-center gap-1 text-xs font-bold text-gray-700">
+                                    <HiCheck className="h-4 w-4 text-green-500" />
+                                </span>
+                            ) : added ? (
+                                <HiCheck className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white transition-transform duration-500 ease-out transform translate-x-8 opacity-0 animate-[slidein_0.5s_ease-out_forwards]" style={{ animation: 'slidein 0.5s ease-out forwards' }} />
+                            ) : (
+                                <HiShoppingCart className="h-5 w-5 text-[#0D1F40]" />
+                            )}
                         </button>
                     </div>
                 </div>
@@ -132,4 +153,4 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     );
 };
 
-export default ProductCard; 
+export default ProductCard;

@@ -8,13 +8,18 @@ import { HiPlus, HiPencil, HiTrash, HiEye, HiSearch, HiFilter } from 'react-icon
 interface Article {
     id: number;
     title: string;
-    category: string;
+    category_id: number;
     date: string;
     read_time: number;
     is_published: boolean;
     featured: boolean;
     sort_order: number;
     created_at: string;
+}
+
+interface Category {
+    id: number;
+    name: string;
 }
 
 interface ArticlesIndexProps {
@@ -25,9 +30,10 @@ interface ArticlesIndexProps {
         per_page: number;
         total: number;
     };
+    categories: Category[];
 }
 
-const ArticlesIndex: React.FC<ArticlesIndexProps> = ({ articles }) => {
+const ArticlesIndex: React.FC<ArticlesIndexProps> = ({ articles, categories }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [articleToDelete, setArticleToDelete] = useState<Article | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -122,6 +128,12 @@ const ArticlesIndex: React.FC<ArticlesIndexProps> = ({ articles }) => {
         });
     };
 
+    const getCategoryName = (id: number) => {
+        if (!categories || !Array.isArray(categories)) return 'غير محدد';
+        const category = categories.find(c => c.id === id);
+        return category ? category.name : 'غير محدد';
+    };
+
     return (
         <AdminLayout>
             <Head title="إدارة المقالات" />
@@ -213,9 +225,6 @@ const ArticlesIndex: React.FC<ArticlesIndexProps> = ({ articles }) => {
                                             <th className="hidden md:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 مميزة
                                             </th>
-                                            <th className="hidden lg:table-cell px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                الترتيب
-                                            </th>
                                             <th className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 الإجراءات
                                             </th>
@@ -230,7 +239,7 @@ const ArticlesIndex: React.FC<ArticlesIndexProps> = ({ articles }) => {
                                                             {article.title}
                                                         </div>
                                                         <div className="md:hidden text-sm text-gray-500">
-                                                            {article.category}
+                                                            {article.category_id}
                                                         </div>
                                                         <div className="lg:hidden text-sm text-gray-500">
                                                             {new Date(article.date).toLocaleDateString('ar-SA')}
@@ -239,7 +248,7 @@ const ArticlesIndex: React.FC<ArticlesIndexProps> = ({ articles }) => {
                                                 </td>
                                                 <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
                                                     <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                                        {article.category}
+                                                        {getCategoryName(Number(article.category_id))}
                                                     </span>
                                                 </td>
                                                 <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -248,11 +257,10 @@ const ArticlesIndex: React.FC<ArticlesIndexProps> = ({ articles }) => {
                                                 <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                                                     <button
                                                         onClick={() => togglePublished(article.id, article.is_published)}
-                                                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full transition-colors ${
-                                                            article.is_published
-                                                                ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                                                                : 'bg-red-100 text-red-800 hover:bg-red-200'
-                                                        }`}
+                                                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full transition-colors ${article.is_published
+                                                            ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                                                            : 'bg-red-100 text-red-800 hover:bg-red-200'
+                                                            }`}
                                                         title={article.is_published ? 'إلغاء النشر' : 'نشر'}
                                                     >
                                                         {article.is_published ? 'منشورة' : 'مسودة'}
@@ -261,18 +269,14 @@ const ArticlesIndex: React.FC<ArticlesIndexProps> = ({ articles }) => {
                                                 <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
                                                     <button
                                                         onClick={() => toggleFeatured(article.id, article.featured)}
-                                                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full transition-colors ${
-                                                            article.featured
-                                                                ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                                                                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                                                        }`}
+                                                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full transition-colors ${article.featured
+                                                            ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                                                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                                                            }`}
                                                         title={article.featured ? 'إلغاء التميز' : 'تعيين كمميزة'}
                                                     >
                                                         {article.featured ? 'مميزة' : 'عادية'}
                                                     </button>
-                                                </td>
-                                                <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {article.sort_order}
                                                 </td>
                                                 <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                     <div className="flex gap-1 sm:gap-2">
@@ -319,11 +323,10 @@ const ArticlesIndex: React.FC<ArticlesIndexProps> = ({ articles }) => {
                                             <button
                                                 key={page}
                                                 onClick={() => router.get(route('admin.articles.index'), { page })}
-                                                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                                    page === articles.current_page
-                                                        ? 'bg-primary-yellow text-gray-900'
-                                                        : 'bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-                                                }`}
+                                                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${page === articles.current_page
+                                                    ? 'bg-primary-yellow text-gray-900'
+                                                    : 'bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                                                    }`}
                                             >
                                                 {page}
                                             </button>
@@ -363,4 +366,4 @@ const ArticlesIndex: React.FC<ArticlesIndexProps> = ({ articles }) => {
     );
 };
 
-export default ArticlesIndex; 
+export default ArticlesIndex;

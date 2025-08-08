@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { HiShoppingCart, HiMenu, HiX } from 'react-icons/hi';
 import { FaEnvelope, FaUser, FaPhoneAlt, FaMapMarkerAlt, FaGlobe, FaTachometerAlt } from 'react-icons/fa';
+import HeaderCartIcon from '@/Components/HeaderCartIcon';
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -100,12 +101,12 @@ const Header = () => {
                             <img
                                 src="/images/logo.png"
                                 alt="ايفيا"
-                                className="h-8 md:h-10 lg:h-12 object-contain"
+                                className="h-8 md:h-10 lg:h-10 object-contain"
                             />
                         </Link>
 
                         {/* Desktop Navigation */}
-                        <nav className="bg-[#EFEFEF] py-2 px-2 md:px-2 rounded-full hidden lg:flex items-center">
+                        <nav className="bg-[#EFEFEF] py-1.5 px-2 md:px-1.5 rounded-full hidden lg:flex items-center">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.name}
@@ -128,12 +129,7 @@ const Header = () => {
                             >
                                 ابدأ الآن
                             </Link>
-                            <Link
-                                href="/cart"
-                                className="bg-[#0D1D25] text-white hover:bg-opacity-90 transition flex items-center p-2 rounded-full font-medium text-sm whitespace-nowrap"
-                            >
-                                <HiShoppingCart className="text-xl" />
-                            </Link>
+                            <HeaderCartIcon />
 
                             {/* Mobile menu button */}
                             <button

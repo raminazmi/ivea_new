@@ -13,11 +13,11 @@ class CartController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function show()
+    public function index()
     {
         // The cart is managed client-side with Redux
         // This method just renders the cart page
-        return Inertia::render('CartPage');
+        return Inertia::render('Cart/Index');
     }
 
     /**
@@ -30,7 +30,7 @@ class CartController extends Controller
     public function getCartItems(Request $request)
     {
         $cartItems = $request->input('items', []);
-        
+
         if (empty($cartItems)) {
             return response()->json(['items' => []]);
         }
@@ -44,7 +44,7 @@ class CartController extends Controller
         // Merge cart quantities with product data
         $enrichedItems = collect($cartItems)->map(function ($item) use ($products) {
             $product = $products->get($item['id']);
-            
+
             if (!$product) {
                 return null;
             }

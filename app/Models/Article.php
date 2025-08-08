@@ -106,10 +106,14 @@ class Article extends Model
     }
 
     /**
-     * Get all unique categories.
+     * Get all unique categories with id and name.
      */
+
     public static function getCategories()
     {
-        return static::distinct()->pluck('category')->filter()->values();
+        // جلب جميع الفئات المرتبطة بمقالات موجودة فقط
+        $categoryIds = self::query()->distinct()->pluck('category_id')->toArray();
+        return \App\Models\Category::whereIn('id', $categoryIds)
+            ->get(['id', 'name']);
     }
 }
