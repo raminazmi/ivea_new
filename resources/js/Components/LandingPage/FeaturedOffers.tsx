@@ -61,7 +61,7 @@ const FeaturedOffers: React.FC = () => {
     return (
         <section
             ref={sectionRef}
-            className="py-6 md:py-8 lg:py-12 px-2 sm:px-4 lg:px-24 bg-peach1"
+            className="py-6 md:py-8 lg:py-12 px-2 sm:px-4 lg:px-20 bg-peach1"
         >
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-6 md:gap-8 lg:gap-12">

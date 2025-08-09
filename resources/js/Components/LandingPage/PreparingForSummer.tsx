@@ -61,7 +61,7 @@ const PreparingForSummer: React.FC = () => {
     return (
         <section
             ref={sectionRef}
-            className="py-6 md:py-10 lg:py-16 relative overflow-hidden"
+            className="py-6 md:py-10 lg:py-16 px-2 sm:px-4 lg:px-20 relative overflow-hidden"
         >
             {/* Yellow background shape - Responsive */}
             <div className="absolute top-1/2 left-0 w-full h-[80%] -translate-y-1/2 -z-10"></div>

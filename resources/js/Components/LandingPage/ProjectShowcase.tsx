@@ -91,7 +91,7 @@ const ProjectShowcase = () => {
     return (
         <div
             ref={sectionRef}
-            className="py-6 md:py-10 lg:py-16 px-2 sm:px-4"
+            className="py-6 md:py-10 lg:py-16 px-2 sm:px-0"
         >
             <div className="container mx-auto">
                 {/* Mobile View (1 column) */}
