@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { router } from '@inertiajs/react';
 
-// تسجيل ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
 const ProjectShowcase = () => {
@@ -10,6 +10,9 @@ const ProjectShowcase = () => {
     const sectionRef = useRef<HTMLDivElement>(null);
     const mobileGridRef = useRef<HTMLDivElement>(null);
     const desktopGridRef = useRef<HTMLDivElement>(null);
+    const handleStartQuiz = () => {
+        router.visit('/projects');
+    };
 
     const projects = [
         {
@@ -43,7 +46,6 @@ const ProjectShowcase = () => {
     ];
 
     useEffect(() => {
-        // Mobile grid animation
         if (mobileGridRef.current) {
             gsap.fromTo(mobileGridRef.current,
                 { opacity: 0, y: 50 },
@@ -62,7 +64,6 @@ const ProjectShowcase = () => {
             );
         }
 
-        // Desktop grid animation
         if (desktopGridRef.current) {
             gsap.fromTo(desktopGridRef.current,
                 { opacity: 0, y: 30 },
@@ -82,7 +83,6 @@ const ProjectShowcase = () => {
             );
         }
 
-        // Cleanup function
         return () => {
             ScrollTrigger.getAll().forEach(trigger => trigger.kill());
         };
@@ -94,14 +94,15 @@ const ProjectShowcase = () => {
             className="py-6 md:py-10 lg:py-16 px-2 sm:px-0"
         >
             <div className="container mx-auto">
-                {/* Mobile View (1 column) */}
                 <div ref={mobileGridRef} className="grid grid-cols-1 gap-8 md:hidden">
                     {projects.map((project) => (
                         <div key={project.id} className="group relative overflow-visible rounded-2xl overflow-hidden bg-primary-gray shadow-lg flex flex-col transition-all duration-1000 hover:scale-105 hover:shadow-xl">
                             <div className='flex flex-col justify-center gap-2 py-3 px-3'>
                                 <h3 className="text-xs font-bold mb-1">{project.title}</h3>
                                 <p className="mb-2 text-xs">{project.subtitle}</p>
-                                <button className="bg-white text-[#0D1F40] px-2 py-1 rounded-full font-bold text-xs transition-all duration-700 w-fit hover:bg-gray-100 hover:scale-105">
+                                <button
+                                    onClick={handleStartQuiz}
+                                    className="bg-white text-[#0D1F40] px-2 py-1 rounded-full font-bold text-xs transition-all duration-700 w-fit hover:bg-gray-100 hover:scale-105">
                                     {project.buttonText}
                                 </button>
                             </div>
@@ -118,14 +119,15 @@ const ProjectShowcase = () => {
                     ))}
                 </div>
 
-                {/* Desktop View (4 columns - Original Design) */}
                 <div ref={desktopGridRef} className="hidden md:grid grid-cols-4 gap-8">
                     {projects.map((project) => (
                         <div key={project.id} className="group relative overflow-visible rounded-2xl overflow-hidden bg-primary-gray shadow-lg flex transition-all duration-1000 hover:scale-105 hover:shadow-xl">
                             <div className='flex flex-col justify-center gap-2 p-4'>
                                 <h3 className="text-[16px] font-bold mb-1">{project.title}</h3>
                                 <p className="mb-2 text-[14px]">{project.subtitle}</p>
-                                <button className="bg-white text-[#0D1F40] px-4 py-1 rounded-full font-bold text-sm transition-all duration-700 w-fit hover:bg-gray-100 hover:scale-105">
+                                <button
+                                    onClick={handleStartQuiz}
+                                    className="bg-white text-[#0D1F40] px-4 py-1 rounded-full font-bold text-sm transition-all duration-700 w-fit hover:bg-gray-100 hover:scale-105">
                                     {project.buttonText}
                                 </button>
                             </div>

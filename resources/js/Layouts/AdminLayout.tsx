@@ -1,7 +1,7 @@
 import React, { useState, ReactNode } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
-import { FaHome, FaUsers, FaBriefcase, FaEnvelope, FaCog, FaSignOutAlt, FaBars, FaTimes, FaUser, FaTools, FaNewspaper } from 'react-icons/fa';
+import { FaHome, FaBox, FaTags, FaNewspaper, FaEnvelope, FaCog, FaSignOutAlt, FaBars, FaTimes, FaUser, FaTools, FaPaintBrush, FaBriefcase, FaFileAlt, FaUsers, FaShoppingCart } from 'react-icons/fa';
 
 interface User {
     id: number;
@@ -28,15 +28,15 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
     const { auth, user: pageUser } = usePage<PageProps>().props;
     const currentUser = user || pageUser || auth.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    // { name: 'أدوات وإرشادات', icon: FaTools, href: route('admin.tools.index'), active: route().current('admin.tools.*') },
-
     const menuItems = [
         { name: 'الرئيسية', icon: FaHome, href: route('admin.dashboard'), active: route().current('admin.dashboard') },
-        { name: 'المنتجات', icon: FaBriefcase, href: route('admin.products.index'), active: route().current('admin.products.*') },
-        { name: 'الفئات', icon: FaUsers, href: route('admin.categories.index'), active: route().current('admin.categories.*') },
+        { name: 'المنتجات', icon: FaBox, href: route('admin.products.index'), active: route().current('admin.products.*') },
+        { name: 'الطلبات', icon: FaShoppingCart, href: route('admin.orders.index'), active: route().current('admin.orders.*') },
+        { name: 'الفئات', icon: FaTags, href: route('admin.categories.index'), active: route().current('admin.categories.*') },
         { name: 'المقالات', icon: FaNewspaper, href: route('admin.articles.index'), active: route().current('admin.articles.*') },
+        { name: 'المشاريع', icon: FaPaintBrush, href: route('admin.projects.index'), active: route().current('admin.projects.*') },
         { name: 'الوظائف', icon: FaBriefcase, href: route('admin.jobs.index'), active: route().current('admin.jobs.*') },
-        { name: 'التقديمات', icon: FaUsers, href: route('admin.applications.index'), active: route().current('admin.applications.*') },
+        { name: 'التقديمات', icon: FaFileAlt, href: route('admin.applications.index'), active: route().current('admin.applications.*') },
         { name: 'الرسائل', icon: FaEnvelope, href: route('admin.contacts.index'), active: route().current('admin.contacts.*') },
     ];
 
@@ -44,11 +44,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
         <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
             <Head title={title} />
 
-            {/* Sidebar */}
             <aside className={`h-screen fixed inset-y-0 right-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
                 }`}>
                 <div className="flex flex-col h-full">
-                    {/* Logo */}
                     <div className="flex items-center justify-between p-4 px-3 border-b border-gray-200">
                         <Link href="/" className="flex items-center justify-center space-x-3 rtl:space-x-reverse">
                             <img
@@ -66,7 +64,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
                         </button>
                     </div>
 
-                    {/* Navigation */}
                     <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
                         {menuItems.map((item) => {
                             const Icon = item.icon;
@@ -86,7 +83,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
                         })}
                     </nav>
 
-                    {/* User Info */}
                     <div className="p-4 border-t border-gray-200 bg-white">
                         <div className="flex items-center space-x-3 rtl:space-x-reverse">
                             <div className="w-10 h-10 bg-primary-yellow rounded-full flex items-center justify-center">
@@ -110,9 +106,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
                 </div>
             </aside>
 
-            {/* Main Content */}
             <div className="flex-1 flex flex-col lg:mr-64">
-                {/* Header */}
                 <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40 w-full">
                     <div className="flex items-center justify-between px-6 py-4">
                         <div className="flex items-center space-x-4 rtl:space-x-reverse">
@@ -136,7 +130,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
                     </div>
                 </header>
 
-                {/* Page Content */}
                 <main className="flex-1 p-4 sm:p-6 overflow-auto max-w-full w-full">
                     <div className="w-full max-w-5xl mx-auto">
                         {children}
@@ -144,7 +137,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
                 </main>
             </div>
 
-            {/* Mobile Sidebar Overlay */}
             {sidebarOpen && (
                 <div
                     className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"

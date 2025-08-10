@@ -14,12 +14,10 @@ class CategoryController extends Controller
     {
         $query = Category::withCount('products');
 
-        // Apply search filter
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        // Apply status filter
         if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
@@ -49,7 +47,6 @@ class CategoryController extends Controller
             'sort_order' => 'nullable|integer|min:0',
         ]);
 
-        // Generate slug from name
         $validated['slug'] = \Str::slug($validated['name']);
 
         Category::create($validated);
@@ -61,7 +58,7 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         $category->load('products');
-        
+
         return Inertia::render('Admin/Categories/Show', [
             'category' => $category
         ]);
@@ -83,7 +80,6 @@ class CategoryController extends Controller
             'sort_order' => 'nullable|integer|min:0',
         ]);
 
-        // Generate slug from name
         $validated['slug'] = \Str::slug($validated['name']);
 
         $category->update($validated);
@@ -94,7 +90,6 @@ class CategoryController extends Controller
 
     public function destroy(Category $category): RedirectResponse
     {
-        // Check if category has products
         if ($category->products()->count() > 0) {
             return redirect()->route('admin.categories.index')
                 ->with('error', 'لا يمكن حذف الفئة لأنها تحتوي على منتجات');

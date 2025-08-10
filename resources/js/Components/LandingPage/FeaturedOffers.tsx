@@ -3,7 +3,6 @@ import { Link } from '@inertiajs/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// تسجيل ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
 const FeaturedOffers: React.FC = () => {
@@ -13,7 +12,6 @@ const FeaturedOffers: React.FC = () => {
     const cardsRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Content animation
         if (contentRef.current) {
             gsap.fromTo(contentRef.current,
                 { opacity: 0, y: 50 },
@@ -32,7 +30,6 @@ const FeaturedOffers: React.FC = () => {
             );
         }
 
-        // Cards animation
         if (cardsRef.current) {
             gsap.fromTo(cardsRef.current,
                 { opacity: 0, y: 30 },
@@ -52,7 +49,6 @@ const FeaturedOffers: React.FC = () => {
             );
         }
 
-        // Cleanup function
         return () => {
             ScrollTrigger.getAll().forEach(trigger => trigger.kill());
         };
@@ -65,7 +61,6 @@ const FeaturedOffers: React.FC = () => {
         >
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-6 md:gap-8 lg:gap-12">
-                    {/* العنوان والوصف */}
                     <div ref={contentRef} className="text-center lg:text-start w-full lg:w-1/2 mb-6 lg:mb-0">
                         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#0D1D25] mb-2 md:mb-3">
                             عــــرض اليوم
@@ -75,7 +70,7 @@ const FeaturedOffers: React.FC = () => {
                         </p>
                         <div className='mt-4 flex justify-center lg:justify-start'>
                             <Link
-                                href="#"
+                                href="/products?tab=offers"
                                 className="bg-primary-yellow text-black border border-black border-[1px] py-1.5 px-4 rounded-full text-xs sm:text-sm md:text-base font-bold hover:bg-[#ffd54f] transition-all duration-700 hover:scale-105 hover:shadow-lg"
                             >
                                 افتح المتجر
@@ -83,9 +78,11 @@ const FeaturedOffers: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* بطاقات العروض */}
                     <div ref={cardsRef} className="w-full lg:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                        <div className="relative rounded-2xl overflow-hidden bg-light-blue shadow-lg flex transition-all duration-1000 hover:scale-105 hover:shadow-xl">
+                        <Link
+                            href="/products?category=tawlat&tab=offers"
+                            className="relative rounded-2xl overflow-hidden bg-light-blue shadow-lg flex transition-all duration-1000 hover:scale-105 hover:shadow-xl cursor-pointer block"
+                        >
                             <div className='flex flex-col justify-between gap-6 py-4 ps-6 pe-2'>
                                 <div className='w-10 h-10 bg-primary-yellow rounded-full flex justify-center items-center transition-all duration-700 hover:scale-110'>
                                     <span className='text-base font-bold'>15%</span>
@@ -99,9 +96,12 @@ const FeaturedOffers: React.FC = () => {
                                     className="w-full object-contain transition-transform duration-1000 hover:scale-110 max-h-32 sm:max-h-40 md:max-h-48"
                                 />
                             </div>
-                        </div>
+                        </Link>
 
-                        <div className="relative rounded-2xl overflow-hidden bg-peach shadow-lg flex transition-all duration-1000 hover:scale-105 hover:shadow-xl">
+                        <Link
+                            href="/products?category=stayr-nbsh&tab=offers"
+                            className="relative rounded-2xl overflow-hidden bg-peach shadow-lg flex transition-all duration-1000 hover:scale-105 hover:shadow-xl cursor-pointer block"
+                        >
                             <div className='flex flex-col justify-between gap-6 py-4 ps-6 pe-2'>
                                 <div className='w-10 h-10 bg-primary-yellow rounded-full flex justify-center items-center transition-all duration-700 hover:scale-110'>
                                     <span className='text-base font-bold'>30%</span>
@@ -115,7 +115,7 @@ const FeaturedOffers: React.FC = () => {
                                     className="w-full object-contain transition-transform duration-1000 hover:scale-110 max-h-32 sm:max-h-40 md:max-h-48"
                                 />
                             </div>
-                        </div>
+                        </Link>
                     </div>
                 </div>
             </div>

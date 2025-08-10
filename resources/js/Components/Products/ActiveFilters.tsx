@@ -47,7 +47,6 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({ filters, onRemoveFilter, 
         '#FF69B4': 'وردي غامق'
     };
 
-    // Size names mapping
     const sizeNames: { [key: string]: string } = {
         'small': 'صغير',
         'medium': 'متوسط',

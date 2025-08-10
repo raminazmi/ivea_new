@@ -1,4 +1,3 @@
-// src/Components/ProductCard.tsx
 import React from 'react';
 import { Link } from '@inertiajs/react';
 

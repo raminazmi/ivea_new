@@ -66,7 +66,7 @@ const ShowArticle: React.FC<ShowArticleProps> = ({ article }) => {
                                                 {article.category}
                                             </span>
                                             <span className="text-sm text-gray-500">
-                                                {new Date(article.date).toLocaleDateString('ar-SA')}
+                                                {new Date(article.date).toLocaleDateString('ar-EG')}
                                             </span>
                                             <span className="text-sm text-gray-500">
                                                 {article.read_time} دقائق للقراءة
@@ -139,14 +139,14 @@ const ShowArticle: React.FC<ShowArticleProps> = ({ article }) => {
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700">تاريخ الإنشاء</label>
                                                 <p className="text-sm text-gray-900">
-                                                    {new Date(article.created_at).toLocaleDateString('ar-SA')}
+                                                    {new Date(article.created_at).toLocaleDateString('ar-EG')}
                                                 </p>
                                             </div>
 
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700">آخر تحديث</label>
                                                 <p className="text-sm text-gray-900">
-                                                    {new Date(article.updated_at).toLocaleDateString('ar-SA')}
+                                                    {new Date(article.updated_at).toLocaleDateString('ar-EG')}
                                                 </p>
                                             </div>
 

@@ -14,6 +14,13 @@ interface Product {
     name: string;
     brand: string;
     price: number;
+    base_price: number;
+    price_per_sqm?: number;
+    pricing_method?: 'fixed' | 'per_sqm' | 'tiered';
+    min_price?: number;
+    max_price?: number;
+    default_width?: number;
+    default_height?: number;
     discount?: number;
     image: string;
     rating: number;

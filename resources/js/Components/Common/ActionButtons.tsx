@@ -10,19 +10,23 @@ interface ActionButton {
 interface ActionButtonsProps {
     buttons?: ActionButton[];
     onAddToCart?: () => void;
+    onQuickOrder?: () => void;
     inStock?: boolean;
     className?: string;
+    showQuickOrder?: boolean;
 }
 
-const ActionButtons: React.FC<ActionButtonsProps> = ({ 
-    buttons, 
-    onAddToCart, 
-    inStock = true, 
-    className = "" 
+const ActionButtons: React.FC<ActionButtonsProps> = ({
+    buttons,
+    onAddToCart,
+    onQuickOrder,
+    inStock = true,
+    className = "",
+    showQuickOrder = true
 }) => {
     if (buttons) {
         return (
-            <div className={`flex gap-4 ${className}`}>
+            <div className={`flex flex-col sm:flex-row gap-3 sm:gap-4 ${className}`}>
                 {buttons.map((button, index) => (
                     <button
                         key={index}
@@ -41,7 +45,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
     }
 
     return (
-        <div className={`flex gap-4 ${className}`}>
+        <div className={`flex flex-col sm:flex-row gap-3 sm:gap-4 ${className}`}>
             <button
                 onClick={onAddToCart}
                 disabled={!inStock}
@@ -49,6 +53,16 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
             >
                 {inStock ? 'أضف إلى السلة' : 'غير متوفر'}
             </button>
+
+            {showQuickOrder && (
+                <button
+                    onClick={onQuickOrder}
+                    disabled={!inStock}
+                    className={`flex-1 font-medium py-3 px-6 rounded-lg transition-colors border-2 border-yellow-400 text-yellow-600 hover:bg-yellow-50 ${!inStock ? 'opacity-50 cursor-not-allowed border-gray-300 text-gray-400' : ''}`}
+                >
+                    اطلب الآن
+                </button>
+            )}
         </div>
     );
 };

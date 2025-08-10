@@ -8,25 +8,11 @@ use App\Models\Product;
 
 class CartController extends Controller
 {
-    /**
-     * Display the cart page with the current cart items
-     *
-     * @return \Inertia\Response
-     */
     public function index()
     {
-        // The cart is managed client-side with Redux
-        // This method just renders the cart page
         return Inertia::render('Cart/Index');
     }
 
-    /**
-     * Get cart items with current product data
-     * This can be used to sync cart data with the server
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function getCartItems(Request $request)
     {
         $cartItems = $request->input('items', []);
@@ -41,7 +27,6 @@ class CartController extends Controller
             ->get()
             ->keyBy('id');
 
-        // Merge cart quantities with product data
         $enrichedItems = collect($cartItems)->map(function ($item) use ($products) {
             $product = $products->get($item['id']);
 

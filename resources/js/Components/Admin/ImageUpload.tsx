@@ -30,7 +30,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
         setUploading(true);
         const formData = new FormData();
-        
+
         for (let i = 0; i < files.length; i++) {
             formData.append('images[]', files[i]);
         }
@@ -45,13 +45,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             });
 
             const result = await response.json();
-            
+
             if (result.success) {
                 const newImages = result.images.map((img: any) => img.url);
                 const updatedImages = [...images, ...newImages];
                 onImagesChange(updatedImages);
-                
-                // Set main image if not set
                 if (!mainImage && newImages.length > 0 && onMainImageChange) {
                     onMainImageChange(newImages[0]);
                 }
@@ -73,8 +71,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         if (newImageUrl.trim()) {
             const updatedImages = [...images, newImageUrl.trim()];
             onImagesChange(updatedImages);
-            
-            // Set main image if not set
             if (!mainImage && onMainImageChange) {
                 onMainImageChange(newImageUrl.trim());
             }
@@ -85,8 +81,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     const removeImage = (index: number) => {
         const updatedImages = images.filter((_, i) => i !== index);
         onImagesChange(updatedImages);
-        
-        // Update main image if it was removed
         if (mainImage === images[index] && onMainImageChange) {
             if (updatedImages.length > 0) {
                 onMainImageChange(updatedImages[0]);
@@ -106,7 +100,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         <div>
             <InputLabel value={label} />
             <div className="mt-2 space-y-4">
-                {/* File Upload */}
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                     <input
                         ref={fileInputRef}
@@ -142,7 +135,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     </div>
                 </div>
 
-                {/* Manual URL Input */}
                 <div className="flex gap-2">
                     <input
                         type="text"
@@ -157,7 +149,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     </SecondaryButton>
                 </div>
 
-                {/* Display Images */}
                 {images.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {images.map((image, index) => (

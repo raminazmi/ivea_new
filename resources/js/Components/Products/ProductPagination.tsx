@@ -44,7 +44,6 @@ const ProductPagination: React.FC<ProductPaginationProps> = ({ currentPage, tota
 
     return (
         <div className="flex justify-center items-center space-x-2 mt-8">
-            {/* Previous Button */}
             <button
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
@@ -54,7 +53,6 @@ const ProductPagination: React.FC<ProductPaginationProps> = ({ currentPage, tota
                 &lt;
             </button>
 
-            {/* Page Numbers */}
             {getVisiblePages().map((page, index) => (
                 <React.Fragment key={index}>
                     {page === '...' ? (
@@ -63,8 +61,8 @@ const ProductPagination: React.FC<ProductPaginationProps> = ({ currentPage, tota
                         <button
                             onClick={() => onPageChange(page as number)}
                             className={`px-3 py-2 rounded-lg transition-colors ${currentPage === page
-                                    ? 'bg-primary-yellow text-white'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                                ? 'bg-primary-yellow text-white'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                                 }`}
                             title={`الصفحة ${page}`}
                         >
@@ -74,7 +72,6 @@ const ProductPagination: React.FC<ProductPaginationProps> = ({ currentPage, tota
                 </React.Fragment>
             ))}
 
-            {/* Next Button */}
             <button
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}

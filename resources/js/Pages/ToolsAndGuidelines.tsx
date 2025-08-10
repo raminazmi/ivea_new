@@ -5,6 +5,7 @@ import AppLayout from '@/Components/LandingPage/Layout/AppLayout';
 import ContactUs from '@/Components/LandingPage/ContactUs';
 import Breadcrumb from '@/Components/Common/Breadcrumb';
 import CoverSection from '@/Components/LandingPage/Layout/CoverSection';
+import { formatDate } from '@/Utils/dateUtils';
 
 interface ToolsAndGuidelinesProps {
     tools: Array<{
@@ -288,7 +289,7 @@ const ToolsAndGuidelines: React.FC<ToolsAndGuidelinesProps> = ({
                                                             {article.title}
                                                         </h4>
                                                         <div className="flex items-center justify-between gap-1 text-xs text-gray-500">
-                                                            <span>{article.date?.split('T')[0]} . {article.read_time} دقائق للقراءة</span>
+                                                            <span>{formatDate(article.date)} . {article.read_time} دقائق للقراءة</span>
                                                         </div>
                                                     </div>
                                                 </div>

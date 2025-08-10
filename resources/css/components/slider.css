@@ -1,0 +1,100 @@
+.slider-blue {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    background: linear-gradient(90deg, #E5E7EB 0%, #D1D5DB 100%);
+    border-radius: 4px;
+    outline: none;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.slider-blue:hover {
+    opacity: 1;
+}
+
+.slider-blue::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 24px;
+    width: 24px;
+    background: linear-gradient(135deg, #FFD974 0%, #ffbd09 100%);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+    transition: all 0.3s ease;
+    border: 2px solid white;
+}
+
+.slider-blue::-moz-range-thumb {
+    height: 24px;
+    width: 24px;
+    background: linear-gradient(135deg, #FFD974 0%, #ffbd09 100%);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+    transition: all 0.3s ease;
+}
+
+.slider-blue::-webkit-slider-track {
+    height: 8px;
+    background: linear-gradient(90deg, #E5E7EB 0%, #D1D5DB 100%);
+    border-radius: 4px;
+}
+
+.slider-blue::-moz-range-track {
+    height: 8px;
+    background: linear-gradient(90deg, #E5E7EB 0%, #D1D5DB 100%);
+    border-radius: 4px;
+    border: none;
+}
+
+.slider-blue:hover::-webkit-slider-thumb {
+    background: linear-gradient(135deg, #fcd97a 0%, #fcba05 100%);
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
+}
+
+.slider-blue:hover::-moz-range-thumb {
+    background: linear-gradient(135deg, #fcd97a 0%, #fcba05 100%);
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
+}
+
+.slider-blue:active::-webkit-slider-thumb {
+    background: linear-gradient(135deg, #f8d472 0%, #fbb800 100%);
+    transform: scale(1.2);
+    box-shadow: 0 8px 16px rgba(29, 78, 216, 0.5);
+}
+
+.slider-blue:active::-moz-range-thumb {
+    background: linear-gradient(135deg, #f9d677 0%, #fbb800 100%);
+    transform: scale(1.2);
+    box-shadow: 0 8px 16px rgba(29, 78, 216, 0.5);
+}
+
+.slider-blue:focus {
+    outline: none;
+}
+
+.slider-blue:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(253, 174, 3, 0.5);
+}
+
+.slider-blue:focus::-moz-range-thumb {
+    box-shadow: 0 0 0 3px rgba(253, 174, 3, 0.5);
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.slider-blue:hover::-webkit-slider-thumb {
+    animation: pulse 2s infinite;
+}
+
+.slider-blue:hover::-moz-range-thumb {
+    animation: pulse 2s infinite;
+}

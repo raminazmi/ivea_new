@@ -33,7 +33,6 @@ const EditJob: React.FC = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        // إرسال فقط الحقول المطلوبة وليس كائن job كامل
         const payload = {
             title: form.title,
             description: form.description,

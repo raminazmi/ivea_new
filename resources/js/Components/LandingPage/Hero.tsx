@@ -5,7 +5,6 @@ import { HiChevronRight, HiChevronLeft } from 'react-icons/hi';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// تسجيل ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
 const Hero: React.FC = () => {
@@ -28,7 +27,6 @@ const Hero: React.FC = () => {
     const categoriesContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Hero section animation
         if (heroContentRef.current && heroImageRef.current) {
             gsap.fromTo(heroContentRef.current,
                 { opacity: 0, y: 50 },
@@ -65,7 +63,6 @@ const Hero: React.FC = () => {
             );
         }
 
-        // Features section animation
         if (featuresContainerRef.current) {
             gsap.fromTo(featuresContainerRef.current,
                 { opacity: 0, y: 30 },
@@ -85,7 +82,6 @@ const Hero: React.FC = () => {
             );
         }
 
-        // Brands section animation
         if (brandsContainerRef.current) {
             gsap.fromTo(brandsContainerRef.current,
                 { opacity: 0, y: 30 },
@@ -105,7 +101,6 @@ const Hero: React.FC = () => {
             );
         }
 
-        // Categories section animation
         if (categoriesContainerRef.current) {
             gsap.fromTo(categoriesContainerRef.current,
                 { opacity: 0, y: 30 },
@@ -124,8 +119,6 @@ const Hero: React.FC = () => {
                 }
             );
         }
-
-        // Cleanup function
         return () => {
             ScrollTrigger.getAll().forEach(trigger => trigger.kill());
         };
@@ -192,29 +185,32 @@ const Hero: React.FC = () => {
             name: 'ستــائر',
             image: '/images/curtain.png',
             subtitle: 'عرض المزيد',
-            bgColor: 'bg-[#F5F5F5]'
+            bgColor: 'bg-[#F5F5F5]',
+            slug: 'stayr-nbsh'
         },
         {
             name: 'خشبيات',
             image: '/images/door.png',
             subtitle: 'عرض المزيد',
-            bgColor: 'bg-[#F5F5F5]'
+            bgColor: 'bg-[#F5F5F5]',
+            slug: 'stayr-qmashya'
         },
         {
             name: 'كــنب',
             image: '/images/sofa.png',
             subtitle: 'عرض المزيد',
-            bgColor: 'bg-[#F5F5F5]'
+            bgColor: 'bg-[#F5F5F5]',
+            slug: 'knb-wraayk'
         },
         {
             name: 'خــزائن',
             image: '/images/treasury.png',
             subtitle: 'عرض المزيد',
-            bgColor: 'bg-[#F5F5F5]'
+            bgColor: 'bg-[#F5F5F5]',
+            slug: 'tawlat'
         }
     ];
 
-    // Auto-slide functionality
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % heroImages.length);
@@ -238,7 +234,6 @@ const Hero: React.FC = () => {
     return (
         <section className="bg-white py-4 sm:py-6 md:py-8 lg:pt-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Hero Section */}
                 <div
                     ref={heroRef}
                     data-section="hero"
@@ -319,21 +314,24 @@ const Hero: React.FC = () => {
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-2 sm:gap-3 mb-4 sm:mb-6">
-                            <span className="text-[#0D1D25] px-3 sm:px-4 md:px-5 py-1.5 md:py-2 rounded-full transition-all duration-500 hover:bg-opacity-90 text-xs sm:text-sm md:text-base font-medium w-full sm:w-auto text-center border border-[#0D1D25] hover:scale-105 hover:shadow-md">
-                                استكشف عروضنا
-                            </span>
                             <Link
-                                href="#"
+                                href="/products?tab=offers"
+                                className="text-[#0D1D25] px-3 sm:px-4 md:px-5 py-1.5 md:py-2 rounded-full transition-all duration-500 hover:bg-opacity-90 text-xs sm:text-sm md:text-base font-medium w-full sm:w-auto text-center border border-[#0D1D25] hover:scale-105 hover:shadow-md hover:bg-[#0D1D25] hover:text-white block"
+                            >
+                                استكشف عروضنا
+                            </Link>
+                            <a
+                                href="https://wa.me/966123456789?text=مرحباً، أود الحصول على استشارة مجانية"
+                                target="_blank"
                                 className="flex items-center justify-center gap-2 text-[#616161] font-medium transition-all duration-500 hover:scale-105"
                             >
                                 <FaWhatsapp className="text-xl sm:text-2xl md:text-3xl text-white bg-[#4CAF50] hover:bg-[#3d8b40] rounded-full p-1 sm:p-1.5 md:p-2 transition-all duration-500 hover:scale-110" />
                                 <span className="text-xs sm:text-sm md:text-base">للإستشارة المجانية</span>
-                            </Link>
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                {/* Features Section */}
                 <div
                     ref={featuresRef}
                     data-section="features"
@@ -359,20 +357,21 @@ const Hero: React.FC = () => {
                                 </div>
                             ))}
                         </div>
-                        <button className="border border-[2px] border-black bg-white text-[#0D1D25] px-3 sm:px-4 md:px-6 py-1 md:py-2 rounded-full shadow-lg font-medium text-xs sm:text-sm lg:text-base hover:bg-gray-50 transition-all duration-500 whitespace-nowrap mt-2 md:mt-0 hover:scale-105 hover:shadow-xl">
+                        <Link
+                            href="/products"
+                            className="border border-[2px] border-black bg-white text-[#0D1D25] px-3 sm:px-4 md:px-6 py-1 md:py-2 rounded-full shadow-lg font-medium text-xs sm:text-sm lg:text-base hover:bg-gray-50 transition-all duration-500 whitespace-nowrap mt-2 md:mt-0 hover:scale-105 hover:shadow-xl block text-center"
+                        >
                             عرض المزيد
-                        </button>
+                        </Link>
                     </div>
                 </div>
 
-                {/* Brand Logos - Continuous Scrolling */}
                 <div
                     ref={brandsRef}
                     data-section="brands"
                     className="mt-16 sm:mt-20 md:mt-24 lg:mt-32 mb-12 sm:mb-16 md:mb-20 lg:mb-24 -mx-4 sm:-mx-6 lg:-mx-8">
                     <div ref={brandsContainerRef} className="relative overflow-hidden">
                         <div className="flex animate-scroll-brands">
-                            {/* First set of brands */}
                             <div className="flex items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 px-4 sm:px-6 lg:px-8">
                                 {brands.map((brand, index) => (
                                     <div
@@ -396,23 +395,23 @@ const Hero: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Categories - Responsive Grid */}
                 <div
                     ref={categoriesRef}
                     data-section="categories"
                     className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14 sm:gap-8 lg:gap-6 px-2 sm:px-4 mt-32">
                     <div ref={categoriesContainerRef} className="contents">
                         {categories.map((category, index) => (
-                            <div
+                            <Link
                                 key={index}
-                                className="group relative overflow-visible rounded-xl sm:rounded-2xl transition-all duration-1000 cursor-pointer hover:scale-105"
+                                href={`/products?category=${category.slug}`}
+                                className="group relative overflow-visible rounded-xl sm:rounded-2xl transition-all duration-1000 cursor-pointer hover:scale-105 block"
                             >
                                 <div className={`${category.bgColor} flex justify-between items-center gap-2 rounded-xl sm:rounded-2xl p-3 sm:p-4 pb-2 transition-all duration-700 group-hover:shadow-xl`}>
                                     <div className="text-center w-28 sm:w-32 md:w-36 flex flex-col gap-2 sm:gap-3 w-fit text-center">
                                         <h3 className="font-bold text-sm sm:text-base md:text-lg text-[#0D1D25] transition-all duration-700 group-hover:text-[#0D1D25]/80">
                                             {category.name}
                                         </h3>
-                                        <p className="text-xs sm:text-sm text-[#616161] mt-1 bg-white rounded-full py-1.5 sm:py-2 px-3 sm:px-4 transition-all duration-700 group-hover:bg-gray-50">
+                                        <p className="text-xs sm:text-sm text-[#616161] mt-1 bg-white rounded-full py-1.5 sm:py-2 px-3 sm:px-4 transition-all duration-700 group-hover:bg-gray-50 hover:bg-primary-yellow hover:text-white">
                                             {category.subtitle}
                                         </p>
                                     </div>
@@ -425,13 +424,12 @@ const Hero: React.FC = () => {
                                         />
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>
             </div>
 
-            {/* Custom CSS for scroll animation */}
             <style>{`
                 @keyframes scrollBrands {
                     0% { transform: translateX(0); }

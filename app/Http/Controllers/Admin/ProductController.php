@@ -16,7 +16,6 @@ class ProductController extends Controller
     {
         $query = Product::with('category');
 
-        // Apply search filter
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
@@ -25,17 +24,14 @@ class ProductController extends Controller
             });
         }
 
-        // Apply status filter
         if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
 
-        // Apply category filter
         if ($request->filled('category') && $request->category !== 'all') {
             $query->where('category_id', $request->category);
         }
 
-        // Apply tab filter
         if ($request->filled('tab') && $request->tab !== 'all') {
             $query->where('tab', $request->tab);
         }
@@ -44,7 +40,6 @@ class ProductController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        // Get categories for filter dropdown
         $categories = Category::active()->ordered()->get();
 
         return Inertia::render('Admin/Products/Index', [
@@ -95,6 +90,18 @@ class ProductController extends Controller
             'dimensions.width' => 'nullable|string',
             'dimensions.height' => 'nullable|string',
             'dimensions.depth' => 'nullable|string',
+            'base_price' => 'nullable|numeric|min:0',
+            'price_per_sqm' => 'nullable|numeric|min:0',
+            'min_price' => 'nullable|numeric|min:0',
+            'max_price' => 'nullable|numeric|min:0',
+            'pricing_method' => 'nullable|in:fixed,area_based,size_based,custom',
+            'price_modifiers' => 'nullable|array',
+            'default_width' => 'nullable|numeric|min:10|max:1000',
+            'default_height' => 'nullable|numeric|min:10|max:1000',
+            'min_width' => 'nullable|numeric|min:1|max:1000',
+            'max_width' => 'nullable|numeric|min:1|max:1000',
+            'min_height' => 'nullable|numeric|min:1|max:1000',
+            'max_height' => 'nullable|numeric|min:1|max:1000',
         ]);
 
         $validated['featured'] = $validated['featured'] ?? false;
@@ -102,6 +109,15 @@ class ProductController extends Controller
         $validated['colors'] = $validated['colors'] ?? [];
         $validated['specifications'] = $validated['specifications'] ?? [];
         $validated['dimensions'] = $validated['dimensions'] ?? [];
+        $validated['pricing_method'] = $validated['pricing_method'] ?? 'area_based';
+        $validated['base_price'] = $validated['base_price'] ?? $validated['price'];
+        $validated['price_modifiers'] = $validated['price_modifiers'] ?? [];
+        $validated['default_width'] = $validated['default_width'] ?? 100;
+        $validated['default_height'] = $validated['default_height'] ?? 100;
+        $validated['min_width'] = $validated['min_width'] ?? 50;
+        $validated['max_width'] = $validated['max_width'] ?? 500;
+        $validated['min_height'] = $validated['min_height'] ?? 50;
+        $validated['max_height'] = $validated['max_height'] ?? 400;
 
         if (empty($validated['image']) && !empty($validated['images'])) {
             $validated['image'] = $validated['images'][0];
@@ -123,10 +139,12 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::active()->ordered()->get();
+        $product->load('category');
 
-        return Inertia::render('Admin/Products/Edit', [
+        return Inertia::render('Admin/Products/Create', [
             'product' => $product,
-            'categories' => $categories
+            'categories' => $categories,
+            'isEditing' => true
         ]);
     }
 
@@ -162,6 +180,20 @@ class ProductController extends Controller
             'dimensions.width' => 'nullable|string',
             'dimensions.height' => 'nullable|string',
             'dimensions.depth' => 'nullable|string',
+            // Dynamic pricing fields
+            'base_price' => 'nullable|numeric|min:0',
+            'price_per_sqm' => 'nullable|numeric|min:0',
+            'min_price' => 'nullable|numeric|min:0',
+            'max_price' => 'nullable|numeric|min:0',
+            'pricing_method' => 'nullable|in:fixed,area_based,size_based,custom',
+            'price_modifiers' => 'nullable|array',
+            // Dimension fields
+            'default_width' => 'nullable|numeric|min:10|max:1000',
+            'default_height' => 'nullable|numeric|min:10|max:1000',
+            'min_width' => 'nullable|numeric|min:1|max:1000',
+            'max_width' => 'nullable|numeric|min:1|max:1000',
+            'min_height' => 'nullable|numeric|min:1|max:1000',
+            'max_height' => 'nullable|numeric|min:1|max:1000',
         ]);
 
         // Set default values
@@ -170,6 +202,9 @@ class ProductController extends Controller
         $validated['colors'] = $validated['colors'] ?? [];
         $validated['specifications'] = $validated['specifications'] ?? [];
         $validated['dimensions'] = $validated['dimensions'] ?? [];
+        $validated['pricing_method'] = $validated['pricing_method'] ?? 'fixed';
+        $validated['base_price'] = $validated['base_price'] ?? $validated['price'];
+        $validated['price_modifiers'] = $validated['price_modifiers'] ?? [];
 
         $product->update($validated);
 

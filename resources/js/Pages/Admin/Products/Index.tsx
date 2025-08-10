@@ -67,13 +67,20 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
 
     const fetchTabStats = async () => {
         try {
-            const response = await fetch('/admin/products/tab-statistics');
+            const response = await fetch('/admin/products/tab-statistics', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
+                    'Accept': 'application/json',
+                },
+                credentials: 'same-origin'
+            });
             if (response.ok) {
                 const stats = await response.json();
                 setTabStats(stats);
             }
         } catch (error) {
-            console.error('Error fetching tab statistics:', error);
         }
     };
 
@@ -92,7 +99,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
                 router.reload();
             }
         } catch (error) {
-            console.error('Error updating tab settings:', error);
         }
     };
 
@@ -118,7 +124,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
                 router.reload();
             }
         } catch (error) {
-            console.error('Error updating bulk tab settings:', error);
         }
     };
 
@@ -185,10 +190,7 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
 
     const handleBulkDelete = () => {
         if (selectedProducts.length === 0) return;
-
         if (confirm(`هل أنت متأكد من حذف ${selectedProducts.length} منتج محدد؟`)) {
-            // Implement bulk delete functionality
-            // Handle bulk delete
         }
     };
 
@@ -233,7 +235,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
                 <div className="max-w-5xl sm:px-6 lg:px-8">
                     <div className="w-[100%] bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-4 sm:p-6 bg-white border-b border-gray-200">
-                            {/* Header */}
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900">إدارة المنتجات</h2>
                                 <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -254,7 +255,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
                                 </div>
                             </div>
 
-                            {/* Filters */}
                             {showFilters && (
                                 <div className="bg-gray-50 p-4 rounded-lg mb-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -337,7 +337,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
                                 </div>
                             )}
 
-                            {/* Tab Statistics */}
                             {tabStats && (
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                                     <div className="bg-blue-50 p-4 rounded-lg">
@@ -371,7 +370,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
                                 </div>
                             )}
 
-                            {/* Bulk Actions */}
                             {selectedProducts.length > 0 && (
                                 <div className="bg-gray-50 p-4 rounded-lg mb-6">
                                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -426,7 +424,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
                                 </div>
                             )}
 
-                            {/* Products Table */}
                             <div className="table-container border border-gray-200 rounded-lg">
                                 <table className="products-table divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
@@ -584,7 +581,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
                                 </table>
                             </div>
 
-                            {/* Pagination */}
                             {products.last_page > 1 && (
                                 <div className="mt-6 flex justify-center">
                                     <nav className="flex space-x-2 rtl:space-x-reverse">
@@ -614,7 +610,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
                 </div>
             </div>
 
-            {/* Delete Confirmation Modal */}
             <ConfirmModal
                 isOpen={showDeleteModal}
                 onClose={() => {

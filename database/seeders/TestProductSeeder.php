@@ -10,7 +10,6 @@ class TestProductSeeder extends Seeder
 {
     public function run(): void
     {
-        // إنشاء فئات إذا لم تكن موجودة
         $categories = [
             ['name' => 'ستائر قماشية', 'slug' => 'curtains-fabric'],
             ['name' => 'كنب وأرائك', 'slug' => 'sofas-chairs'],

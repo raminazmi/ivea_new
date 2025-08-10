@@ -7,9 +7,7 @@ const Footer: React.FC = () => {
     return (
         <footer className="bg-primary-black text-white py-8 md:py-12 md:px-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Top Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-6 md:mb-8">
-                    {/* Logo and Description */}
                     <div className="space-y-3 md:space-y-4">
                         <img
                             src="/images/logo_white.png"
@@ -32,7 +30,6 @@ const Footer: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Main Links */}
                     <div>
                         <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4">الرئيسية</h3>
                         <ul className="space-y-2 md:space-y-3">
@@ -42,7 +39,6 @@ const Footer: React.FC = () => {
                         </ul>
                     </div>
 
-                    {/* Contact */}
                     <div>
                         <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4">تواصل معنا</h3>
                         <div className="space-y-2 md:space-y-3 text-gray-300 text-sm">
@@ -51,7 +47,6 @@ const Footer: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Newsletter */}
                     <div>
                         <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4">النشرة البردية</h3>
                         <div className="relative">
@@ -67,7 +62,6 @@ const Footer: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Bottom Section */}
                 <div className="border-t border-gray-700 pt-4 md:pt-6">
                     <div className="flex flex-col md:flex-row justify-between items-center">
                         <div className="text-gray-400 text-xs md:text-sm mb-3 md:mb-0">

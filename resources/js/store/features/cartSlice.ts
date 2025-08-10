@@ -14,6 +14,11 @@ export interface CartItem {
     openingMethod?: string;
     trackType?: string;
     liningOption?: string;
+    selectedDimensions?: {
+        width: number;
+        height: number;
+    };
+    selectedPrice?: number;
 }
 
 interface CartState {

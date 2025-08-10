@@ -35,9 +35,6 @@ class Article extends Model
         'sort_order' => 'integer',
     ];
 
-    /**
-     * Boot the model and add event listeners.
-     */
     protected static function boot()
     {
         parent::boot();
@@ -49,69 +46,43 @@ class Article extends Model
         });
     }
 
-    /**
-     * Get the route key for the model.
-     */
     public function getRouteKeyName()
     {
         return 'slug';
     }
 
-    /**
-     * Scope a query to only include published articles.
-     */
     public function scopePublished($query)
     {
         return $query->where('is_published', true);
     }
 
-    /**
-     * Scope a query to only include featured articles.
-     */
     public function scopeFeatured($query)
     {
         return $query->where('featured', true);
     }
 
-    /**
-     * Scope a query to order by sort order.
-     */
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order', 'asc')->orderBy('created_at', 'desc');
     }
 
-    /**
-     * Get the formatted date attribute.
-     */
     public function getFormattedDateAttribute()
     {
         return $this->date ? $this->date->format('d M Y') : now()->format('d M Y');
     }
 
-    /**
-     * Get the formatted read time attribute.
-     */
     public function getFormattedReadTimeAttribute()
     {
         return $this->read_time . ' دقائق للقراءة';
     }
 
-    /**
-     * Get the excerpt of the content.
-     */
     public function getExcerptAttribute()
     {
         return Str::limit(strip_tags($this->content), 150);
     }
 
-    /**
-     * Get all unique categories with id and name.
-     */
-
     public static function getCategories()
     {
-        // جلب جميع الفئات المرتبطة بمقالات موجودة فقط
         $categoryIds = self::query()->distinct()->pluck('category_id')->toArray();
         return \App\Models\Category::whereIn('id', $categoryIds)
             ->get(['id', 'name']);

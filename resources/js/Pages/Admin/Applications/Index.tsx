@@ -167,7 +167,6 @@ const ApplicationsIndex: React.FC<ApplicationsIndexProps> = ({ applications, use
                     </button>
                 </div>
 
-                {/* Statistics Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
                         <div className="flex items-center">
@@ -226,7 +225,6 @@ const ApplicationsIndex: React.FC<ApplicationsIndexProps> = ({ applications, use
                     </div>
                 </div>
 
-                {/* Filters */}
                 {showFilters && (
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -330,7 +328,7 @@ const ApplicationsIndex: React.FC<ApplicationsIndexProps> = ({ applications, use
                                                 </span>
                                             </td>
                                             <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {new Date(application.created_at).toLocaleDateString('ar-SA')}
+                                                {new Date(application.created_at).toLocaleDateString('ar-EG')}
                                             </td>
                                             <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div className="flex gap-1 sm:gap-2">
@@ -398,7 +396,6 @@ const ApplicationsIndex: React.FC<ApplicationsIndexProps> = ({ applications, use
                 </div>
             </div>
 
-            {/* Delete Confirmation Modal */}
             <ConfirmModal
                 isOpen={showDeleteModal}
                 onClose={() => {

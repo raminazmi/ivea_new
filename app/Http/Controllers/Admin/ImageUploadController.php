@@ -10,9 +10,6 @@ use Illuminate\Support\Str;
 
 class ImageUploadController extends Controller
 {
-    /**
-     * Upload a single image
-     */
     public function upload(Request $request): JsonResponse
     {
         $request->validate([
@@ -22,8 +19,6 @@ class ImageUploadController extends Controller
         try {
             $file = $request->file('image');
             $fileName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
-
-            // Store in public/images/products directory
             $path = $file->storeAs('images/products', $fileName, 'public');
 
             return response()->json([
@@ -39,9 +34,6 @@ class ImageUploadController extends Controller
         }
     }
 
-    /**
-     * Upload multiple images
-     */
     public function uploadMultiple(Request $request): JsonResponse
     {
         $request->validate([
@@ -73,9 +65,6 @@ class ImageUploadController extends Controller
         }
     }
 
-    /**
-     * Delete an image
-     */
     public function delete(Request $request): JsonResponse
     {
         $request->validate([

@@ -10,6 +10,5 @@ class Project extends Model
         'title',
         'description',
         'image',
-        // أضف أي حقول أخرى تحتاجها
     ];
 }

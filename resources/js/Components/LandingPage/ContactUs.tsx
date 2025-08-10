@@ -3,7 +3,6 @@ import { Link } from '@inertiajs/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// تسجيل ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
 const ContactUs = () => {
@@ -13,7 +12,6 @@ const ContactUs = () => {
     const imageRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Content animation
         if (contentRef.current) {
             gsap.fromTo(contentRef.current,
                 { opacity: 0, y: 50 },
@@ -32,7 +30,6 @@ const ContactUs = () => {
             );
         }
 
-        // Image animation
         if (imageRef.current) {
             gsap.fromTo(imageRef.current,
                 { opacity: 0, x: 30 },
@@ -52,7 +49,6 @@ const ContactUs = () => {
             );
         }
 
-        // Cleanup function
         return () => {
             ScrollTrigger.getAll().forEach(trigger => trigger.kill());
         };

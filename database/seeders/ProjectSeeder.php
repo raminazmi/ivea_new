@@ -7,9 +7,6 @@ use App\Models\Project;
 
 class ProjectSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $projects = [

@@ -7,13 +7,22 @@ import ProductCardSkeleton from '@/Components/Products/ProductCardSkeleton';
 import ProductFilters from '@/Components/Products/ProductFilters';
 import ProductPagination from '@/Components/Products/ProductPagination';
 import ActiveFilters from '@/Components/Products/ActiveFilters';
+import DimensionFilter from '@/Components/Products/DimensionFilter';
 import ContactUs from '@/Components/LandingPage/ContactUs';
+import { Dimensions } from '@/Utils/priceCalculator';
 
 interface Product {
     id: number;
     name: string;
     brand: string;
     price: number;
+    base_price: number;
+    price_per_sqm?: number;
+    pricing_method?: 'fixed' | 'per_sqm' | 'tiered';
+    min_price?: number;
+    max_price?: number;
+    default_width?: number;
+    default_height?: number;
     discount?: number;
     image: string;
     rating: number;
@@ -34,6 +43,12 @@ interface Product {
     stock?: number;
     featured?: boolean;
     tab?: string;
+    pricesFrom?: number;
+    priceRange?: {
+        min: number;
+        max: number;
+    };
+    pricingMethod?: 'fixed' | 'area_based' | 'size_based' | 'custom';
 }
 
 interface Category {
@@ -60,6 +75,48 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
     const [currentFilters, setCurrentFilters] = useState(filters);
     const [activeTab, setActiveTab] = useState(filters.tab || 'all');
     const [loading, setLoading] = useState(false);
+
+    React.useEffect(() => {
+        if (filters.category) {
+            setCurrentFilters((prevFilters: any) => ({
+                ...prevFilters,
+                category: filters.category
+            }));
+        }
+    }, [filters.category]);
+
+    const getDefaultDimensions = (): Dimensions => {
+        if (products.data.length > 0) {
+            const firstProduct = products.data[0];
+            return {
+                width: firstProduct.default_width || 100,
+                height: firstProduct.default_height || 100
+            };
+        }
+        return { width: 100, height: 100 };
+    };
+    const getDimensionLimits = () => {
+        if (products.data.length > 0) {
+            const allProducts = products.data;
+            const minWidths = allProducts.map(p => (p as any).min_width).filter(Boolean);
+            const maxWidths = allProducts.map(p => (p as any).max_width).filter(Boolean);
+            const minHeights = allProducts.map(p => (p as any).min_height).filter(Boolean);
+            const maxHeights = allProducts.map(p => (p as any).max_height).filter(Boolean);
+
+            return {
+                minWidth: minWidths.length > 0 ? Math.min(...minWidths) : 50,
+                maxWidth: maxWidths.length > 0 ? Math.max(...maxWidths) : 500,
+                minHeight: minHeights.length > 0 ? Math.min(...minHeights) : 50,
+                maxHeight: maxHeights.length > 0 ? Math.max(...maxHeights) : 400,
+            };
+        }
+        return { minWidth: 50, maxWidth: 500, minHeight: 50, maxHeight: 400 };
+    };
+
+    const [globalDimensions, setGlobalDimensions] = useState<Dimensions>(getDefaultDimensions());
+    const [dynamicPrices, setDynamicPrices] = useState<Record<number, number>>({});
+
+    const dimensionLimits = getDimensionLimits();
 
     const tabs = [
         { id: 'all', label: 'الكل' },
@@ -92,7 +149,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
         const newFilters = { ...currentFilters };
 
         if (value) {
-            // Remove specific value from array filters
             if (Array.isArray(newFilters[filterType])) {
                 newFilters[filterType] = newFilters[filterType].filter((v: string) => v !== value);
                 if (newFilters[filterType].length === 0) {
@@ -100,7 +156,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                 }
             }
         } else {
-            // Remove entire filter
             delete newFilters[filterType];
         }
 
@@ -134,7 +189,25 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
         });
     };
 
-    // حساب عدد المنتجات المتاحة
+    const handleDimensionChange = (dimensions: Dimensions) => {
+        setGlobalDimensions(dimensions);
+    };
+
+    const handleProductPriceChange = (productId: number, price: number) => {
+        setDynamicPrices(prev => ({
+            ...prev,
+            [productId]: price
+        }));
+    };
+
+    const getSelectedCategoryName = () => {
+        if (currentFilters.category) {
+            const selectedCategory = categories.find(cat => cat.slug === currentFilters.category);
+            return selectedCategory ? selectedCategory.name : 'المنتجات';
+        }
+        return 'المنتجات';
+    };
+
     const availableProducts = products.data.filter(product => product.in_stock !== false);
     const outOfStockProducts = products.data.filter(product => product.in_stock === false);
 
@@ -144,8 +217,8 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
 
             <CoverSection
                 imageUrl="/images/products_cover.png"
-                title="تصفح المنتجات"
-                subtitle="اكتشف مجموعتنا المتنوعة من المنتجات"
+                title={`تصفح ${getSelectedCategoryName()}`}
+                subtitle={currentFilters.category ? `اكتشف مجموعة ${getSelectedCategoryName()}` : "اكتشف مجموعتنا المتنوعة من المنتجات"}
                 description="ستائر، أثاث، وأكثر من ذلك"
                 socialLinks={{
                     facebook: 'https://facebook.com',
@@ -158,13 +231,23 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                 <section className="py-8 md:py-12 lg:py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
-                            <div className="lg:w-1/4">
+                            <div className="lg:w-1/4 space-y-6">
                                 <ProductFilters
                                     onFilterChange={handleFilterChange}
                                     activeTab={activeTab}
                                     categories={categories}
                                     filterOptions={filterOptions}
                                     currentFilters={currentFilters}
+                                />
+
+                                <DimensionFilter
+                                    onDimensionChange={handleDimensionChange}
+                                    defaultWidth={globalDimensions.width}
+                                    defaultHeight={globalDimensions.height}
+                                    minWidth={dimensionLimits.minWidth}
+                                    maxWidth={dimensionLimits.maxWidth}
+                                    minHeight={dimensionLimits.minHeight}
+                                    maxHeight={dimensionLimits.maxHeight}
                                 />
                             </div>
 
@@ -203,7 +286,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                                     </div>
                                 </div>
 
-                                {/* Tabs */}
                                 <div className="flex justify-center mb-8">
                                     <div className="flex flex-wrap justify-center gap-2 md:gap-4">
                                         {tabs.map((tab) => (
@@ -230,7 +312,12 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                                 ) : products.data.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 md:gap-6">
                                         {products.data.map((product) => (
-                                            <ProductCard key={product.id} product={product} />
+                                            <ProductCard
+                                                key={`${product.id}-${globalDimensions.width}-${globalDimensions.height}`}
+                                                product={product}
+                                                dimensions={globalDimensions}
+                                                onDimensionChange={handleProductPriceChange}
+                                            />
                                         ))}
                                     </div>
                                 ) : (

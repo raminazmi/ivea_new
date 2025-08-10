@@ -5,13 +5,12 @@ interface SectionTitleProps {
     className?: string;
 }
 
-const SectionTitle: React.FC<SectionTitleProps> = ({ 
-    text, 
-    size = '2xl', 
+const SectionTitle: React.FC<SectionTitleProps> = ({
+    text,
+    size = '2xl',
     align = 'center',
     className = ''
 }) => {
-    // تحديد حجم النص
     const getSizeClasses = (size: string) => {
         switch (size) {
             case 'sm':
@@ -33,55 +32,52 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
         }
     };
 
-    // تحديد ارتفاع الخط الأصفر حسب حجم النص
     const getLineHeight = (size: string) => {
         switch (size) {
             case 'sm':
-                return 'h-1'; // 4px
+                return 'h-1';
             case 'md':
-                return 'h-1.5'; // 6px
+                return 'h-1.5';
             case 'lg':
-                return 'h-2'; // 8px
+                return 'h-2';
             case 'xl':
-                return 'h-2.5'; // 10px
+                return 'h-2.5';
             case '2xl':
-                return 'h-3'; // 12px
+                return 'h-3';
             case '3xl':
-                return 'h-3'; // 12px (كما هو عليه)
+                return 'h-3';
             case '4xl':
-                return 'h-4'; // 16px
+                return 'h-4';
             default:
-                return 'h-3'; // 12px
+                return 'h-3';
         }
     };
 
-    // تحديد عرض الخط الأصفر حسب حجم النص (أقل من w-full قليلاً)
     const getLineWidth = (size: string) => {
         switch (size) {
             case 'sm':
-                return 'w-4/5'; // 80%
+                return 'w-4/5';
             case 'md':
-                return 'w-5/6'; // 83.33%
+                return 'w-5/6';
             case 'lg':
-                return 'w-11/12'; // 91.67%
+                return 'w-11/12';
             case 'xl':
-                return 'w-11/12'; // 91.67%
+                return 'w-11/12';
             case '2xl':
-                return 'w-full'; // 100%
+                return 'w-full';
             case '3xl':
-                return 'w-full'; // 100% (كما هو عليه)
+                return 'w-full';
             case '4xl':
-                return 'w-full'; // 100%
+                return 'w-full';
             default:
-                return 'w-full'; // 100%
+                return 'w-full';
         }
     };
 
-    // تحديد المسافة العلوية للخط حسب حجم النص
     const getLineTopMargin = (size: string) => {
         switch (size) {
             case 'sm':
-                return 'mt-[8px]'; // أقل مسافة
+                return 'mt-[8px]';
             case 'md':
                 return 'mt-[10px]';
             case 'lg':
@@ -91,15 +87,14 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
             case '2xl':
                 return 'mt-[16px]';
             case '3xl':
-                return 'mt-[17px]'; // كما هو عليه
+                return 'mt-[17px]';
             case '4xl':
-                return 'mt-[20px]'; // أكبر مسافة
+                return 'mt-[20px]';
             default:
                 return 'mt-[16px]';
         }
     };
 
-    // تحديد المحاذاة
     const getAlignClasses = (align: string) => {
         switch (align) {
             case 'start':

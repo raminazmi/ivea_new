@@ -5,7 +5,6 @@ import ProductCardSkeleton from '../Products/ProductCardSkeleton';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// تسجيل ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
 interface Product {
@@ -13,6 +12,13 @@ interface Product {
     name: string;
     brand: string;
     price: number;
+    base_price: number;
+    price_per_sqm?: number;
+    pricing_method?: 'fixed' | 'per_sqm' | 'tiered';
+    min_price?: number;
+    max_price?: number;
+    default_width?: number;
+    default_height?: number;
     discount?: number;
     image: string;
     rating: number;
@@ -53,7 +59,6 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts })
         { id: 'bestsellers', label: 'الأكثر مبيعاً' },
     ];
 
-    // Use featured products when tab is 'all', otherwise fetch from API
     useEffect(() => {
         if (activeTab === 'all') {
             setProducts(featuredProducts);
@@ -99,9 +104,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts })
         }
     }, [activeTab, featuredProducts]);
 
-    // GSAP animations
     useEffect(() => {
-        // Section animation
         if (sectionRef.current) {
             gsap.fromTo(sectionRef.current,
                 { opacity: 0, y: 50 },
@@ -120,7 +123,6 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts })
             );
         }
 
-        // Cleanup function
         return () => {
             ScrollTrigger.getAll().forEach(trigger => trigger.kill());
         };
@@ -142,7 +144,6 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts })
             <div className="container mx-auto relative z-10">
                 <SectionTitle text="منتجاتنا المميزة" />
 
-                {/* Tabs */}
                 <div className="flex justify-center mb-6 md:mb-8">
                     <div className="flex flex-wrap justify-center gap-2 md:gap-3">
                         {tabs.map((tab) => (
@@ -160,20 +161,16 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts })
                     </div>
                 </div>
 
-                {/* Products Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
                     {loading ? (
-                        // Show skeleton loading
                         Array.from({ length: 8 }).map((_, index) => (
                             <ProductCardSkeleton key={index} />
                         ))
                     ) : products.length > 0 ? (
-                        // Show actual products
                         products.map((product) => (
                             <ProductCard key={product.id} product={product} />
                         ))
                     ) : (
-                        // Show empty state
                         <div className="col-span-full text-center py-8">
                             <p className="text-gray-500 text-xs md:text-sm">لا توجد منتجات متاحة</p>
                         </div>

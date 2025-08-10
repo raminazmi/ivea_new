@@ -12,9 +12,6 @@ use Inertia\Inertia;
 
 class JobController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $jobs = Job::active()->with('applications')->get();
@@ -26,17 +23,11 @@ class JobController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return Inertia::render('Jobs/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(JobRequest $request)
     {
         try {
@@ -57,27 +48,18 @@ class JobController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $job = Job::with('applications')->findOrFail($id);
         return Inertia::render('Jobs/Show', ['job' => $job]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $job = Job::findOrFail($id);
         return Inertia::render('Jobs/Edit', ['job' => $job]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(JobRequest $request, string $id)
     {
         try {
@@ -99,9 +81,6 @@ class JobController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         try {
@@ -121,15 +100,10 @@ class JobController extends Controller
         }
     }
 
-    /**
-     * Apply for a job.
-     */
     public function apply(JobApplicationRequest $request)
     {
         try {
             $validated = $request->validated();
-
-            // Handle CV file upload
             if ($request->hasFile('cv_file')) {
                 $file = $request->file('cv_file');
                 $fileName = time() . '_' . $file->getClientOriginalName();
@@ -153,9 +127,6 @@ class JobController extends Controller
         }
     }
 
-    /**
-     * Get jobs by category.
-     */
     public function getByCategory(Request $request)
     {
         $category = $request->get('category');

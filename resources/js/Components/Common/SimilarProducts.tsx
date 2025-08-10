@@ -19,7 +19,7 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({
     return (
         <div className={`mt-16 ${className}`}>
             <h2 className="text-xl font-bold text-gray-900 mb-6">{title}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {products.map((product) => (
                     <ProductCard key={product.id} product={product} />
                 ))}

@@ -12,17 +12,11 @@ use Inertia\Response;
 
 class ConfirmablePasswordController extends Controller
 {
-    /**
-     * Show the confirm password view.
-     */
     public function show(): Response
     {
         return Inertia::render('Auth/ConfirmPassword');
     }
 
-    /**
-     * Confirm the user's password.
-     */
     public function store(Request $request): RedirectResponse
     {
         if (! Auth::guard('web')->validate([
@@ -36,7 +30,6 @@ class ConfirmablePasswordController extends Controller
 
         $request->session()->put('auth.password_confirmed_at', time());
 
-        // Check if user is admin and redirect accordingly
         $user = Auth::user();
         if ($user && $user->is_admin) {
             return redirect()->intended(route('admin.dashboard', absolute: false));

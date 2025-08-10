@@ -12,19 +12,18 @@ use Inertia\Inertia;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of products for public page
-     */
     public function index(Request $request)
     {
         $query = Product::with('category')->active();
 
-        // Filter by category
         if ($request->has('category') && $request->category !== 'all') {
-            $query->byCategory($request->category);
+            $categorySlug = $request->category;
+            $category = Category::where('slug', $categorySlug)->first();
+            if ($category) {
+                $query->where('category_id', $category->id);
+            }
         }
 
-        // Filter by tab
         if ($request->has('tab') && $request->tab !== 'all') {
             switch ($request->tab) {
                 case 'new':
@@ -40,12 +39,10 @@ class ProductController extends Controller
                     $query->featured();
                     break;
                 default:
-                    // No additional filtering for 'all'
                     break;
             }
         }
 
-        // Search
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -56,7 +53,6 @@ class ProductController extends Controller
             });
         }
 
-        // Filter by price range
         if ($request->has('min_price') && !empty($request->min_price)) {
             $query->where('price', '>=', $request->min_price);
         }
@@ -64,7 +60,6 @@ class ProductController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
-        // Filter by colors (multiple colors)
         if ($request->has('colors') && !empty($request->colors)) {
             $colors = is_array($request->colors) ? $request->colors : [$request->colors];
             $query->where(function ($q) use ($colors) {
@@ -74,7 +69,6 @@ class ProductController extends Controller
             });
         }
 
-        // Filter by size
         if ($request->has('size') && !empty($request->size)) {
             $sizes = is_array($request->size) ? $request->size : [$request->size];
             $query->where(function ($q) use ($sizes) {
@@ -106,7 +100,6 @@ class ProductController extends Controller
             });
         }
 
-        // Filter by opening method
         if ($request->has('opening_method') && !empty($request->opening_method)) {
             $methods = is_array($request->opening_method) ? $request->opening_method : [$request->opening_method];
             $query->where(function ($q) use ($methods) {
@@ -116,7 +109,6 @@ class ProductController extends Controller
             });
         }
 
-        // Filter by rail type
         if ($request->has('rail_type') && !empty($request->rail_type)) {
             $railTypes = is_array($request->rail_type) ? $request->rail_type : [$request->rail_type];
             $query->where(function ($q) use ($railTypes) {
@@ -126,7 +118,6 @@ class ProductController extends Controller
             });
         }
 
-        // Filter by lining
         if ($request->has('lining') && !empty($request->lining)) {
             $linings = is_array($request->lining) ? $request->lining : [$request->lining];
             $query->where(function ($q) use ($linings) {
@@ -136,19 +127,16 @@ class ProductController extends Controller
             });
         }
 
-        // Filter by brand
         if ($request->has('brand') && !empty($request->brand)) {
             $brands = is_array($request->brand) ? $request->brand : [$request->brand];
             $query->whereIn('brand', $brands);
         }
 
-        // Filter by collection
         if ($request->has('collection') && !empty($request->collection)) {
             $collections = is_array($request->collection) ? $request->collection : [$request->collection];
             $query->whereIn('collection', $collections);
         }
 
-        // Filter by stock availability
         if ($request->has('in_stock')) {
             if ($request->in_stock === 'true') {
                 $query->where('stock', '>', 0);
@@ -157,11 +145,22 @@ class ProductController extends Controller
             }
         }
 
-        // Sort
+        if ($request->has('width_min') && !empty($request->width_min)) {
+            $query->where('max_width', '>=', $request->width_min);
+        }
+        if ($request->has('width_max') && !empty($request->width_max)) {
+            $query->where('min_width', '<=', $request->width_max);
+        }
+        if ($request->has('height_min') && !empty($request->height_min)) {
+            $query->where('max_height', '>=', $request->height_min);
+        }
+        if ($request->has('height_max') && !empty($request->height_max)) {
+            $query->where('min_height', '<=', $request->height_max);
+        }
+
         $sortBy = $request->get('sort', 'created_at');
         $sortOrder = $request->get('order', 'desc');
 
-        // Handle special sorting cases
         switch ($sortBy) {
             case 'featured':
                 $query->orderBy('featured', 'desc')->orderBy('created_at', 'desc');
@@ -191,12 +190,10 @@ class ProductController extends Controller
 
         $products = $query->paginate(12);
 
-        // Get categories for filter
         $categories = Category::active()->ordered()->withCount(['products' => function ($query) {
             $query->active();
         }])->get();
 
-        // Get filter options for dynamic filters
         $filterOptions = $this->getFilterOptions();
 
         return Inertia::render('Products', [
@@ -217,20 +214,20 @@ class ProductController extends Controller
                 'brand',
                 'collection',
                 'in_stock',
+                'width_min',
+                'width_max',
+                'height_min',
+                'height_max',
                 'sort',
                 'order'
             ])
         ]);
     }
 
-    /**
-     * Display the specified product
-     */
     public function show($id)
     {
         $product = Product::with('category')->active()->findOrFail($id);
 
-        // Get related products from same category
         $relatedProducts = Product::with('category')
             ->active()
             ->byCategory($product->category_id)
@@ -238,7 +235,6 @@ class ProductController extends Controller
             ->limit(6)
             ->get();
 
-        // Format product data for frontend
         $formattedProduct = [
             'id' => $product->id,
             'name' => $product->name,
@@ -267,6 +263,17 @@ class ProductController extends Controller
             'hasDiscount' => $product->has_discount,
             'finalPrice' => (float) $product->final_price,
             'discountAmount' => (float) $product->discount_amount,
+            'pricesFrom' => (float) $product->pricesFrom,
+            'priceRange' => $product->priceRange,
+            'pricingMethod' => $product->pricing_method,
+            'basePrice' => (float) $product->base_price,
+            'pricePerSqm' => (float) ($product->price_per_sqm ?? 0),
+            'defaultWidth' => (float) ($product->default_width ?? 150),
+            'defaultHeight' => (float) ($product->default_height ?? 200),
+            'minWidth' => (float) ($product->min_width ?? 50),
+            'maxWidth' => (float) ($product->max_width ?? 500),
+            'minHeight' => (float) ($product->min_height ?? 50),
+            'maxHeight' => (float) ($product->max_height ?? 400),
         ];
 
         return Inertia::render('ProductDetail', [
@@ -275,14 +282,10 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Display product options page
-     */
     public function options($id)
     {
         $product = Product::with('category')->active()->findOrFail($id);
 
-        // Format product data for frontend
         $formattedProduct = [
             'id' => $product->id,
             'name' => $product->name,
@@ -292,6 +295,7 @@ class ProductController extends Controller
                 'id' => $product->category->id,
                 'name' => $product->category->name,
                 'slug' => $product->category->slug,
+                'customization_fields' => $product->category->customization_fields,
             ],
             'brand' => $product->brand ?: 'Antartica',
             'collection' => $product->collection ?: 'Paragon I',
@@ -302,17 +306,18 @@ class ProductController extends Controller
             'colorNames' => $product->color_names,
             'image' => $product->main_image,
             'images' => $product->product_images,
-            'measurementUnits' => $product->measurement_units,
-            'openingMethods' => $product->opening_methods,
-            'trackTypes' => $product->track_types,
-            'liningOptions' => $product->lining_options,
-            'defaultWidth' => (float) $product->default_width,
-            'defaultHeight' => (float) $product->default_height,
-            'fabricReduction' => (float) $product->fabric_reduction,
-            'coverageIncrease' => (float) $product->coverage_increase,
+            'defaultWidth' => (float) ($product->default_width ?? 150),
+            'defaultHeight' => (float) ($product->default_height ?? 200),
+            'fabricReduction' => (float) ($product->fabric_reduction ?? 0),
+            'coverageIncrease' => (float) ($product->coverage_increase ?? 0),
             'inStock' => $product->in_stock,
             'hasDiscount' => $product->has_discount,
             'finalPrice' => (float) $product->final_price,
+            'pricesFrom' => (float) $product->pricesFrom,
+            'priceRange' => $product->priceRange,
+            'pricingMethod' => $product->pricing_method,
+            'basePrice' => (float) ($product->base_price ?? $product->price),
+            'pricePerSqm' => (float) ($product->price_per_sqm ?? 0),
         ];
 
         return Inertia::render('ProductOptions', [
@@ -320,9 +325,6 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Get all products for API
-     */
     public function getAll(): JsonResponse
     {
         $products = Product::with('category')
@@ -334,9 +336,6 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
-    /**
-     * Get products by tab
-     */
     public function getByTab($tab): JsonResponse
     {
         $query = Product::with('category')->active();
@@ -359,9 +358,6 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
-    /**
-     * Get products by category
-     */
     public function getByCategory($categoryId): JsonResponse
     {
         $products = Product::with('category')
@@ -372,9 +368,6 @@ class ProductController extends Controller
         return ResponseFacade::json($products);
     }
 
-    /**
-     * Get featured products
-     */
     public function getFeatured(): JsonResponse
     {
         $products = Product::with('category')
@@ -386,9 +379,6 @@ class ProductController extends Controller
         return ResponseFacade::json($products);
     }
 
-    /**
-     * Get new products
-     */
     public function getNew(): JsonResponse
     {
         $products = Product::with('category')
@@ -400,9 +390,6 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
-    /**
-     * Get offer products
-     */
     public function getOffers(): JsonResponse
     {
         $products = Product::with('category')
@@ -414,9 +401,6 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
-    /**
-     * Get bestseller products
-     */
     public function getBestsellers(): JsonResponse
     {
         $products = Product::with('category')
@@ -428,12 +412,8 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
-    /**
-     * Get filter options for dynamic filters
-     */
     private function getFilterOptions()
     {
-        // Get unique colors from products
         $colors = Product::active()
             ->whereNotNull('colors')
             ->pluck('colors')
@@ -442,7 +422,6 @@ class ProductController extends Controller
             ->values()
             ->toArray();
 
-        // Get unique brands
         $brands = Product::active()
             ->whereNotNull('brand')
             ->distinct()
@@ -451,7 +430,6 @@ class ProductController extends Controller
             ->values()
             ->toArray();
 
-        // Get unique collections
         $collections = Product::active()
             ->whereNotNull('collection')
             ->distinct()
@@ -460,7 +438,6 @@ class ProductController extends Controller
             ->values()
             ->toArray();
 
-        // Get price range
         $priceRange = Product::active()
             ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
             ->first();
@@ -498,9 +475,28 @@ class ProductController extends Controller
         ];
     }
 
-    /**
-     * Get filter options for API
-     */
+    public function calculatePrice(Request $request, $id): JsonResponse
+    {
+        $product = Product::active()->findOrFail($id);
+
+        $width = $request->get('width', $product->default_width);
+        $height = $request->get('height', $product->default_height);
+        $options = $request->get('options', []);
+
+        $calculatedPrice = $product->calculateDynamicPrice($width, $height, $options);
+
+        return response()->json([
+            'price' => $calculatedPrice,
+            'formatted_price' => number_format($calculatedPrice, 2) . ' ر.س',
+            'area' => ($width / 100) * ($height / 100),
+            'pricing_method' => $product->pricing_method,
+            'base_price' => $product->base_price,
+            'width' => $width,
+            'height' => $height,
+            'options' => $options
+        ]);
+    }
+
     public function getFilterOptionsApi(): JsonResponse
     {
         return response()->json($this->getFilterOptions());

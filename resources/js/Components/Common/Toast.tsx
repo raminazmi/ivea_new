@@ -15,7 +15,7 @@ const Toast: React.FC<ToastProps> = ({ message, type, isVisible, onClose }) => {
       setIsShowing(true);
       const timer = setTimeout(() => {
         setIsShowing(false);
-        setTimeout(onClose, 300); // Wait for fade out animation
+        setTimeout(onClose, 300);
       }, 5000);
 
       return () => clearTimeout(timer);
@@ -28,9 +28,8 @@ const Toast: React.FC<ToastProps> = ({ message, type, isVisible, onClose }) => {
   const icon = type === 'success' ? '✓' : '✕';
 
   return (
-    <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ${
-      isShowing ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
-    }`}>
+    <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ${isShowing ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
+      }`}>
       <div className={`${bgColor} text-white px-4 sm:px-6 py-3 sm:py-4 rounded-lg shadow-lg flex items-center space-x-2 sm:space-x-3 min-w-64 sm:min-w-80 text-right`}>
         <span className="text-lg sm:text-xl font-bold">{icon}</span>
         <span className="flex-1 text-sm sm:text-base">{message}</span>

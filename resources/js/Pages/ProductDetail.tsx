@@ -11,6 +11,8 @@ import ImageGallery from '@/Components/Common/ImageGallery';
 import SimilarProducts from '@/Components/Common/SimilarProducts';
 import StockStatus from '@/Components/Common/StockStatus';
 import DiscountBadge from '@/Components/Common/DiscountBadge';
+import DimensionPriceCalculator from '@/Components/Products/DimensionPriceCalculator';
+import QuickOrderModal from '@/Components/Common/QuickOrderModal';
 import AppLayout from '@/Components/LandingPage/Layout/AppLayout';
 import ContactUs from '@/Components/LandingPage/ContactUs';
 
@@ -42,6 +44,23 @@ interface ProductDetailProps {
         rating: number;
         weight?: number;
         dimensions?: any;
+        pricesFrom?: number;
+        priceRange?: {
+            min: number;
+            max: number;
+        };
+        pricingMethod?: 'fixed' | 'area_based' | 'size_based' | 'custom';
+        basePrice?: number;
+        pricePer_sqm?: number;
+        minPrice?: number;
+        maxPrice?: number;
+        priceModifiers?: any;
+        defaultWidth?: number;
+        defaultHeight?: number;
+        minWidth?: number;
+        maxWidth?: number;
+        minHeight?: number;
+        maxHeight?: number;
     };
     relatedProducts: any[];
 }
@@ -49,15 +68,38 @@ interface ProductDetailProps {
 const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts }) => {
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedColor, setSelectedColor] = useState(0);
+    const [showQuickOrderModal, setShowQuickOrderModal] = useState(false);
+    const [currentPrice, setCurrentPrice] = useState(product.finalPrice);
+    const [selectedDimensions, setSelectedDimensions] = useState({
+        width: product.defaultWidth || 150,
+        height: product.defaultHeight || 200
+    });
     const dispatch = useDispatch();
 
     const handleAddToCart = () => {
         dispatch(addToCart({
             id: product.id,
             name: product.name,
-            price: product.finalPrice,
+            price: currentPrice,
             image: product.image,
+            color: product.colors?.[selectedColor],
+            colorName: product.colorNames?.[selectedColor],
+            width: selectedDimensions.width,
+            height: selectedDimensions.height,
+            measurementUnit: 'cm'
         }));
+    };
+
+    const handleQuickOrder = () => {
+        setShowQuickOrderModal(true);
+    };
+
+    const handlePriceChange = (price: number) => {
+        setCurrentPrice(price);
+    };
+
+    const handleDimensionsChange = (width: number, height: number) => {
+        setSelectedDimensions({ width, height });
     };
 
     return (
@@ -127,8 +169,26 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts 
                                 <FeatureList features={product.features} />
                             )}
 
+                            {product.pricingMethod && product.pricingMethod !== 'fixed' && (
+                                <DimensionPriceCalculator
+                                    productId={product.id}
+                                    defaultWidth={product.defaultWidth || 150}
+                                    defaultHeight={product.defaultHeight || 200}
+                                    minWidth={product.minWidth || 50}
+                                    maxWidth={product.maxWidth || 500}
+                                    minHeight={product.minHeight || 50}
+                                    maxHeight={product.maxHeight || 400}
+                                    pricingMethod={product.pricingMethod}
+                                    basePrice={product.basePrice || product.price}
+                                    pricePerSqm={product.pricePer_sqm || 50}
+                                    onPriceChange={handlePriceChange}
+                                    onDimensionsChange={handleDimensionsChange}
+                                />
+                            )}
+
                             <ActionButtons
                                 onAddToCart={handleAddToCart}
+                                onQuickOrder={handleQuickOrder}
                                 inStock={product.inStock}
                             />
                         </div>
@@ -142,6 +202,24 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts 
                 </div>
             </div>
             <ContactUs />
+
+            <QuickOrderModal
+                isOpen={showQuickOrderModal}
+                onClose={() => setShowQuickOrderModal(false)}
+                product={{
+                    id: product.id,
+                    name: product.name,
+                    price: currentPrice,
+                    image: product.image
+                }}
+                selectedOptions={{
+                    color: product.colors?.[selectedColor],
+                    colorName: product.colorNames?.[selectedColor],
+                    width: selectedDimensions.width,
+                    height: selectedDimensions.height,
+                    measurementUnit: 'سم'
+                }}
+            />
         </AppLayout>
     );
 };

@@ -41,8 +41,16 @@ class Product extends Model
         'max_width',
         'min_height',
         'max_height',
+        'default_width',
+        'default_height',
         'fabric_reduction',
-        'coverage_increase'
+        'coverage_increase',
+        'base_price',
+        'price_per_sqm',
+        'min_price',
+        'max_price',
+        'pricing_method',
+        'price_modifiers'
     ];
 
     protected $casts = [
@@ -69,17 +77,22 @@ class Product extends Model
         'max_width' => 'decimal:3',
         'min_height' => 'decimal:3',
         'max_height' => 'decimal:3',
+        'default_width' => 'decimal:2',
+        'default_height' => 'decimal:2',
         'fabric_reduction' => 'decimal:2',
-        'coverage_increase' => 'decimal:2'
+        'coverage_increase' => 'decimal:2',
+        'base_price' => 'decimal:2',
+        'price_per_sqm' => 'decimal:2',
+        'min_price' => 'decimal:2',
+        'max_price' => 'decimal:2',
+        'price_modifiers' => 'array'
     ];
 
-    // Relationships
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    // Scopes
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
@@ -125,16 +138,9 @@ class Product extends Model
             ->orderBy('sales_count', 'desc');
     }
 
-    // Accessors
-    /**
-     * Get the final price after discount
-     * @return float
-     */
     public function getFinalPriceAttribute()
     {
-        /** @var float $price */
         $price = $this->attributes['price'] ?? 0;
-        /** @var int|null $discount */
         $discount = $this->attributes['discount'] ?? null;
 
         if ($discount) {
@@ -145,9 +151,7 @@ class Product extends Model
 
     public function getDiscountAmountAttribute()
     {
-        /** @var float $price */
         $price = $this->attributes['price'] ?? 0;
-        /** @var int|null $discount */
         $discount = $this->attributes['discount'] ?? null;
 
         if ($discount) {
@@ -158,23 +162,19 @@ class Product extends Model
 
     public function getHasDiscountAttribute()
     {
-        /** @var int|null $discount */
         $discount = $this->attributes['discount'] ?? null;
         return !is_null($discount) && $discount > 0;
     }
 
     public function getInStockAttribute()
     {
-        /** @var int $stock */
         $stock = $this->attributes['stock'] ?? 0;
         return $stock > 0;
     }
 
     public function getMainImageAttribute()
     {
-        /** @var string|null $image */
         $image = $this->attributes['image'] ?? null;
-        /** @var array|null $images */
         $images = $this->attributes['images'] ?? null;
 
         return $image ?: ($images[0] ?? '/images/curtain.png');
@@ -182,14 +182,10 @@ class Product extends Model
 
     public function getProductImagesAttribute()
     {
-        /** @var array|null $images */
         $images = $this->attributes['images'] ?? null;
-        /** @var string|null $image */
         $image = $this->attributes['image'] ?? null;
 
-        // If images is a JSON string, decode it
         if ($images && is_string($images)) {
-            // Clean up the JSON string by removing extra escapes
             $cleanImages = str_replace('\\/', '/', $images);
             $decodedImages = json_decode($cleanImages, true);
             if (is_array($decodedImages)) {
@@ -197,17 +193,14 @@ class Product extends Model
             }
         }
 
-        // If images is already an array
         if ($images && is_array($images)) {
             return $images;
         }
 
-        // If we have a main image, use it as the first image
         if ($image) {
             return [$image];
         }
 
-        // Fallback images
         return [
             '/images/curtain.png',
             '/images/curtain1.png',
@@ -218,14 +211,12 @@ class Product extends Model
 
     public function getProductColorsAttribute()
     {
-        /** @var array|null $colors */
         $colors = $this->attributes['colors'] ?? null;
 
         if ($colors && is_array($colors)) {
             return $colors;
         }
 
-        // Default colors
         return ['#FFA500', '#87CEEB', '#DDA0DD', '#9370DB'];
     }
 
@@ -236,14 +227,12 @@ class Product extends Model
 
     public function getFeaturesAttribute()
     {
-        /** @var array|null $specifications */
         $specifications = $this->attributes['specifications'] ?? null;
 
         if ($specifications && isset($specifications['features'])) {
             return $specifications['features'];
         }
 
-        // Default features
         return [
             'تمنع ما يقارب 90 - 96% من الأشعة فوق البنفسجية الضارة ، ظاهرة الوهج.',
             'شديدة التحمل و سهلة التنظيف',
@@ -253,7 +242,6 @@ class Product extends Model
 
     public function getMeasurementUnitsAttribute()
     {
-        /** @var array|null $measurement_units */
         $measurement_units = $this->attributes['measurement_units'] ?? null;
 
         if ($measurement_units && is_array($measurement_units)) {
@@ -269,7 +257,6 @@ class Product extends Model
 
     public function getOpeningMethodsAttribute()
     {
-        /** @var array|null $opening_methods */
         $opening_methods = $this->attributes['opening_methods'] ?? null;
 
         if ($opening_methods && is_array($opening_methods)) {
@@ -284,7 +271,6 @@ class Product extends Model
 
     public function getTrackTypesAttribute()
     {
-        /** @var array|null $track_types */
         $track_types = $this->attributes['track_types'] ?? null;
 
         if ($track_types && is_array($track_types)) {
@@ -299,7 +285,6 @@ class Product extends Model
 
     public function getLiningOptionsAttribute()
     {
-        /** @var array|null $lining_options */
         $lining_options = $this->attributes['lining_options'] ?? null;
 
         if ($lining_options && is_array($lining_options)) {
@@ -314,46 +299,167 @@ class Product extends Model
 
     public function getDefaultWidthAttribute()
     {
-        /** @var float|null $min_width */
         $min_width = $this->attributes['min_width'] ?? null;
         return $min_width ?: 35.000;
     }
 
     public function getDefaultHeightAttribute()
     {
-        /** @var float|null $min_height */
         $min_height = $this->attributes['min_height'] ?? null;
         return $min_height ?: 35.000;
     }
 
     public function getFabricReductionAttribute()
     {
-        /** @var float|null $fabric_reduction */
         $fabric_reduction = $this->attributes['fabric_reduction'] ?? null;
         return $fabric_reduction ?: 4.00;
     }
 
     public function getCoverageIncreaseAttribute()
     {
-        /** @var float|null $coverage_increase */
         $coverage_increase = $this->attributes['coverage_increase'] ?? null;
         return $coverage_increase ?: 5.00;
     }
 
-    // Mutators
-    /**
-     * Set the name attribute
-     * @param string $value
-     */
+    public function getPricesFromAttribute()
+    {
+        $min_price = $this->attributes['min_price'] ?? null;
+
+        if ($min_price) {
+            return $min_price;
+        }
+
+        switch ($this->pricing_method) {
+            case 'area_based':
+                $minArea = ($this->default_width / 100) * ($this->default_height / 100); // Convert cm to m²
+                return $this->base_price + ($minArea * ($this->price_per_sqm ?? 0));
+
+            case 'size_based':
+                return $this->base_price;
+
+            case 'custom':
+                return $this->calculateCustomPrice();
+
+            default:
+                return $this->price;
+        }
+    }
+
+    public function calculateDynamicPrice($width = null, $height = null, $options = [])
+    {
+        $width = $width ?: $this->default_width;
+        $height = $height ?: $this->default_height;
+
+        $basePrice = $this->base_price ?: $this->price;
+
+        switch ($this->pricing_method) {
+            case 'area_based':
+                $area = ($width / 100) * ($height / 100);
+                $price = $basePrice + ($area * ($this->price_per_sqm ?? 0));
+                break;
+
+            case 'size_based':
+                $price = $this->calculateSizeBasedPrice($width, $height);
+                break;
+
+            case 'custom':
+                $price = $this->calculateCustomPrice($width, $height, $options);
+                break;
+
+            default:
+                $price = $basePrice;
+        }
+
+        $price = $this->applyPriceModifiers($price, $options);
+
+        if ($this->has_discount) {
+            $price = $price - ($price * $this->discount / 100);
+        }
+
+        return round($price, 2);
+    }
+
+    private function calculateSizeBasedPrice($width, $height)
+    {
+        $basePrice = $this->base_price ?: $this->price;
+
+        $area = $width * $height;
+
+        if ($area <= 5000) {
+            return $basePrice;
+        } elseif ($area <= 15000) {
+            return $basePrice * 1.3;
+        } elseif ($area <= 30000) {
+            return $basePrice * 1.6;
+        } else {
+            return $basePrice * 2.0;
+        }
+    }
+
+    private function calculateCustomPrice($width = null, $height = null, $options = [])
+    {
+        $basePrice = $this->base_price ?: $this->price;
+        if ($width && $height) {
+            $area = ($width / 100) * ($height / 100);
+            $basePrice = $basePrice + ($area * ($this->price_per_sqm ?? 100));
+        }
+
+        return $basePrice;
+    }
+
+    private function applyPriceModifiers($price, $options = [])
+    {
+        $modifiers = $this->price_modifiers ?? [];
+
+        foreach ($options as $optionKey => $optionValue) {
+            if (isset($modifiers[$optionKey][$optionValue])) {
+                $modifier = $modifiers[$optionKey][$optionValue];
+
+                if (isset($modifier['type']) && isset($modifier['value'])) {
+                    switch ($modifier['type']) {
+                        case 'percentage':
+                            $price = $price * (1 + $modifier['value'] / 100);
+                            break;
+                        case 'fixed':
+                            $price = $price + $modifier['value'];
+                            break;
+                        case 'multiply':
+                            $price = $price * $modifier['value'];
+                            break;
+                    }
+                }
+            }
+        }
+
+        return $price;
+    }
+
+    public function getPriceRangeAttribute()
+    {
+        $minPrice = $this->prices_from;
+
+        $maxPrice = $this->max_price;
+        if (!$maxPrice) {
+            $maxWidth = $this->max_width ?: ($this->default_width * 3);
+            $maxHeight = $this->max_height ?: ($this->default_height * 3);
+            $maxPrice = $this->calculateDynamicPrice($maxWidth, $maxHeight);
+        }
+
+        return [
+            'min' => $minPrice,
+            'max' => $maxPrice,
+            'currency' => 'ر.س',
+            'display' => $minPrice == $maxPrice
+                ? number_format($minPrice, 2) . ' ر.س'
+                : 'تبدأ من ' . number_format($minPrice, 2) . ' ر.س'
+        ];
+    }
+
     public function setNameAttribute($value)
     {
         $this->attributes['name'] = ucfirst($value);
     }
 
-    /**
-     * Set the brand attribute
-     * @param string $value
-     */
     public function setBrandAttribute($value)
     {
         $this->attributes['brand'] = ucfirst($value);

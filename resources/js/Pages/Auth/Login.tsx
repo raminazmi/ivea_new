@@ -31,13 +31,6 @@ const Login: React.FC = () => {
                             <ApplicationLogo className="h-12 w-auto text-primary-yellow" />
                         </Link>
                     </div>
-
-                    <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
-                        مرحباً بك مرة أخرى
-                    </h2>
-                    <p className="text-gray-600">
-                        سجل دخولك للوصول إلى حسابك
-                    </p>
                 </div>
 
                 <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
@@ -150,13 +143,6 @@ const Login: React.FC = () => {
                             </button>
                         </div>
                     </form>
-                </div>
-
-                {/* Footer */}
-                <div className="text-center">
-                    <p className="text-xs text-gray-500">
-                        © 2024 إيفيا. جميع الحقوق محفوظة
-                    </p>
                 </div>
             </div>
         </div>

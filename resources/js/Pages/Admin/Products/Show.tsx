@@ -22,6 +22,17 @@ interface Product {
         id: number;
         name: string;
     };
+    base_price?: number;
+    price_per_sqm?: number;
+    pricing_method?: string;
+    min_price?: number;
+    max_price?: number;
+    default_width?: number;
+    default_height?: number;
+    min_width?: number;
+    max_width?: number;
+    min_height?: number;
+    max_height?: number;
 }
 
 interface ShowProps {
@@ -54,7 +65,6 @@ const Show: React.FC<ShowProps> = ({ product }) => {
 
                 <div className="bg-white shadow rounded-lg overflow-hidden">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6">
-                        {/* Product Images */}
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold text-gray-900">صور المنتج</h3>
                             {product.images && product.images.length > 0 ? (
@@ -88,7 +98,7 @@ const Show: React.FC<ShowProps> = ({ product }) => {
                         <div className="space-y-6">
                             <div>
                                 <h3 className="text-lg font-semibold text-gray-900 mb-4">تفاصيل المنتج</h3>
-                                
+
                                 <div className="space-y-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">اسم المنتج</label>
@@ -141,11 +151,10 @@ const Show: React.FC<ShowProps> = ({ product }) => {
 
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">الحالة</label>
-                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                            product.status === 'active' 
-                                                ? 'bg-green-100 text-green-800' 
-                                                : 'bg-red-100 text-red-800'
-                                        }`}>
+                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${product.status === 'active'
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-red-100 text-red-800'
+                                            }`}>
                                             {product.status === 'active' ? 'نشط' : 'غير نشط'}
                                         </span>
                                     </div>
@@ -176,6 +185,107 @@ const Show: React.FC<ShowProps> = ({ product }) => {
                             </div>
                         </div>
                     </div>
+
+                    <div className="border-t border-gray-200 p-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">إعدادات التسعير الديناميكي</h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h4 className="font-medium text-gray-700 mb-2">السعر الأساسي</h4>
+                                <p className="text-2xl font-bold text-green-600">
+                                    {product.base_price ? `${product.base_price} ريال` : 'غير محدد'}
+                                </p>
+                                <p className="text-sm text-gray-500 mt-1">للأبعاد الافتراضية</p>
+                            </div>
+
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h4 className="font-medium text-gray-700 mb-2">السعر لكل متر مربع</h4>
+                                <p className="text-lg font-bold text-blue-600">
+                                    {product.price_per_sqm ? `${product.price_per_sqm} ريال/م²` : 'غير محدد'}
+                                </p>
+                                <p className="text-sm text-gray-500 mt-1">سعر إضافي</p>
+                            </div>
+
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h4 className="font-medium text-gray-700 mb-2">طريقة التسعير</h4>
+                                <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${product.pricing_method === 'area_based' ? 'bg-green-100 text-green-800' :
+                                    product.pricing_method === 'fixed' ? 'bg-blue-100 text-blue-800' :
+                                        'bg-gray-100 text-gray-800'
+                                    }`}>
+                                    {product.pricing_method === 'area_based' ? 'حسب المساحة' :
+                                        product.pricing_method === 'fixed' ? 'ثابت' :
+                                            product.pricing_method === 'size_based' ? 'حسب الحجم' :
+                                                product.pricing_method === 'custom' ? 'مخصص' : 'غير محدد'}
+                                </span>
+                            </div>
+
+                            {product.min_price && (
+                                <div className="bg-gray-50 p-4 rounded-lg">
+                                    <h4 className="font-medium text-gray-700 mb-2">الحد الأدنى للسعر</h4>
+                                    <p className="text-lg font-bold text-red-600">{product.min_price} ريال</p>
+                                </div>
+                            )}
+
+                            {product.max_price && (
+                                <div className="bg-gray-50 p-4 rounded-lg">
+                                    <h4 className="font-medium text-gray-700 mb-2">الحد الأقصى للسعر</h4>
+                                    <p className="text-lg font-bold text-red-600">{product.max_price} ريال</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="border-t border-gray-200 p-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">إعدادات الأبعاد</h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-4">
+                                <h4 className="text-md font-medium text-gray-700">الأبعاد الافتراضية</h4>
+                                <div className="bg-blue-50 p-4 rounded-lg">
+                                    <div className="grid grid-cols-2 gap-4 text-center">
+                                        <div>
+                                            <p className="text-sm text-gray-600">العرض</p>
+                                            <p className="text-2xl font-bold text-blue-600">
+                                                {product.default_width || 100} سم
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-600">الارتفاع</p>
+                                            <p className="text-2xl font-bold text-blue-600">
+                                                {product.default_height || 100} سم
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="text-center mt-3 pt-3 border-t border-blue-200">
+                                        <p className="text-sm text-blue-700">
+                                            المساحة الأساسية: <span className="font-bold">
+                                                {(((product.default_width || 100) * (product.default_height || 100)) / 10000).toFixed(2)} م²
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h4 className="text-md font-medium text-gray-700">الحدود المسموحة</h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-gray-50 p-3 rounded-lg">
+                                        <p className="text-sm text-gray-600">العرض</p>
+                                        <p className="text-sm font-medium text-gray-800">
+                                            {product.min_width || 50} سم - {product.max_width || 500} سم
+                                        </p>
+                                    </div>
+                                    <div className="bg-gray-50 p-3 rounded-lg">
+                                        <p className="text-sm text-gray-600">الارتفاع</p>
+                                        <p className="text-sm font-medium text-gray-800">
+                                            {product.min_height || 50} سم - {product.max_height || 400} سم
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </AdminLayout>

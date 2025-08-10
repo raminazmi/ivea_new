@@ -34,15 +34,14 @@ const ContactForm = () => {
   const hideToast = () => {
     setToast(prev => ({ ...prev, isVisible: false }));
   };
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    
-    // Clear error when user starts typing
+
     if (errors[name]) {
       setErrors((prev: Record<string, string>) => ({
         ...prev,
@@ -65,7 +64,6 @@ const ContactForm = () => {
     setIsSubmitting(true);
     setErrors({});
 
-    // Create FormData for file upload
     const submitData = new FormData();
     submitData.append('first_name', formData.first_name);
     submitData.append('last_name', formData.last_name);
@@ -76,12 +74,10 @@ const ContactForm = () => {
     submitData.append('category', formData.category);
     submitData.append('message', formData.message);
 
-    // Append files
     formData.attachments.forEach((file) => {
       submitData.append('attachments[]', file);
     });
 
-    // Add CSRF token
     const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     if (token) {
       submitData.append('_token', token);
@@ -89,7 +85,6 @@ const ContactForm = () => {
 
     router.post('/contact', submitData, {
       onSuccess: () => {
-        // Reset form on success
         setFormData({
           first_name: '',
           last_name: '',
@@ -139,9 +134,8 @@ const ContactForm = () => {
                   name="first_name"
                   value={formData.first_name}
                   onChange={handleChange}
-                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${
-                    errors.first_name ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.first_name ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   required
                 />
                 {errors.first_name && (
@@ -159,9 +153,8 @@ const ContactForm = () => {
                   name="last_name"
                   value={formData.last_name}
                   onChange={handleChange}
-                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${
-                    errors.last_name ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.last_name ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   required
                 />
                 {errors.last_name && (
@@ -181,9 +174,8 @@ const ContactForm = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${
-                    errors.email ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.email ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   required
                 />
                 {errors.email && (
@@ -197,33 +189,32 @@ const ContactForm = () => {
                 </label>
                 <div className="flex">
                   <select
-                      name="phone_country_code"
-                      value={formData.phone_country_code}
-                      onChange={handleChange}
-                      className="bg-primary-gray p-2.5 md:p-3 border rounded-l-none rounded-r-md focus:outline-none text-sm md:text-base"
+                    name="phone_country_code"
+                    value={formData.phone_country_code}
+                    onChange={handleChange}
+                    className="bg-primary-gray p-2.5 md:p-3 border rounded-l-none rounded-r-md focus:outline-none text-sm md:text-base"
                     dir="ltr"
-                      title="اختر رمز الدولة"
-                    >
-                      <option value="+966">+966</option>
-                      <option value="+970">+970</option>
-                      <option value="+971">+971</option>
-                      <option value="+20">+20</option>
+                    title="اختر رمز الدولة"
+                  >
+                    <option value="+966">+966</option>
+                    <option value="+970">+970</option>
+                    <option value="+971">+971</option>
+                    <option value="+20">+20</option>
                   </select>
                   <input
                     type="tel"
-                      id="phone_number"
-                      name="phone_number"
-                      value={formData.phone_number}
+                    id="phone_number"
+                    name="phone_number"
+                    value={formData.phone_number}
                     onChange={handleChange}
-                      className={`bg-primary-gray flex-1 p-2.5 md:p-3 border border-r-0 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${
-                        errors.phone_number ? 'border-red-500' : 'border-gray-300'
+                    className={`bg-primary-gray flex-1 p-2.5 md:p-3 border border-r-0 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.phone_number ? 'border-red-500' : 'border-gray-300'
                       }`}
                     required
                   />
-                  </div>
-                  {errors.phone_number && (
-                    <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.phone_number}</p>
-                  )}
+                </div>
+                {errors.phone_number && (
+                  <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.phone_number}</p>
+                )}
               </div>
             </div>
 
@@ -238,14 +229,13 @@ const ContactForm = () => {
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                    className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${
-                      errors.subject ? 'border-red-500' : 'border-gray-300'
+                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.subject ? 'border-red-500' : 'border-gray-300'
                     }`}
                   required
                 />
-                  {errors.subject && (
-                    <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.subject}</p>
-                  )}
+                {errors.subject && (
+                  <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.subject}</p>
+                )}
               </div>
 
               <div>
@@ -257,20 +247,19 @@ const ContactForm = () => {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                    className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${
-                      errors.category ? 'border-red-500' : 'border-gray-300'
+                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.category ? 'border-red-500' : 'border-gray-300'
                     }`}
                   required
                 >
                   <option value="">اختر الفئة</option>
-                    <option value="اقتراحات">اقتراحات</option>
-                    <option value="استفسار">استفسار</option>
-                    <option value="دعم فني">دعم فني</option>
+                  <option value="اقتراحات">اقتراحات</option>
+                  <option value="استفسار">استفسار</option>
+                  <option value="دعم فني">دعم فني</option>
                 </select>
-                  {errors.category && (
-                    <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.category}</p>
-                  )}
-                </div>
+                {errors.category && (
+                  <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.category}</p>
+                )}
+              </div>
             </div>
 
             <div>
@@ -283,14 +272,13 @@ const ContactForm = () => {
                 value={formData.message}
                 onChange={handleChange}
                 rows={4}
-                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${
-                    errors.message ? 'border-red-500' : 'border-gray-300'
+                className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.message ? 'border-red-500' : 'border-gray-300'
                   }`}
                 required
               />
-                {errors.message && (
-                  <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.message}</p>
-                )}
+              {errors.message && (
+                <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.message}</p>
+              )}
             </div>
 
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 text-center">

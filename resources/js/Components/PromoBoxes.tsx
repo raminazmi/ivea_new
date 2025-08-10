@@ -1,4 +1,3 @@
-// src/Components/PromoBoxes.tsx
 import React from 'react';
 
 const PromoBoxes: React.FC = () => {

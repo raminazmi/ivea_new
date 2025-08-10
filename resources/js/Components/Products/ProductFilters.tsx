@@ -57,7 +57,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
         { id: 'bestsellers', label: 'الأكثر مبيعاً' },
     ];
 
-    // Color names mapping
     const colorNames: { [key: string]: string } = {
         '#FFFFFF': 'أبيض',
         '#000000': 'أسود',
@@ -76,7 +75,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
         '#FF69B4': 'وردي غامق'
     };
 
-    // Size names mapping
     const sizeNames: { [key: string]: string } = {
         'small': 'صغير',
         'medium': 'متوسط',
@@ -156,7 +154,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
             inStock !== 'all';
     };
 
-    // Auto-apply filters when selections change
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             handleFilterChange();
@@ -184,7 +181,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                 )}
             </div>
 
-            {/* Search */}
             <div className="mb-4 sm:mb-6">
                 <div className="relative">
                     <HiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
@@ -199,7 +195,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                 </div>
             </div>
 
-            {/* Categories */}
             <div className="mb-6">
                 <button
                     onClick={() => toggleSection('category')}
@@ -236,7 +231,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                 )}
             </div>
 
-            {/* Price Range */}
             <div className="mb-6">
                 <button
                     onClick={() => toggleSection('price')}
@@ -246,37 +240,52 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                     {expandedSections.price ? <HiChevronUp className="w-5 h-5" /> : <HiChevronDown className="w-5 h-5" />}
                 </button>
                 {expandedSections.price && (
-                    <div className="space-y-4">
-                        <div className="price-range-container">
-                            <div className="flex justify-between text-sm text-gray-600 mb-2">
-                                <span>السعر: {priceRange.min} - {priceRange.max} ريال</span>
-                            </div>
-                            <div className="relative">
+                    <div className="space-y-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-3">
+                                الحد الأدنى: {priceRange.min} ريال
+                            </label>
+                            <div className="space-y-2">
                                 <input
-                                    title="نطاق الحد الأدنى"
                                     type="range"
                                     min={filterOptions.priceRange?.min || 0}
                                     max={filterOptions.priceRange?.max || 1000}
+                                    step="10"
                                     value={priceRange.min}
                                     onChange={(e) => setPriceRange(prev => ({ ...prev, min: Number(e.target.value) }))}
-                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-blue"
                                 />
+                                <div className="flex justify-between text-xs text-gray-500">
+                                    <span>{filterOptions.priceRange?.min || 0} ريال</span>
+                                    <span>{filterOptions.priceRange?.max || 1000} ريال</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-3">
+                                الحد الأقصى: {priceRange.max} ريال
+                            </label>
+                            <div className="space-y-2">
                                 <input
-                                    title="نطاق الحد الأقصى"
                                     type="range"
                                     min={filterOptions.priceRange?.min || 0}
                                     max={filterOptions.priceRange?.max || 1000}
+                                    step="10"
                                     value={priceRange.max}
                                     onChange={(e) => setPriceRange(prev => ({ ...prev, max: Number(e.target.value) }))}
-                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider absolute top-0"
+                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-blue"
                                 />
+                                <div className="flex justify-between text-xs text-gray-500">
+                                    <span>{filterOptions.priceRange?.min || 0} ريال</span>
+                                    <span>{filterOptions.priceRange?.max || 1000} ريال</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* Color Filter */}
             <div className="mb-6">
                 <button
                     onClick={() => toggleSection('color')}
@@ -314,7 +323,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                 )}
             </div>
 
-            {/* Size Filter */}
             <div className="mb-6">
                 <button
                     onClick={() => toggleSection('size')}
@@ -346,7 +354,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                 )}
             </div>
 
-            {/* Opening Method Filter */}
             <div className="mb-6">
                 <button
                     onClick={() => toggleSection('openingMethod')}
@@ -378,7 +385,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                 )}
             </div>
 
-            {/* Rail Type Filter */}
             <div className="mb-6">
                 <button
                     onClick={() => toggleSection('railType')}
@@ -410,7 +416,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                 )}
             </div>
 
-            {/* Lining Filter */}
             <div className="mb-6">
                 <button
                     onClick={() => toggleSection('lining')}
@@ -442,7 +447,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                 )}
             </div>
 
-            {/* Brand Filter */}
             <div className="mb-6">
                 <button
                     onClick={() => toggleSection('brand')}
@@ -474,7 +478,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                 )}
             </div>
 
-            {/* Collection Filter */}
             <div className="mb-6">
                 <button
                     onClick={() => toggleSection('collection')}
@@ -506,7 +509,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                 )}
             </div>
 
-            {/* Stock Availability */}
             <div className="mb-6">
                 <h4 className="font-bold text-gray-900 mb-3">التوفر</h4>
                 <div className="space-y-2">

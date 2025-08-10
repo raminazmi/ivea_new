@@ -33,7 +33,6 @@ class ArticleController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        \Log::info('STORE REQUEST DATA:', $request->all());
         try {
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
@@ -53,9 +52,7 @@ class ArticleController extends Controller
                 'author_image' => 'nullable|file|image|max:2048',
                 'date' => 'nullable|date',
             ]);
-            \Log::info('VALIDATED DATA:', $validated);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('VALIDATION ERROR:', $e->errors());
             throw $e;
         }
 
@@ -92,9 +89,7 @@ class ArticleController extends Controller
             'sort_order' => $sort_order,
         ]);
         if (!$article) {
-            \Log::error('FAILED TO CREATE ARTICLE');
         } else {
-            \Log::info('ARTICLE CREATED:', $article->toArray());
         }
         return redirect()->route('admin.articles.index')
             ->with('success', 'تم إنشاء المقال بنجاح');
@@ -120,30 +115,6 @@ class ArticleController extends Controller
 
     public function update(Request $request, $id): RedirectResponse
     {
-        // Log raw request data for debugging
-        \Log::info('UPDATE RAW REQUEST DATA:', [
-            'all' => $request->all(),
-            'files' => $request->files->all(),
-            'headers' => $request->headers->all()
-        ]);
-
-        \Log::info('UPDATE REQUEST DATA:', $request->all());
-        \Log::info('title:', [$request->input('title')]);
-        \Log::info('slug:', [$request->input('slug')]);
-        \Log::info('content:', [$request->input('content')]);
-        \Log::info('category_id:', [$request->input('category_id')]);
-        \Log::info('date:', [$request->input('date')]);
-        \Log::info('read_time:', [$request->input('read_time')]);
-        \Log::info('is_published:', [$request->input('is_published')]);
-        \Log::info('featured:', [$request->input('featured')]);
-        \Log::info('sort_order:', [$request->input('sort_order')]);
-        \Log::info('author:', [$request->input('author')]);
-        \Log::info('author_bio:', [$request->input('author_bio')]);
-        \Log::info('meta_description:', [$request->input('meta_description')]);
-        \Log::info('meta_keywords:', [$request->input('meta_keywords')]);
-        \Log::info('image:', [$request->file('image')]);
-        \Log::info('author_image:', [$request->file('author_image')]);
-
         $article = Article::findOrFail($id);
         try {
             $validated = $request->validate([
@@ -164,9 +135,7 @@ class ArticleController extends Controller
                 'author_image' => 'nullable|file|image|max:2048',
                 'date' => 'nullable|date',
             ]);
-            \Log::info('VALIDATED DATA:', $validated);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('VALIDATION ERROR:', $e->errors());
             throw $e;
         }
 

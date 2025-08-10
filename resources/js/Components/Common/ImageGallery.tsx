@@ -15,10 +15,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
     productName,
     className = ""
 }) => {
-    // Filter out empty or invalid images
     const validImages = images.filter(image => image && image.trim() !== '');
-    
-    // If no valid images, show a placeholder
     if (validImages.length === 0) {
         return (
             <div className={`space-y-4 flex flex-col items-center justify-start ${className}`}>
@@ -36,7 +33,6 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
 
     return (
         <div className={`space-y-4 flex flex-col items-center justify-start ${className}`}>
-            {/* Main Image */}
             <div className="bg-gray-100 rounded-lg overflow-hidden shadow-sm">
                 <img
                     src={validImages[selectedImage] || validImages[0]}
@@ -50,7 +46,6 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
                 />
             </div>
 
-            {/* Thumbnail Images */}
             {validImages.length > 1 && (
                 <div className="flex gap-3 flex-wrap justify-center">
                     {validImages.map((image, index) => (

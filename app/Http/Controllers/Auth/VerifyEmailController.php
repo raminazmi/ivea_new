@@ -9,12 +9,8 @@ use Illuminate\Http\RedirectResponse;
 
 class VerifyEmailController extends Controller
 {
-    /**
-     * Mark the authenticated user's email address as verified.
-     */
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
-        // Check if user is admin and redirect accordingly
         $user = $request->user();
         $redirectRoute = $user->is_admin ? 'admin.dashboard' : 'user.dashboard';
 

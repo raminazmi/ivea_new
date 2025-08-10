@@ -81,12 +81,10 @@ const Jobs: React.FC<JobsProps> = ({ jobs, categories }) => {
   };
 
   React.useEffect(() => {
-    // مثال لجلب الوظائف من API
     setLoading(true);
     fetch('/api/jobs')
       .then(res => res.json())
       .then(data => {
-        // هنا يمكنك تحديث الوظائف إذا كنت تجلبها ديناميكياً
         setLoading(false);
       })
       .catch(() => setLoading(false));

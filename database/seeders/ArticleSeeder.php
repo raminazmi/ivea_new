@@ -8,12 +8,8 @@ use Carbon\Carbon;
 
 class ArticleSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // المقالة الأولى - التطور في عالم الكتب
         Article::create([
             'title' => 'التطور في عالم الكتب',
             'slug' => 'التطور-في-عالم-الكتب',
@@ -67,7 +63,6 @@ class ArticleSeeder extends Seeder
             'sort_order' => 1
         ]);
 
-        // مقالة ثانية
         Article::create([
             'title' => 'أحدث تقنيات البناء المستدام',
             'slug' => 'أحدث-تقنيات-البناء-المستدام',
@@ -92,7 +87,6 @@ class ArticleSeeder extends Seeder
             'sort_order' => 2
         ]);
 
-        // مقالة ثالثة
         Article::create([
             'title' => 'دليل اختيار المواد المناسبة للمشاريع العقارية',
             'slug' => 'دليل-اختيار-المواد-المناسبة-للمشاريع-العقارية',
@@ -117,7 +111,6 @@ class ArticleSeeder extends Seeder
             'sort_order' => 3
         ]);
 
-        // مقالة رابعة
         Article::create([
             'title' => 'تخطيط المشاريع العقارية الناجحة',
             'slug' => 'تخطيط-المشاريع-العقارية-الناجحة',
@@ -142,7 +135,6 @@ class ArticleSeeder extends Seeder
             'sort_order' => 4
         ]);
 
-        // مقالة خامسة
         Article::create([
             'title' => 'أساسيات التصميم الداخلي للمنازل الحديثة',
             'slug' => 'أساسيات-التصميم-الداخلي-للمنازل-الحديثة',

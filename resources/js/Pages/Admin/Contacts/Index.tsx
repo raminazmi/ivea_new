@@ -35,7 +35,6 @@ interface Contact {
 interface ContactsIndexProps {
     contacts: {
         data: Contact[];
-        // باقي خصائص pagination إذا احتجت
     } | null | undefined;
     user?: {
         id: number;
@@ -184,7 +183,6 @@ const ContactsIndex: React.FC<ContactsIndexProps> = ({ contacts, user }) => {
                     </button>
                 </div>
 
-                {/* Statistics Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
                         <div className="flex items-center">
@@ -229,7 +227,6 @@ const ContactsIndex: React.FC<ContactsIndexProps> = ({ contacts, user }) => {
                     </div>
                 </div>
 
-                {/* Filters */}
                 {showFilters && (
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -336,7 +333,7 @@ const ContactsIndex: React.FC<ContactsIndexProps> = ({ contacts, user }) => {
                                             <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 <div className="flex items-center">
                                                     <FaCalendar className="w-4 h-4 text-gray-400 ml-1" />
-                                                    {new Date(contact.created_at).toLocaleDateString('ar-SA')}
+                                                    {new Date(contact.created_at).toLocaleDateString('ar-EG')}
                                                 </div>
                                             </td>
                                             <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -396,7 +393,6 @@ const ContactsIndex: React.FC<ContactsIndexProps> = ({ contacts, user }) => {
                     )}
                 </div>
 
-                {/* Contact Details Modal */}
                 {selectedContact && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                         <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -465,7 +461,6 @@ const ContactsIndex: React.FC<ContactsIndexProps> = ({ contacts, user }) => {
                 )}
             </div>
 
-            {/* Delete Confirmation Modal */}
             <ConfirmModal
                 isOpen={showDeleteModal}
                 onClose={() => {

@@ -10,23 +10,16 @@ use Inertia\Inertia;
 
 class ContactController extends Controller
 {
-    /**
-     * Show the contact form
-     */
     public function create()
     {
         return Inertia::render('Contact');
     }
 
-    /**
-     * Store a new contact message
-     */
     public function store(ContactRequest $request)
     {
         try {
             $validated = $request->validated();
 
-            // Handle file uploads
             $uploadedFiles = [];
             if ($request->hasFile('attachments')) {
                 foreach ($request->file('attachments') as $file) {
@@ -36,7 +29,6 @@ class ContactController extends Controller
                 }
             }
 
-            // Create contact record
             $contact = Contact::create([
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
@@ -49,22 +41,12 @@ class ContactController extends Controller
                 'status' => 'pending'
             ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.'
-            ]);
+            return redirect()->back()->with('success', 'تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.',
-                'error' => $e->getMessage()
-            ], 500);
+            return redirect()->back()->with('error', 'حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.');
         }
     }
 
-    /**
-     * Display a listing of contacts (for admin)
-     */
     public function index()
     {
         $contacts = Contact::orderBy('created_at', 'desc')->paginate(10);
@@ -74,9 +56,6 @@ class ContactController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified contact
-     */
     public function show(Contact $contact)
     {
         return Inertia::render('Admin/Contacts/Show', [
@@ -84,9 +63,6 @@ class ContactController extends Controller
         ]);
     }
 
-    /**
-     * Update contact status
-     */
     public function updateStatus(Request $request, Contact $contact)
     {
         $request->validate([

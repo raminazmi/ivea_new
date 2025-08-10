@@ -30,7 +30,6 @@ const Header = () => {
         { name: 'أدوات وإرشادات', href: '/tools-and-guidelines' },
     ];
 
-    // Function to check if a link is active
     const isActiveLink = (linkHref: string) => {
         if (linkHref === '/') {
             return url === '/';
@@ -38,20 +37,16 @@ const Header = () => {
         return url.startsWith(linkHref);
     };
 
-    // Function to get active link name
     const getActiveLinkName = () => {
         const activeLink = navLinks.find(link => isActiveLink(link.href));
         return activeLink ? activeLink.name : 'الرئيسية';
     };
 
-    // Check if user is authenticated
     const isAuthenticated = auth?.user;
     const isAdmin = auth?.user?.is_admin;
 
     return (
         <div className="sticky top-0 z-50">
-
-            {/* Top Bar */}
             <div
                 className={`bg-[#0D1D25] text-white text-xs md:text-sm transition-all duration-500 ease-in-out ${isScrolled ? 'opacity-0 h-0 py-0 overflow-hidden' : 'opacity-100 h-auto py-1'}`}
             >
@@ -92,11 +87,9 @@ const Header = () => {
                 </div>
             </div>
 
-            {/* Main Header */}
             <div className={`sticky top-0 z-50 bg-white shadow-sm transition-all duration-300 ${isScrolled ? 'shadow-md' : ''}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
                     <div className="flex items-center justify-between">
-                        {/* Logo */}
                         <Link href="/" className="flex-shrink-0">
                             <img
                                 src="/images/logo.png"
@@ -105,7 +98,6 @@ const Header = () => {
                             />
                         </Link>
 
-                        {/* Desktop Navigation */}
                         <nav className="bg-[#EFEFEF] py-1.5 px-2 md:px-1.5 rounded-full hidden lg:flex items-center">
                             {navLinks.map((link) => (
                                 <Link
@@ -121,7 +113,6 @@ const Header = () => {
                             ))}
                         </nav>
 
-                        {/* Right Side */}
                         <div className="flex items-center gap-2">
                             <Link
                                 href="/products"
@@ -131,7 +122,6 @@ const Header = () => {
                             </Link>
                             <HeaderCartIcon />
 
-                            {/* Mobile menu button */}
                             <button
                                 className="lg:hidden text-gray-600 focus:outline-none p-1.5 md:p-2"
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -141,7 +131,6 @@ const Header = () => {
                         </div>
                     </div>
 
-                    {/* Mobile Navigation */}
                     {isMenuOpen && (
                         <div className="lg:hidden mt-3 pb-3 animate-fadeIn">
                             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">

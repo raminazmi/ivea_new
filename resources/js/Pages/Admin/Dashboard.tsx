@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { HiUsers, HiShoppingBag, HiDocumentText, HiBriefcase, HiStar, HiTag, HiFire, HiClock, HiPlus, HiEye } from 'react-icons/hi';
 
@@ -23,7 +23,15 @@ const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
 
     const fetchTabStats = async () => {
         try {
-            const response = await fetch('/admin/products/tab-statistics');
+            const response = await fetch('/admin/products/tab-statistics', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
+                    'Accept': 'application/json',
+                },
+                credentials: 'same-origin'
+            });
             if (response.ok) {
                 const stats = await response.json();
                 setTabStats(stats);
@@ -43,7 +51,6 @@ const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
                         <div className="p-4 sm:p-6 bg-white border-b border-gray-200">
                             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">لوحة الإدارة</h2>
 
-                            {/* Main Stats */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
                                 <div className="bg-blue-50 p-4 sm:p-6 rounded-lg">
                                     <div className="flex items-center">
@@ -106,7 +113,6 @@ const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
                                 </div>
                             </div>
 
-                            {/* Tab Statistics */}
                             {tabStats && (
                                 <div className="mb-8">
                                     <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-4">إحصائيات التبويبات</h3>
@@ -143,55 +149,54 @@ const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
                                 </div>
                             )}
 
-                            {/* Quick Actions */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <a
+                                <Link
                                     href={route('admin.products.create')}
                                     className="bg-primary-yellow text-white p-4 rounded-lg hover:bg-yellow-600 transition-colors text-center flex flex-col items-center gap-2"
                                 >
                                     <HiShoppingBag className="w-6 h-6" />
                                     <span className="font-medium text-sm sm:text-base">إضافة منتج جديد</span>
-                                </a>
+                                </Link>
 
-                                <a
+                                <Link
                                     href={route('admin.categories.create')}
                                     className="bg-green-500 text-white p-4 rounded-lg hover:bg-green-600 transition-colors text-center flex flex-col items-center gap-2"
                                 >
                                     <HiUsers className="w-6 h-6" />
                                     <span className="font-medium text-sm sm:text-base">إضافة فئة جديدة</span>
-                                </a>
+                                </Link>
 
-                                <a
+                                <Link
                                     href={route('admin.articles.create')}
                                     className="bg-purple-500 text-white p-4 rounded-lg hover:bg-purple-600 transition-colors text-center flex flex-col items-center gap-2"
                                 >
                                     <HiDocumentText className="w-6 h-6" />
                                     <span className="font-medium text-sm sm:text-base">إضافة مقال جديد</span>
-                                </a>
+                                </Link>
 
-                                <a
+                                <Link
                                     href={route('admin.products.index')}
                                     className="bg-blue-500 text-white p-4 rounded-lg hover:bg-blue-600 transition-colors text-center flex flex-col items-center gap-2"
                                 >
                                     <HiEye className="w-6 h-6" />
                                     <span className="font-medium text-sm sm:text-base">عرض المنتجات</span>
-                                </a>
+                                </Link>
 
-                                <a
+                                <Link
                                     href={route('admin.applications.index')}
                                     className="bg-orange-500 text-white p-4 rounded-lg hover:bg-orange-600 transition-colors text-center flex flex-col items-center gap-2"
                                 >
                                     <HiBriefcase className="w-6 h-6" />
                                     <span className="font-medium text-sm sm:text-base">مراجعة التقديمات</span>
-                                </a>
+                                </Link>
 
-                                <a
+                                <Link
                                     href={route('admin.contacts.index')}
                                     className="bg-indigo-500 text-white p-4 rounded-lg hover:bg-indigo-600 transition-colors text-center flex flex-col items-center gap-2"
                                 >
                                     <HiDocumentText className="w-6 h-6" />
                                     <span className="font-medium text-sm sm:text-base">عرض الرسائل</span>
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>

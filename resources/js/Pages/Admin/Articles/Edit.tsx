@@ -66,7 +66,6 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories = [] }) =
         if (!data.read_time || isNaN(Number(data.read_time))) errors.read_time = 'وقت القراءة مطلوب';
         if (Object.keys(errors).length > 0) {
             setLocalErrors(errors);
-            console.log('Local validation errors:', errors);
             return;
         } else {
             setLocalErrors({});
@@ -81,19 +80,13 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories = [] }) =
             return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         };
         setData('slug', generateSlug(data.title));
-        console.log('Generated slug:', slug);
-
-        console.log('Submitting form with data:', data);
-
         post(route('admin.articles.update', article.id), {
             forceFormData: true,
             preserveState: true,
             preserveScroll: true,
             onSuccess: (page) => {
-                console.log('Update successful:', page);
             },
             onError: (errors) => {
-                console.log('Update errors:', errors);
             }
         });
     };

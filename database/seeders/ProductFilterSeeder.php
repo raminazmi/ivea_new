@@ -8,40 +8,19 @@ use App\Models\Product;
 
 class ProductFilterSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Update existing products with filter data
         $products = Product::all();
 
         foreach ($products as $product) {
-            // Random colors
             $colors = $this->getRandomColors();
-
-            // Random opening methods
             $openingMethods = $this->getRandomOpeningMethods();
-
-            // Random track types
             $trackTypes = $this->getRandomTrackTypes();
-
-            // Random lining options
             $liningOptions = $this->getRandomLiningOptions();
-
-            // Random customization options
             $customizationOptions = $this->getRandomCustomizationOptions();
-
-            // Random measurement units
             $measurementUnits = $this->getRandomMeasurementUnits();
-
-            // Random dimensions
             $dimensions = $this->getRandomDimensions();
-
-            // Random specifications
             $specifications = $this->getRandomSpecifications();
-
-            // Update product with filter data
             $product->update([
                 'colors' => $colors,
                 'opening_methods' => $openingMethods,

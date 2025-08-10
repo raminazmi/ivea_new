@@ -29,9 +29,6 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Display a listing of jobs for admin.
-     */
     public function jobs()
     {
         $jobs = Job::latest()->get();
@@ -42,9 +39,6 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Display a listing of job applications for admin.
-     */
     public function applications()
     {
         $applications = JobApplication::with('job')->latest()->get();
@@ -55,9 +49,6 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Display a listing of contacts for admin.
-     */
     public function contacts()
     {
         $contacts = Contact::latest()->get();
@@ -68,9 +59,6 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Update application status.
-     */
     public function updateApplicationStatus(Request $request, $id)
     {
         $request->validate([
@@ -86,9 +74,6 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Update contact status.
-     */
     public function updateContactStatus(Request $request, $id)
     {
         $request->validate([

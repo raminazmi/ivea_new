@@ -140,7 +140,6 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
                     </div>
                 </div>
 
-                {/* Filters */}
                 {showFilters && (
                     <div className="bg-gray-50 p-4 rounded-lg mb-6">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -185,7 +184,6 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
 
                 <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div className="p-4 sm:p-6 bg-white border-b border-gray-200">
-                        {/* Table */}
                         <div className="overflow-x-auto border border-gray-200 rounded-lg categories-table" style={{
                             scrollbarWidth: 'thin',
                             scrollbarColor: '#d1d5db #f9fafb'
@@ -252,7 +250,7 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
                                                 {getStatusBadge(category.status)}
                                             </td>
                                             <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {new Date(category.created_at).toLocaleDateString('ar-SA')}
+                                                {new Date(category.created_at).toLocaleDateString('ar-EG')}
                                             </td>
                                             <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
@@ -285,7 +283,6 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
                         )}
                     </div>
 
-                    {/* Pagination */}
                     {categories.last_page > 1 && (
                         <div className="m-4 flex justify-center">
                             <nav className="flex space-x-2 rtl:space-x-reverse">
@@ -307,7 +304,6 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
                 </div>
             </div>
 
-            {/* Delete Confirmation Modal */}
             <ConfirmModal
                 isOpen={showDeleteModal}
                 onClose={() => {

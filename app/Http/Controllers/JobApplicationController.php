@@ -6,11 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Job;
 use App\Models\JobApplication;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Log;
 
 class JobApplicationController extends Controller
 {
-    // عرض نموذج التقديم
     public function showApplyForm($id)
     {
         $job = Job::findOrFail($id);
@@ -19,7 +17,6 @@ class JobApplicationController extends Controller
         ]);
     }
 
-    // حفظ طلب التقديم
     public function store(Request $request, $id)
     {
         $job = Job::findOrFail($id);
@@ -32,16 +29,11 @@ class JobApplicationController extends Controller
             'cv_file' => 'required|file|mimes:pdf,doc,docx|max:2048',
         ]);
 
-        Log::info('JobApplicationController@store - validated:', $validated);
-
-        // رفع السيرة الذاتية
         if ($request->hasFile('cv_file')) {
             $cvPath = $request->file('cv_file')->store('cvs', 'public');
         } else {
             $cvPath = null;
         }
-
-        Log::info('JobApplicationController@store - cvPath:', ['cvPath' => $cvPath]);
 
         $application = JobApplication::create([
             'job_id' => $job->id,
@@ -53,8 +45,6 @@ class JobApplicationController extends Controller
             'cv_file' => $cvPath,
             'status' => 'pending',
         ]);
-
-        Log::info('JobApplicationController@store - created application:', $application->toArray());
 
         return redirect()->route('jobs')->with('success', 'تم إرسال طلبك بنجاح!');
     }
