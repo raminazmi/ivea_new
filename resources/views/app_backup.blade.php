@@ -148,7 +148,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #0a0a0a;
+            background: #F59E0B;
             z-index: 9999;
             display: flex;
             align-items: center;
@@ -173,7 +173,7 @@
 <body class="font-sans antialiased">
     <!-- Page Loader -->
     <div id="page-loader" class="page-loader">
-        <img src="/images/logo_white.png" alt="ايڤيا" style="width: 120px; height: 80px;">
+        <img src="/images/logo.png" alt="ايڤيا" style="width: 80px; height: 80px;">
     </div>
 
     @inertia
