@@ -64,9 +64,11 @@ const Home: React.FC<HomeProps> = ({ featuredProducts, categories }) => {
             <FeaturedOffers />
             <PreparingForSummer />
             <CategoryShowcase featuredProducts={featuredProducts} />
-            <div className="container mx-auto px-2 sm:px-4 lg:px-8">
+            <div className="container mx-auto px-2 sm:px-4 lg:px-8 xl:px-24">
                 <SectionTitle text="قائمة المشاريع" />
                 <ProjectShowcase />
+            </div>
+            <div className="container mx-auto px-2 sm:px-4 lg:px-8 xl:px-20">
                 <ContactUs />
             </div>
         </AppLayout>

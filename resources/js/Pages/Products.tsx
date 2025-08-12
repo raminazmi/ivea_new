@@ -232,14 +232,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
                             <div className="lg:w-1/4 space-y-6">
-                                <ProductFilters
-                                    onFilterChange={handleFilterChange}
-                                    activeTab={activeTab}
-                                    categories={categories}
-                                    filterOptions={filterOptions}
-                                    currentFilters={currentFilters}
-                                />
-
                                 <DimensionFilter
                                     onDimensionChange={handleDimensionChange}
                                     defaultWidth={globalDimensions.width}
@@ -248,6 +240,13 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                                     maxWidth={dimensionLimits.maxWidth}
                                     minHeight={dimensionLimits.minHeight}
                                     maxHeight={dimensionLimits.maxHeight}
+                                />
+                                <ProductFilters
+                                    onFilterChange={handleFilterChange}
+                                    activeTab={activeTab}
+                                    categories={categories}
+                                    filterOptions={filterOptions}
+                                    currentFilters={currentFilters}
                                 />
                             </div>
 

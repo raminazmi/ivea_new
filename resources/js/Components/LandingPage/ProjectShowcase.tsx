@@ -97,15 +97,6 @@ const ProjectShowcase = () => {
                 <div ref={mobileGridRef} className="grid grid-cols-1 gap-8 md:hidden">
                     {projects.map((project) => (
                         <div key={project.id} className="group relative overflow-visible rounded-2xl overflow-hidden bg-primary-gray shadow-lg flex flex-col transition-all duration-1000 hover:scale-105 hover:shadow-xl">
-                            <div className='flex flex-col justify-center gap-2 py-3 px-3'>
-                                <h3 className="text-xs font-bold mb-1">{project.title}</h3>
-                                <p className="mb-2 text-xs">{project.subtitle}</p>
-                                <button
-                                    onClick={handleStartQuiz}
-                                    className="bg-white text-[#0D1F40] px-2 py-1 rounded-full font-bold text-xs transition-all duration-700 w-fit hover:bg-gray-100 hover:scale-105">
-                                    {project.buttonText}
-                                </button>
-                            </div>
                             <div className={`relative overflow-visible flex justify-center 
                                 ${project.image === "/images/building4.png" ? '-mt-6' : '-mt-4 -mb-1'}`}>
                                 <img
@@ -115,30 +106,43 @@ const ProjectShowcase = () => {
                                     style={{ zIndex: 10 }}
                                 />
                             </div>
+                            <div className='flex flex-col justify-center gap-2 py-3 px-3'>
+                                <p className="text-sm font-bold mb-1">{project.title}</p>
+                                <p className="mb-2 text-xs">{project.subtitle}</p>
+                                <button
+                                    onClick={handleStartQuiz}
+                                    className="bg-white text-[#0D1F40] px-2 py-1 rounded-full font-bold text-xs transition-all duration-700 w-fit hover:bg-gray-100 hover:scale-105">
+                                    {project.buttonText}
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>
 
                 <div ref={desktopGridRef} className="hidden md:grid grid-cols-4 gap-8">
                     {projects.map((project) => (
-                        <div key={project.id} className="group relative overflow-visible rounded-2xl overflow-hidden bg-primary-gray shadow-lg flex transition-all duration-1000 hover:scale-105 hover:shadow-xl">
-                            <div className='flex flex-col justify-center gap-2 p-4'>
-                                <h3 className="text-[16px] font-bold mb-1">{project.title}</h3>
-                                <p className="mb-2 text-[14px]">{project.subtitle}</p>
-                                <button
-                                    onClick={handleStartQuiz}
-                                    className="bg-white text-[#0D1F40] px-4 py-1 rounded-full font-bold text-sm transition-all duration-700 w-fit hover:bg-gray-100 hover:scale-105">
-                                    {project.buttonText}
-                                </button>
+                        <div key={project.id} className="group relative p-4 pe-2 overflow-visible rounded-2xl overflow-hidden bg-primary-gray shadow-lg flex flex-col justify-center transition-all duration-1000 hover:scale-105 hover:shadow-xl">
+                            <div className="grid grid-cols-2 gap-1">
+                                <div className='flex flex-col justify-center gap-2 '>
+                                    <h3 className="text-[14px] font-bold mb-1">{project.title}</h3>
+                                    <p className="mb-2 text-[12px]">{project.subtitle}</p>
+
+                                </div>
+                                <div className={`${project.image == "/images/building4.png" ? '-mt-10' : '-mt-6 -mb-2'} relative overflow-visible`}>
+                                    <img
+                                        src={project.image}
+                                        alt={project.title}
+                                        className={`${project.image == "/images/building4.png" ? 'w-32' : 'w-56'} h-[100px] object-contain transition-transform duration-1000 group-hover:scale-110`}
+                                        style={{ zIndex: 10 }}
+                                    />
+                                </div>
                             </div>
-                            <div className={`${project.image == "/images/building4.png" ? '-mt-10' : '-mt-6 -mb-2'} relative overflow-visible`}>
-                                <img
-                                    src={project.image}
-                                    alt={project.title}
-                                    className={`${project.image == "/images/building4.png" ? 'w-32' : 'w-56'} h-[100px] object-contain transition-transform duration-1000 group-hover:scale-110`}
-                                    style={{ zIndex: 10 }}
-                                />
-                            </div>
+
+                            <button
+                                onClick={handleStartQuiz}
+                                className="bg-white text-[#0D1F40] px-4 py-1 rounded-full font-bold text-sm transition-all duration-700 w-fit hover:bg-gray-100 hover:scale-105">
+                                {project.buttonText}
+                            </button>
                         </div>
                     ))}
                 </div>
