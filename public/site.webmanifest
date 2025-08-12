@@ -1,21 +1,33 @@
 {
-    "name": "IVEA",
-    "short_name": "IVEA",
-    "description": "شركة إيفيا للمفروشات والديكور",
+    "name": "ايڤيا - تصميم داخلي وديكور احترافي",
+    "short_name": "ايڤيا",
+    "description": "ايڤيا رائدة في تصميم الديكور الداخلي والخارجي. نقدم خدمات تصميم احترافية للمنازل والمكاتب والمحلات التجارية.",
+    "lang": "ar",
+    "dir": "rtl",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#f59e0b",
+    "theme_color": "#F59E0B",
+    "background_color": "#F59E0B",
+    "orientation": "portrait-primary",
+    "scope": "/",
     "icons": [
         {
             "src": "/images/logo.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable any"
         },
         {
             "src": "/images/logo.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable any"
         }
+    ],
+    "categories": [
+        "lifestyle",
+        "shopping",
+        "home",
+        "design"
     ]
 }

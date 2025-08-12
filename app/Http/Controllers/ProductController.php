@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Services\SeoService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -12,6 +13,13 @@ use Inertia\Inertia;
 
 class ProductController extends Controller
 {
+    protected $seoService;
+
+    public function __construct(SeoService $seoService)
+    {
+        $this->seoService = $seoService;
+    }
+
     public function index(Request $request)
     {
         $query = Product::with('category')->active();
@@ -196,10 +204,15 @@ class ProductController extends Controller
 
         $filterOptions = $this->getFilterOptions();
 
+        $seoData = $this->seoService->getSeoData('products');
+        $structuredData = $this->seoService->generateStructuredData($seoData);
+
         return Inertia::render('Products', [
             'products' => $products,
             'categories' => $categories,
             'filterOptions' => $filterOptions,
+            'seo' => $seoData,
+            'structuredData' => $structuredData,
             'filters' => $request->only([
                 'category',
                 'tab',
@@ -276,9 +289,14 @@ class ProductController extends Controller
             'maxHeight' => (float) ($product->max_height ?? 400),
         ];
 
+        $seoData = $this->seoService->getProductSeo($product);
+        $structuredData = $this->seoService->generateStructuredData($seoData, 'product');
+
         return Inertia::render('ProductDetail', [
             'product' => $formattedProduct,
-            'relatedProducts' => $relatedProducts
+            'relatedProducts' => $relatedProducts,
+            'seo' => $seoData,
+            'structuredData' => $structuredData,
         ]);
     }
 

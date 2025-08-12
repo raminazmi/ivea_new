@@ -8,6 +8,7 @@ import AppLayout from '@/Components/LandingPage/Layout/AppLayout';
 import { PageProps } from '@inertiajs/core';
 import ContactUs from '@/Components/LandingPage/ContactUs';
 import SectionTitle from '@/Components/SectionTitle';
+import { useSEO } from '@/hooks/useSEO';
 
 interface Product {
     id: number;
@@ -56,6 +57,9 @@ interface HomeProps extends PageProps {
 }
 
 const Home: React.FC<HomeProps> = ({ featuredProducts, categories }) => {
+    // Initialize SEO
+    useSEO();
+
     return (
         <AppLayout>
             <div className="container mx-auto px-2 sm:px-4 lg:px-8">

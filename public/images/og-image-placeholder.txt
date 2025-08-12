@@ -1,0 +1,10 @@
+<!-- This is a placeholder for og-image.jpg -->
+<!-- You should create a 1200x630 image with your brand logo and colors -->
+<!-- For now, you can copy your logo to /public/images/og-image.jpg -->
+Create an Open Graph image (1200x630px) with:
+- Your ايڤيا logo
+- Brand colors (#F59E0B)
+- Text: "ايڤيا - تصميم داخلي وديكور احترافي"
+- Background with your design elements
+
+Place this file at: public/images/og-image.jpg
