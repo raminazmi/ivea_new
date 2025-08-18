@@ -11,18 +11,20 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-            'name' => 'مدير',
-            'email' => 'admin@ivea.com',
-            'password' => Hash::make('12345678'),
-            'is_admin' => true,
-        ]);
+        // Check if admin user already exists
+        $existingAdmin = User::where('email', 'admin@ivea.com')->first();
 
-        User::create([
-            'name' => 'أحمد محمد',
-            'email' => 'ahmed@ivea.com',
-            'password' => Hash::make('12345678'),
-            'is_admin' => true,
-        ]);
+        if (!$existingAdmin) {
+            User::create([
+                'name' => 'أدمن',
+                'email' => 'admin@ivea.com',
+                'password' => Hash::make('12345678'),
+                'is_admin' => true,
+            ]);
+
+            $this->command->info('Admin user created successfully!');
+        } else {
+            $this->command->info('Admin user already exists, skipping creation.');
+        }
     }
 }

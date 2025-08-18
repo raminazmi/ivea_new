@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeFromCart, updateQuantity, clearCart, CartItem } from '@/store/features/cartSlice';
+import { removeFromCart, updateQuantity, clearCart, CartItem, syncCartData } from '@/store/features/cartSlice';
 import { Link, Head, useForm } from '@inertiajs/react';
 import { RootState } from '@/store';
 import AppLayout from '@/Components/LandingPage/Layout/AppLayout';
@@ -9,7 +9,16 @@ import { FaTrash, FaWhatsapp } from 'react-icons/fa';
 const CartIndex: React.FC = () => {
     const items = useSelector((state: RootState) => state.cart.items);
     const dispatch = useDispatch();
-    const total = items.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
+
+    // دالة للحصول على الكمية الصحيحة (من customizations أو من item.quantity)
+    const getActualQuantity = (item: CartItem): number => {
+        if (item.customizations?.quantity?.value) {
+            return Number(item.customizations.quantity.value) || item.quantity;
+        }
+        return item.quantity;
+    };
+
+    const total = items.reduce((sum: number, item: CartItem) => sum + item.price * getActualQuantity(item), 0);
     const [loading, setLoading] = useState(false);
     const [showOrderForm, setShowOrderForm] = useState(false);
 
@@ -22,19 +31,62 @@ const CartIndex: React.FC = () => {
         address: '',
         notes: '',
         total_amount: total,
-        total_items: items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0),
+        total_items: items.reduce((sum: number, item: CartItem) => sum + getActualQuantity(item), 0),
         cart_items: items as any
     });
 
+    // مزامنة بيانات السلة عند تغيير العناصر
+    useEffect(() => {
+        syncCartData();
+
+        const newTotalItems = items.reduce((sum: number, item: CartItem) => sum + getActualQuantity(item), 0);
+
+        // تحديث بيانات النموذج عند تغيير العناصر أو المجموع
+        setData(prevData => ({
+            ...prevData,
+            total_amount: total,
+            total_items: newTotalItems,
+            cart_items: items as any
+        }));
+
+        console.log('Cart updated:', { total, totalItems: newTotalItems, itemsCount: items.length });
+    }, [items, total]);
+
     const handleSendWhatsapp = () => {
         const message = 'طلب جديد:\n' + items.map(i => {
-            let details = `${i.name} - ${i.quantity} قطعة - ${i.price} ريال`;
+            const actualQuantity = getActualQuantity(i);
+            let details = `${i.name} - ${actualQuantity} قطعة - ${i.price} ريال`;
             let options = [];
+
+            // الخيارات التقليدية
             if (i.colorName) options.push(`اللون: ${i.colorName}`);
             if (i.width && i.height && i.measurementUnit) options.push(`المقاس: ${i.width} × ${i.height} ${i.measurementUnit}`);
             if (i.openingMethod) options.push(`طريقة الفتح: ${i.openingMethod}`);
             if (i.trackType) options.push(`نوع المسار: ${i.trackType}`);
             if (i.liningOption) options.push(`البطانة: ${i.liningOption}`);
+
+            // الخيارات المخصصة الجديدة (تخطي الكمية)
+            if (i.customizations) {
+                Object.entries(i.customizations).forEach(([fieldName, customization]) => {
+                    const custom = customization as any;
+                    if (custom && custom.label && fieldName !== 'quantity') {
+                        if (custom.type === 'checkbox_multiple' && custom.displayValues?.length > 0) {
+                            options.push(`${custom.label}: ${custom.displayValues.join(', ')}`);
+                        } else if (custom.displayValue) {
+                            options.push(`${custom.label}: ${custom.displayValue}`);
+                        } else if (custom.value) {
+                            options.push(`${custom.label}: ${custom.value}`);
+                        }
+                    }
+                });
+            }
+
+            // الملفات المرفوعة
+            if (i.uploadedFiles && i.uploadedFiles.length > 0) {
+                const fileNames = i.uploadedFiles.map((file: any) => file.name || file).join(', ');
+                options.push(`ملفات مرفقة: ${fileNames}`);
+            }
+
             if (options.length) details += '\n' + options.join(' | ');
             return details;
         }).join('\n') + `\nالمجموع: ${total} ريال`;
@@ -43,12 +95,8 @@ const CartIndex: React.FC = () => {
 
     const handleSubmitOrder = (e: React.FormEvent) => {
         e.preventDefault();
-        setData(prevData => ({
-            ...prevData,
-            total_amount: total,
-            total_items: items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0),
-            cart_items: items as any
-        }));
+
+        console.log('Submitting order with data:', data);
 
         post('/orders', {
             onSuccess: () => {
@@ -76,14 +124,19 @@ const CartIndex: React.FC = () => {
                                     <div className="flex-1 w-full text-center sm:text-start px-4">
                                         <div className="font-semibold text-lg text-gray-800">{item.name}</div>
                                         <div className="text-yellow-600 font-bold mt-1">{item.price} ريال</div>
-                                        {item.color || item.width || item.height || item.openingMethod || item.trackType || item.liningOption ? (
+                                        {(item.color || item.width || item.height || item.openingMethod || item.trackType || item.liningOption || item.customizations) ? (
                                             <div className="mt-3 bg-white rounded-lg shadow-sm p-3 border border-yellow-100 text-sm text-gray-700 space-y-1">
+                                                {/* اللون التقليدي */}
                                                 {item.color && (
                                                     <div><span className="font-bold text-gray-900">اللون:</span> <span style={{ background: item.color }} className="inline-block w-4 h-4 rounded-full border mr-1 align-middle"></span> {item.colorName}</div>
                                                 )}
+
+                                                {/* الأبعاد التقليدية */}
                                                 {item.width && item.height && (
                                                     <div><span className="font-bold text-gray-900">المقاس:</span> {item.width} × {item.height} {item.measurementUnit}</div>
                                                 )}
+
+                                                {/* الخيارات التقليدية */}
                                                 {item.openingMethod && (
                                                     <div><span className="font-bold text-gray-900">طريقة الفتح:</span> {item.openingMethod}</div>
                                                 )}
@@ -93,15 +146,96 @@ const CartIndex: React.FC = () => {
                                                 {item.liningOption && (
                                                     <div><span className="font-bold text-gray-900">البطانة:</span> {item.liningOption}</div>
                                                 )}
+
+                                                {/* الخيارات المخصصة الجديدة */}
+                                                {item.customizations && Object.entries(item.customizations).map(([fieldName, customization]) => {
+                                                    const custom = customization as any;
+
+                                                    if (!custom || !custom.label) return null;
+
+                                                    // تخطي عرض الكمية المخصصة هنا لأننا نعرضها في العداد
+                                                    if (fieldName === 'quantity') return null;
+
+                                                    return (
+                                                        <div key={fieldName}>
+                                                            <span className="font-bold text-gray-900">{custom.label}:</span>
+                                                            {' '}
+                                                            {custom.type === 'checkbox_multiple' && custom.displayValues ? (
+                                                                <span>{custom.displayValues.join(', ')}</span>
+                                                            ) : custom.type === 'select' && custom.displayValue ? (
+                                                                <span>{custom.displayValue}</span>
+                                                            ) : custom.type === 'dimensions' && custom.displayValue ? (
+                                                                <span>{custom.displayValue}</span>
+                                                            ) : custom.type === 'dimensions_3d' && custom.displayValue ? (
+                                                                <span>{custom.displayValue}</span>
+                                                            ) : custom.type === 'number' && custom.displayValue ? (
+                                                                <span>{custom.displayValue}</span>
+                                                            ) : custom.displayValue ? (
+                                                                <span>{custom.displayValue}</span>
+                                                            ) : (
+                                                                <span>{custom.value}</span>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+
+                                                {/* الملفات المرفوعة */}
+                                                {item.uploadedFiles && item.uploadedFiles.length > 0 && (
+                                                    <div>
+                                                        <span className="font-bold text-gray-900">الملفات المرفوعة:</span>
+                                                        <div className="mt-1 space-y-1">
+                                                            {item.uploadedFiles.map((file: any, index: number) => (
+                                                                <div key={index} className="text-xs bg-gray-100 px-2 py-1 rounded flex items-center justify-between">
+                                                                    {file.uuid ? (
+                                                                        <a
+                                                                            href={`/download-file/${file.uuid}`}
+                                                                            className="text-blue-600 hover:text-blue-800 underline"
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                        >
+                                                                            📎 {file.name}
+                                                                        </a>
+                                                                    ) : (
+                                                                        <span>📎 {file.name || file}</span>
+                                                                    )}
+                                                                    {file.size && (
+                                                                        <span className="text-gray-400 text-xs">
+                                                                            ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         ) : null}
                                         <div className="flex items-center justify-center sm:justify-start mt-3">
-                                            <button onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1 }))} disabled={item.quantity <= 1} className="px-3 py-1 bg-gray-200 rounded-r hover:bg-yellow-100 transition disabled:opacity-50">-</button>
-                                            <span className="px-4 py-1 bg-gray-100 font-bold">{item.quantity}</span>
-                                            <button onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1 }))} className="px-3 py-1 bg-gray-200 rounded-l hover:bg-yellow-100 transition">+</button>
+                                            <button
+                                                onClick={() => {
+                                                    const actualQuantity = getActualQuantity(item);
+                                                    const newQuantity = actualQuantity - 1;
+                                                    if (newQuantity >= 1) {
+                                                        dispatch(updateQuantity({ id: item.cartId || item.id, quantity: newQuantity }));
+                                                    }
+                                                }}
+                                                disabled={getActualQuantity(item) <= 1}
+                                                className="px-3 py-1 bg-gray-200 rounded-r hover:bg-yellow-100 transition disabled:opacity-50"
+                                            >-</button>
+                                            <span className="px-4 py-1 bg-gray-100 font-bold">{getActualQuantity(item)}</span>
+                                            <button
+                                                onClick={() => {
+                                                    const actualQuantity = getActualQuantity(item);
+                                                    dispatch(updateQuantity({ id: item.cartId || item.id, quantity: actualQuantity + 1 }));
+                                                }}
+                                                className="px-3 py-1 bg-gray-200 rounded-l hover:bg-yellow-100 transition"
+                                            >+</button>
                                         </div>
                                     </div>
-                                    <button onClick={() => dispatch(removeFromCart(item.id))} className="text-red-500 ml-0 sm:ml-6 mt-4 sm:mt-0 font-bold hover:underline flex items-center justify-center">
+                                    <button
+                                        onClick={() => dispatch(removeFromCart(item.cartId || item.id))}
+                                        className="text-red-500 ml-0 sm:ml-6 mt-4 sm:mt-0 font-bold hover:underline flex items-center justify-center"
+                                    >
                                         <FaTrash className="w-5 h-5" />
                                     </button>
                                 </li>

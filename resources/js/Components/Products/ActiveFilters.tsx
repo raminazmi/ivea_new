@@ -12,6 +12,8 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({ filters, onRemoveFilter, 
     const hasActiveFilters = () => {
         return filters.search ||
             filters.category ||
+            filters.main_category ||
+            filters.subcategory_ids?.length > 0 ||
             filters.colors?.length > 0 ||
             filters.size?.length > 0 ||
             filters.opening_method?.length > 0 ||
@@ -59,8 +61,11 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({ filters, onRemoveFilter, 
             case 'search':
                 return `البحث: "${value}"`;
             case 'category':
-                const category = categories.find(cat => cat.id.toString() === value);
-                return `الفئة: ${category?.name || value}`;
+                const category = categories.find(cat => cat.slug === value);
+                return `الفئة: ${category?.name || getCategoryArabicName(value)}`;
+            case 'main_category':
+                const mainCategory = categories.find(cat => cat.slug === value && !cat.parent_id);
+                return `الفئة الرئيسية: ${mainCategory?.name || getCategoryArabicName(value)}`;
             case 'colors':
                 return `اللون: ${colorNames[value] || value}`;
             case 'size':
@@ -84,6 +89,24 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({ filters, onRemoveFilter, 
             default:
                 return value;
         }
+    };
+
+    const getCategoryArabicName = (slug: string) => {
+        const categoryNames: { [key: string]: string } = {
+            'curtains': 'ستائر',
+            'ستائر': 'ستائر',
+            'sofas': 'كنب',
+            'كنب': 'كنب',
+            'wooden': 'خشبيات',
+            'خشبيات': 'خشبيات',
+            'cabinets': 'خزائن',
+            'خزائن': 'خزائن',
+            'furniture': 'أثاث',
+            'doors': 'أبواب',
+            'windows': 'نوافذ'
+        };
+
+        return categoryNames[slug] || slug;
     };
 
     return (
@@ -121,6 +144,19 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({ filters, onRemoveFilter, 
                             onClick={() => onRemoveFilter('category')}
                             className="hover:text-green-600"
                             title="إزالة فلتر الفئة"
+                        >
+                            <HiX className="w-3 h-3" />
+                        </button>
+                    </span>
+                )}
+
+                {filters.main_category && (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                        {getFilterLabel('main_category', filters.main_category)}
+                        <button
+                            onClick={() => onRemoveFilter('main_category')}
+                            className="hover:text-green-600"
+                            title="إزالة فلتر الفئة الرئيسية"
                         >
                             <HiX className="w-3 h-3" />
                         </button>

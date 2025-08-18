@@ -11,6 +11,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ToolsAndGuidelinesController;
 use App\Http\Controllers\JobApplicationController;
+use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminProjectController;
@@ -149,6 +150,10 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
 Route::post('/cart/whatsapp', [CartController::class, 'sendToWhatsApp'])->name('cart.whatsapp');
 Route::get('/cart/items', [CartController::class, 'getCartItems'])->name('cart.items');
+
+// File Upload Routes
+Route::post('/upload-files', [FileUploadController::class, 'upload'])->name('files.upload');
+Route::get('/download-file/{uuid}', [FileUploadController::class, 'download'])->name('files.download');
 
 // Order routes
 Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');

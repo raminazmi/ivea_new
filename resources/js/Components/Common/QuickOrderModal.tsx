@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
 
 interface QuickOrderModalProps {
@@ -20,6 +20,34 @@ interface QuickOrderModalProps {
         trackType?: string;
         liningOption?: string;
         quantity?: number;
+        customizations?: Record<string, {
+            type: string;
+            label: string;
+            value?: any;
+            values?: any[];
+            displayValue?: string;
+            displayValues?: string[];
+            width?: number;
+            height?: number;
+            length?: number;
+            unit?: string;
+            files?: Array<{
+                name: string;
+                size: number;
+                uuid: string;
+                path?: string;
+                url?: string;
+                type?: string;
+            }>;
+        }>;
+        uploadedFiles?: Array<{
+            name: string;
+            path: string;
+            url: string;
+            size: number;
+            type: string;
+            uuid: string;
+        }>;
         [key: string]: any; // للسماح بخصائص إضافية
     };
 }
@@ -43,8 +71,21 @@ const QuickOrderModal: React.FC<QuickOrderModalProps> = ({
         product_price: product.price,
         product_image: product.image,
         selected_options: selectedOptions,
-        quantity: 1
+        customizations: selectedOptions.customizations || {},
+        uploaded_files: selectedOptions.uploadedFiles || [],
+        quantity: selectedOptions.quantity || 1
     });
+
+    // تحديث بيانات النموذج عند تغيير الخيارات المحددة
+    useEffect(() => {
+        setData(prev => ({
+            ...prev,
+            selected_options: selectedOptions,
+            customizations: selectedOptions.customizations || {},
+            uploaded_files: selectedOptions.uploadedFiles || [],
+            quantity: selectedOptions.quantity || 1
+        }));
+    }, [selectedOptions]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -88,8 +129,9 @@ const QuickOrderModal: React.FC<QuickOrderModalProps> = ({
                             </div>
                         </div>
 
-                        {(selectedOptions.color || selectedOptions.width || selectedOptions.openingMethod || selectedOptions.trackType || selectedOptions.liningOption) && (
-                            <div className="mt-3 bg-white rounded-lg shadow-sm p-3 border border-yellow-100 text-sm text-gray-700 space-y-1">
+                        {(selectedOptions.color || Object.keys(selectedOptions.customizations || {}).length > 0 || selectedOptions.uploadedFiles?.length) && (
+                            <div className="mt-3 bg-white rounded-lg shadow-sm p-3 border border-yellow-100 text-sm text-gray-700 space-y-2">
+                                {/* عرض اللون المختار */}
                                 {selectedOptions.color && (
                                     <div>
                                         <span className="font-bold text-gray-900">اللون:</span>
@@ -97,31 +139,82 @@ const QuickOrderModal: React.FC<QuickOrderModalProps> = ({
                                             style={{ background: selectedOptions.color }}
                                             className="inline-block w-4 h-4 rounded-full border mr-1 align-middle"
                                         ></span>
-                                        {selectedOptions.colorName}
+                                        {selectedOptions.colorName || selectedOptions.color}
                                     </div>
                                 )}
-                                {selectedOptions.width && selectedOptions.height && (
-                                    <div>
-                                        <span className="font-bold text-gray-900">المقاس:</span>
-                                        {selectedOptions.width} × {selectedOptions.height} {selectedOptions.measurementUnit}
+
+                                {/* عرض التخصيصات */}
+                                {Object.entries(selectedOptions.customizations || {}).map(([key, customization]) => (
+                                    <div key={key}>
+                                        <span className="font-bold text-gray-900">{customization.label}:</span>
+                                        {customization.type === 'color_selector' && (
+                                            <>
+                                                <span
+                                                    style={{ background: customization.value }}
+                                                    className="inline-block w-4 h-4 rounded-full border mr-1 align-middle"
+                                                ></span>
+                                                {customization.displayValue || customization.value}
+                                            </>
+                                        )}
+                                        {customization.type === 'checkbox_multiple' && (
+                                            <span>{customization.displayValues?.join(', ') || ''}</span>
+                                        )}
+                                        {customization.type === 'dimensions' && (
+                                            <span>
+                                                {customization.width} × {customization.height} {customization.unit || 'سم'}
+                                            </span>
+                                        )}
+                                        {customization.type === 'dimensions_3d' && (
+                                            <span>
+                                                {customization.width} × {customization.height} × {customization.length} {customization.unit || 'سم'}
+                                            </span>
+                                        )}
+                                        {(customization.type === 'select' || customization.type === 'number') && (
+                                            <span>{customization.displayValue || customization.value}</span>
+                                        )}
+                                        {customization.type === 'file_upload' && customization.files && (
+                                            <div className="mt-1 space-y-1">
+                                                {customization.files.map((file: any, index: number) => (
+                                                    <div key={index} className="flex items-center gap-2 text-xs text-gray-600">
+                                                        <a
+                                                            href={`/download-file/${file.uuid}`}
+                                                            className="text-blue-600 hover:text-blue-800 underline"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            {file.name}
+                                                        </a>
+                                                        <span className="text-gray-400">
+                                                            ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                                {selectedOptions.openingMethod && (
+                                ))}
+
+                                {/* عرض الملفات المرفقة العامة */}
+                                {selectedOptions.uploadedFiles && selectedOptions.uploadedFiles.length > 0 && (
                                     <div>
-                                        <span className="font-bold text-gray-900">طريقة الفتح:</span>
-                                        {selectedOptions.openingMethod}
-                                    </div>
-                                )}
-                                {selectedOptions.trackType && (
-                                    <div>
-                                        <span className="font-bold text-gray-900">نوع المسار:</span>
-                                        {selectedOptions.trackType}
-                                    </div>
-                                )}
-                                {selectedOptions.liningOption && (
-                                    <div>
-                                        <span className="font-bold text-gray-900">البطانة:</span>
-                                        {selectedOptions.liningOption}
+                                        <span className="font-bold text-gray-900">الملفات المرفقة:</span>
+                                        <div className="mt-1 space-y-1">
+                                            {selectedOptions.uploadedFiles.map((file, index) => (
+                                                <div key={index} className="flex items-center gap-2 text-xs text-gray-600">
+                                                    <a
+                                                        href={`/download-file/${file.uuid}`}
+                                                        className="text-blue-600 hover:text-blue-800 underline"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {file.name}
+                                                    </a>
+                                                    <span className="text-gray-400">
+                                                        ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -176,22 +269,21 @@ const QuickOrderModal: React.FC<QuickOrderModalProps> = ({
                             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                         </div>
 
-                        <div>
-                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                                رقم الهاتف *
-                            </label>
-                            <input
-                                type="tel"
-                                id="phone"
-                                value={data.phone}
-                                onChange={(e) => setData('phone', e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
-                        </div>
-
                         <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                                    رقم الهاتف *
+                                </label>
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    value={data.phone}
+                                    onChange={(e) => setData('phone', e.target.value)}
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required
+                                />
+                                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+                            </div>
                             <div>
                                 <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
                                     المدينة *
@@ -205,22 +297,6 @@ const QuickOrderModal: React.FC<QuickOrderModalProps> = ({
                                     required
                                 />
                                 {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
-                            </div>
-
-                            <div>
-                                <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">
-                                    الكمية *
-                                </label>
-                                <input
-                                    type="number"
-                                    id="quantity"
-                                    min="1"
-                                    value={data.quantity}
-                                    onChange={(e) => setData('quantity', parseInt(e.target.value))}
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    required
-                                />
-                                {errors.quantity && <p className="text-red-500 text-xs mt-1">{errors.quantity}</p>}
                             </div>
                         </div>
 
@@ -258,7 +334,7 @@ const QuickOrderModal: React.FC<QuickOrderModalProps> = ({
                             <div className="flex justify-between items-center mb-4">
                                 <span className="text-sm text-gray-600">إجمالي الطلب:</span>
                                 <span className="font-bold text-lg text-blue-600">
-                                    {(product.price * data.quantity).toFixed(2)} ر.س
+                                    {product.price.toFixed(2)} ر.س
                                 </span>
                             </div>
                             <div className="flex gap-3">

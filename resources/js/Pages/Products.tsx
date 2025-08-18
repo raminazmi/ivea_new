@@ -55,6 +55,8 @@ interface Category {
     id: number;
     name: string;
     slug: string;
+    parent_id?: number;
+    products_count?: number;
 }
 
 interface ProductsProps {
@@ -73,7 +75,15 @@ interface ProductsProps {
 const Products: React.FC<ProductsProps> = ({ products, categories, filters, filterOptions }) => {
     const [currentPage, setCurrentPage] = useState(products.current_page);
     const [currentFilters, setCurrentFilters] = useState(filters);
-    const [activeTab, setActiveTab] = useState(filters.tab || 'all');
+    const [activeTab, setActiveTab] = useState(() => {
+        // Set initial active tab based on filters
+        if (filters.tab) {
+            return filters.tab;
+        } else if (filters.main_category) {
+            return filters.main_category;
+        }
+        return 'all';
+    });
     const [loading, setLoading] = useState(false);
 
     React.useEffect(() => {
@@ -83,7 +93,16 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                 category: filters.category
             }));
         }
-    }, [filters.category]);
+
+        // Update active tab based on filters
+        if (filters.tab) {
+            setActiveTab(filters.tab);
+        } else if (filters.main_category) {
+            setActiveTab(filters.main_category);
+        } else {
+            setActiveTab('all');
+        }
+    }, [filters.category, filters.tab, filters.main_category]);
 
     const getDefaultDimensions = (): Dimensions => {
         if (products.data.length > 0) {
@@ -118,11 +137,15 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
 
     const dimensionLimits = getDimensionLimits();
 
+    // Create tabs from main categories
+    const mainCategories = categories.filter(cat => !cat.parent_id);
     const tabs = [
         { id: 'all', label: 'الكل' },
-        { id: 'new', label: 'جديد' },
-        { id: 'offers', label: 'عروض' },
-        { id: 'bestsellers', label: 'الأكثر مبيعاً' },
+        ...mainCategories.map(category => ({
+            id: category.slug,
+            label: category.name,
+            count: categories.filter(sub => sub.parent_id === category.id).reduce((total, sub) => total + (sub.products_count || 0), 0)
+        }))
     ];
 
     const handlePageChange = (page: number) => {
@@ -169,8 +192,10 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
 
     const handleClearAllFilters = () => {
         setLoading(true);
+        // Clear all filters and return to main products page
         setCurrentFilters({});
         setCurrentPage(1);
+        setActiveTab('all');
         router.get('/products', { page: 1 }, {
             preserveState: true,
             onFinish: () => setLoading(false)
@@ -180,7 +205,31 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
     const handleTabChange = (tab: string) => {
         setLoading(true);
         setActiveTab(tab);
-        const newFilters = { ...currentFilters, tab, page: 1 };
+
+        // If it's a main category tab, filter by that main category and its subcategories
+        let newFilters;
+        if (tab === 'all') {
+            newFilters = { page: 1 };
+        } else {
+            // Check if tab is a main category slug
+            const mainCategory = categories.find(cat => cat.slug === tab && !cat.parent_id);
+            if (mainCategory) {
+                // Get all subcategory IDs for this main category
+                const subcategoryIds = categories
+                    .filter(cat => cat.parent_id === mainCategory.id)
+                    .map(cat => cat.id);
+
+                newFilters = {
+                    main_category: tab,
+                    subcategory_ids: subcategoryIds,
+                    page: 1
+                };
+            } else {
+                // Fallback to old tab system
+                newFilters = { ...currentFilters, tab, page: 1 };
+            }
+        }
+
         setCurrentFilters(newFilters);
         setCurrentPage(1);
         router.get('/products', newFilters, {
@@ -291,12 +340,12 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                                             <button
                                                 key={tab.id}
                                                 onClick={() => handleTabChange(tab.id)}
-                                                className={`px-4 py-2 rounded-full text-sm md:text-base font-medium transition-all duration-700 hover:duration-1000 ${activeTab === tab.id
+                                                className={`px-4 py-2 rounded-full text-sm md:text-base font-medium transition-all duration-700 hover:duration-1000 flex items-center gap-2 ${activeTab === tab.id
                                                     ? 'bg-primary-yellow text-white shadow-lg'
                                                     : 'bg-white/80 text-gray-700 hover:bg-white hover:shadow-md border border-gray-200'
                                                     }`}
                                             >
-                                                {tab.label}
+                                                <span>{tab.label}</span>
                                             </button>
                                         ))}
                                     </div>

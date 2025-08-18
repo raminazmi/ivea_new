@@ -18,7 +18,8 @@ class Category extends Model
         'status',
         'sort_order',
         'color',
-        'customization_fields'
+        'customization_fields',
+        'parent_id'
     ];
 
     protected $casts = [
@@ -29,6 +30,34 @@ class Category extends Model
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    // Parent-child relationships for hierarchical categories
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_id')->ordered();
+    }
+
+    public function allChildren()
+    {
+        return $this->children()->with('allChildren');
+    }
+
+    // Scope for main (parent) categories only
+    public function scopeMainCategories($query)
+    {
+        return $query->whereNull('parent_id');
+    }
+
+    // Scope for subcategories only
+    public function scopeSubCategories($query)
+    {
+        return $query->whereNotNull('parent_id');
     }
 
     public function scopeActive($query)
@@ -289,5 +318,11 @@ class Category extends Model
                 $category->slug = Str::slug($category->name);
             }
         });
+    }
+
+    // Get all products count for this category
+    public function getAllProductsCount()
+    {
+        return $this->products()->count();
     }
 }

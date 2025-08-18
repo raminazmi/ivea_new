@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HiMinus, HiPlus, HiUpload, HiCheck, HiShoppingCart } from 'react-icons/hi';
 import { useDispatch } from 'react-redux';
 import Breadcrumb from '@/Components/Common/Breadcrumb';
@@ -11,7 +11,7 @@ import ActionButtons from '@/Components/Common/ActionButtons';
 import QuickOrderModal from '@/Components/Common/QuickOrderModal';
 import AppLayout from '@/Components/LandingPage/Layout/AppLayout';
 import ContactUs from '@/Components/LandingPage/ContactUs';
-import { addToCart } from '@/store/features/cartSlice';
+import { addToCart, syncCartData } from '@/store/features/cartSlice';
 
 interface ProductOptionsProps {
     product: {
@@ -44,19 +44,30 @@ interface ProductOptionsProps {
     };
 }
 
+interface UploadedFile {
+    name: string;
+    size: number;
+    uuid: string;
+    path?: string;
+    url?: string;
+    type?: string;
+    file?: File; // للاحتفاظ بملف الـ File الأصلي
+}
+
 const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedColor, setSelectedColor] = useState(0);
     const [quantity, setQuantity] = useState(1);
-    const [formData, setFormData] = useState<Record<string, any>>({});
+    const [formData, setFormData] = useState<Record<string, any>>({
+        quantity: 1
+    });
+    const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
     const [inCart, setInCart] = useState(false);
     const [added, setAdded] = useState(false);
     const [showQuickOrderModal, setShowQuickOrderModal] = useState(false);
     const dispatch = useDispatch();
 
-    const customizationFields = product.category?.customization_fields || {};
-
-    const handleQuantityChange = (increment: boolean) => {
+    const customizationFields = product.category?.customization_fields || {}; const handleQuantityChange = (increment: boolean) => {
         if (increment) {
             setQuantity(prev => prev + 1);
         } else if (quantity > 1) {
@@ -71,25 +82,171 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
         }));
     };
 
+    const handleMultipleCheckboxChange = (fieldName: string, optionKey: string, checked: boolean) => {
+        setFormData(prev => {
+            const currentValues = prev[fieldName] || [];
+            if (checked) {
+                return {
+                    ...prev,
+                    [fieldName]: [...currentValues, optionKey]
+                };
+            } else {
+                return {
+                    ...prev,
+                    [fieldName]: currentValues.filter((value: string) => value !== optionKey)
+                };
+            }
+        });
+    };
+
+    const handleFileUpload = async (files: FileList | null) => {
+        if (files) {
+            const formData = new FormData();
+            Array.from(files).forEach(file => {
+                formData.append('files[]', file);
+            });
+
+            try {
+                const response = await fetch('/upload-files', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        setUploadedFiles(prev => [...prev, ...result.files]);
+                    }
+                }
+            } catch (error) {
+                console.error('Error uploading files:', error);
+            }
+        }
+    };
+
+    const removeFile = (index: number) => {
+        setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleAddToCart = () => {
+        // تجميع جميع البيانات المخصصة
+        const customizationData: Record<string, any> = {};
+
+        // إضافة جميع قيم الحقول المخصصة مع التسميات
+        Object.entries(customizationFields).forEach(([fieldName, field]) => {
+            const fieldValue = formData[fieldName];
+            const fieldType = (field as any)?.type;
+            const fieldLabel = (field as any)?.label;
+
+            if (fieldValue !== undefined && fieldValue !== null && fieldValue !== '') {
+                if (fieldType === 'checkbox_multiple' && Array.isArray(fieldValue) && fieldValue.length > 0) {
+                    // للحقول متعددة الاختيار، احفظ القيم والتسميات
+                    const options = (field as any)?.options || {};
+                    customizationData[fieldName] = {
+                        type: fieldType,
+                        label: fieldLabel,
+                        values: fieldValue,
+                        displayValues: fieldValue.map(val => options[val]).filter(Boolean)
+                    };
+                } else if (fieldType === 'select') {
+                    // للحقول المنسدلة، احفظ القيمة والنص المعروض
+                    const options = (field as any)?.options || {};
+                    customizationData[fieldName] = {
+                        type: fieldType,
+                        label: fieldLabel,
+                        value: fieldValue,
+                        displayValue: options[fieldValue] || fieldValue
+                    };
+                } else if (fieldType === 'dimensions') {
+                    // للأبعاد ثنائية
+                    const width = formData[`${fieldName}_width`];
+                    const height = formData[`${fieldName}_height`];
+                    const unit = formData[`${fieldName}_unit`] || ((field as any)?.units?.[0]);
+
+                    if (width || height) {
+                        customizationData[fieldName] = {
+                            type: fieldType,
+                            label: fieldLabel,
+                            width: width || 0,
+                            height: height || 0,
+                            unit: unit,
+                            displayValue: `${width || 0} × ${height || 0} ${unit || ''}`
+                        };
+                    }
+                } else if (fieldType === 'dimensions_3d') {
+                    // للأبعاد ثلاثية
+                    const length = formData[`${fieldName}_length`];
+                    const width = formData[`${fieldName}_width`];
+                    const height = formData[`${fieldName}_height`];
+                    const unit = formData[`${fieldName}_unit`] || ((field as any)?.units?.[0]);
+
+                    if (length || width || height) {
+                        customizationData[fieldName] = {
+                            type: fieldType,
+                            label: fieldLabel,
+                            length: length || 0,
+                            width: width || 0,
+                            height: height || 0,
+                            unit: unit,
+                            displayValue: `${length || 0} × ${width || 0} × ${height || 0} ${unit || ''}`
+                        };
+                    }
+                } else if (fieldType === 'number') {
+                    // للحقول الرقمية
+                    const units = (field as any)?.units;
+                    customizationData[fieldName] = {
+                        type: fieldType,
+                        label: fieldLabel,
+                        value: fieldValue,
+                        displayValue: `${fieldValue}${units ? ` ${units.join('/')}` : ''}`
+                    };
+                } else {
+                    // للحقول الأخرى
+                    customizationData[fieldName] = {
+                        type: fieldType,
+                        label: fieldLabel,
+                        value: fieldValue,
+                        displayValue: fieldValue
+                    };
+                }
+            }
+        });
+
         const cartItem = {
             id: product.id,
             name: product.name,
             price: product.finalPrice || product.price,
             image: product.image,
-            quantity: quantity,
+            quantity: formData.quantity || quantity || 1,
             // إضافة اللون المختار إذا كان متوفراً
             ...(product.colors && product.colors[selectedColor] && {
                 color: product.colors[selectedColor],
                 colorName: product.colorNames?.[selectedColor]
             }),
-            // إضافة باقي البيانات المخصصة
-            ...formData
+            // إضافة البيانات المخصصة المنظمة
+            customizations: customizationData,
+            // إضافة الملفات المرفوعة
+            uploadedFiles: uploadedFiles.map(file => ({
+                name: file.name,
+                path: file.path || '',
+                url: file.url || '',
+                size: file.size,
+                type: file.type || '',
+                uuid: file.uuid
+            })),
+            // معرف فريد للعنصر في السلة (للتمييز بين المنتجات المتشابهة بخيارات مختلفة)
+            cartId: `${product.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
         };
 
         dispatch(addToCart(cartItem));
         setInCart(true);
         setAdded(true);
+
+        // مزامنة بيانات السلة
+        syncCartData();
 
         setTimeout(() => {
             setAdded(false);
@@ -101,33 +258,18 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     };
 
     const renderField = (fieldName: string, field: any) => {
-        const { label, type, options, required, min, max, units } = field;
+        const { label, type, options, required, min, max, units, with_other_option, description, accept, max_files } = field;
 
         switch (type) {
-            case 'color_selector':
-                if (product.colors && product.colors.length > 0) {
-                    return (
-                        <div key={fieldName} className="space-y-3 md:space-y-4">
-                            <h3 className="text-base md:text-lg font-semibold text-gray-900">
-                                {label} {required && <span className="text-red-500">*</span>}
-                            </h3>
-                            <ColorSelector
-                                colors={product.colors}
-                                colorNames={product.colorNames}
-                                selectedColor={selectedColor}
-                                onColorChange={setSelectedColor}
-                            />
-                        </div>
-                    );
-                }
-                break;
-
             case 'select':
                 return (
                     <div key={fieldName} className="space-y-2">
                         <label className="block text-sm md:text-base font-medium text-gray-700">
                             {label} {required && <span className="text-red-500">*</span>}
                         </label>
+                        {description && (
+                            <p className="text-xs md:text-sm text-gray-500">{description}</p>
+                        )}
                         <select
                             value={formData[fieldName] || ''}
                             onChange={(e) => handleFieldChange(fieldName, e.target.value)}
@@ -150,15 +292,191 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                         <label className="block text-sm md:text-base font-medium text-gray-700">
                             {label} {required && <span className="text-red-500">*</span>}
                         </label>
-                        <input
-                            type="number"
-                            value={formData[fieldName] || ''}
-                            onChange={(e) => handleFieldChange(fieldName, parseInt(e.target.value) || 0)}
-                            className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
-                            min={min}
-                            max={max}
-                            required={required}
-                        />
+                        {description && (
+                            <p className="text-xs md:text-sm text-gray-500">{description}</p>
+                        )}
+                        {fieldName === 'quantity' ? (
+                            // تصميم خاص للكمية مع أزرار + و -
+                            <div className="relative w-full inline-flex items-center bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus-within:border-primary-yellow focus-within:ring-2 focus-within:ring-primary-yellow focus-within:ring-opacity-20 transition-all duration-200">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const currentValue = formData[fieldName] || 1;
+                                        if (currentValue > (min || 1)) {
+                                            handleFieldChange(fieldName, currentValue - 1);
+                                            setQuantity(currentValue - 1);
+                                        }
+                                    }}
+                                    className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 focus:outline-none focus:bg-gray-100 rounded-r-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="تقليل الكمية"
+                                    disabled={(formData[fieldName] || 1) <= (min || 1)}
+                                >
+                                    <HiMinus className="h-4 w-4" />
+                                </button>
+                                <input
+                                    type="number"
+                                    value={formData[fieldName] || quantity}
+                                    onChange={(e) => {
+                                        const value = parseInt(e.target.value) || 1;
+                                        handleFieldChange(fieldName, value);
+                                        setQuantity(value);
+                                    }}
+                                    className="flex-1 text-center py-3 px-2 border-0 bg-transparent focus:ring-0 focus:outline-none text-sm md:text-base font-medium text-gray-900"
+                                    min={min || 1}
+                                    max={max}
+                                    placeholder="1"
+                                    title="كمية المنتج"
+                                    required={required}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const currentValue = formData[fieldName] || 1;
+                                        if (!max || currentValue < max) {
+                                            handleFieldChange(fieldName, currentValue + 1);
+                                            setQuantity(currentValue + 1);
+                                        }
+                                    }}
+                                    className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 focus:outline-none focus:bg-gray-100 rounded-l-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="زيادة الكمية"
+                                    disabled={max && (formData[fieldName] || 1) >= max}
+                                >
+                                    <HiPlus className="h-4 w-4" />
+                                </button>
+                            </div>
+                        ) : (
+                            // تصميم محسن للحقول الرقمية الأخرى
+                            <div className="relative inline-flex items-center bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus-within:border-primary-yellow focus-within:ring-2 focus-within:ring-primary-yellow focus-within:ring-opacity-20 transition-all duration-200 max-w-xs">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const currentValue = formData[fieldName] || min || 0;
+                                        if (currentValue > (min || 0)) {
+                                            handleFieldChange(fieldName, currentValue - 1);
+                                        }
+                                    }}
+                                    className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 focus:outline-none focus:bg-gray-100 rounded-r-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="تقليل القيمة"
+                                    disabled={(formData[fieldName] || min || 0) <= (min || 0)}
+                                >
+                                    <HiMinus className="h-4 w-4" />
+                                </button>
+                                <input
+                                    type="number"
+                                    value={formData[fieldName] || ''}
+                                    onChange={(e) => handleFieldChange(fieldName, parseInt(e.target.value) || 0)}
+                                    className="flex-1 text-center py-3 px-4 border-0 bg-transparent focus:ring-0 focus:outline-none text-sm md:text-base font-medium text-gray-900 min-w-0"
+                                    min={min}
+                                    max={max}
+                                    placeholder="0"
+                                    required={required}
+                                    title={`أدخل ${label}`}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const currentValue = formData[fieldName] || min || 0;
+                                        if (!max || currentValue < max) {
+                                            handleFieldChange(fieldName, currentValue + 1);
+                                        }
+                                    }}
+                                    className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 focus:outline-none focus:bg-gray-100 rounded-l-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="زيادة القيمة"
+                                    disabled={max && (formData[fieldName] || min || 0) >= max}
+                                >
+                                    <HiPlus className="h-4 w-4" />
+                                </button>
+                            </div>
+                        )}
+                        {/* عرض وحدة القياس إذا كانت متوفرة */}
+                        {units && (
+                            <p className="text-xs text-gray-500 mt-1">
+                                الوحدة: {units.join(' أو ')}
+                            </p>
+                        )}
+                    </div>
+                );
+            case 'checkbox_multiple':
+                return (
+                    <div key={fieldName} className="space-y-2">
+                        <label className="block text-sm md:text-base font-medium text-gray-700">
+                            {label} {required && <span className="text-red-500">*</span>}
+                        </label>
+                        {description && (
+                            <p className="text-xs md:text-sm text-gray-500">{description}</p>
+                        )}
+                        <div className="space-y-2">
+                            {Object.entries(options).map(([key, value]) => (
+                                <label key={key} className="flex items-center gap-3 rtl:flex-row-reverse">
+                                    <input
+                                        type="checkbox"
+                                        checked={(formData[fieldName] || []).includes(key)}
+                                        onChange={(e) => handleMultipleCheckboxChange(fieldName, key, e.target.checked)}
+                                        className="text-primary-yellow focus:ring-primary-yellow rounded"
+                                    />
+                                    <span className="text-sm md:text-base">{value as string}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                );
+
+            case 'file_upload':
+                return (
+                    <div key={fieldName} className="space-y-4 md:space-y-6">
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                            {label} {required && <span className="text-red-500">*</span>}
+                        </h3>
+
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 text-center">
+                            <HiUpload className="mx-auto h-8 w-8 md:h-12 md:w-12 text-gray-400 mb-3 md:mb-4" />
+                            <p className="text-sm md:text-base text-gray-600 mb-2">
+                                اسحب وأفلت الملفات هنا، أو
+                            </p>
+                            <label className="cursor-pointer">
+                                <span className="text-primary-yellow hover:text-primary-yellow/80 font-medium text-sm md:text-base">
+                                    اختر الملفات
+                                </span>
+                                <input
+                                    type="file"
+                                    multiple={max_files ? max_files > 1 : true}
+                                    accept={accept}
+                                    onChange={(e) => handleFileUpload(e.target.files)}
+                                    className="hidden"
+                                />
+                            </label>
+                            <p className="text-xs md:text-sm text-gray-500 mt-2">
+                                {accept ? accept.replace(/\*/g, '') : 'PNG, JPG, PDF'} حتى 10MB
+                                {max_files && ` (حد أقصى ${max_files} ملف)`}
+                            </p>
+                        </div>
+
+                        {/* عرض الملفات المرفوعة */}
+                        {uploadedFiles.length > 0 && (
+                            <div className="space-y-2">
+                                <h4 className="font-medium text-sm">الملفات المرفوعة:</h4>
+                                <div className="space-y-2">
+                                    {uploadedFiles.map((file, index) => (
+                                        <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                                            <div className="flex items-center gap-2">
+                                                <span>📎</span>
+                                                <span className="text-sm text-gray-700">{file.name}</span>
+                                                <span className="text-xs text-gray-500">
+                                                    ({(file.size / 1024).toFixed(1)} KB)
+                                                </span>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeFile(index)}
+                                                className="text-red-500 hover:text-red-700 text-sm"
+                                            >
+                                                حذف
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 );
 
@@ -347,63 +665,47 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 </div>
 
-                                {/* الكمية */}
-                                <div className="space-y-4 md:space-y-6">
-                                    <div>
-                                        <label className="block text-sm md:text-base font-medium text-gray-700 mb-2">
-                                            الكمية
-                                        </label>
-                                        <div className="flex items-center border border-gray-300 rounded-md w-32">
-                                            <button
-                                                onClick={() => handleQuantityChange(false)}
-                                                className="p-2.5 md:p-3 text-gray-600 hover:text-gray-800 focus:outline-none"
-                                                title="تقليل الكمية"
-                                            >
-                                                <HiMinus className="h-4 w-4 md:h-5 md:w-5" />
-                                            </button>
-                                            <input
-                                                type="number"
-                                                value={quantity}
-                                                onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                                                className="flex-1 text-center p-2.5 md:p-3 border-0 focus:ring-0 text-sm md:text-base"
-                                                min="1"
-                                                placeholder="الكمية"
-                                                title="كمية المنتج"
-                                            />
-                                            <button
-                                                onClick={() => handleQuantityChange(true)}
-                                                className="p-2.5 md:p-3 text-gray-600 hover:text-gray-800 focus:outline-none"
-                                                title="زيادة الكمية"
-                                            >
-                                                <HiPlus className="h-4 w-4 md:h-5 md:w-5" />
-                                            </button>
-                                        </div>
+                                {/* اختيار اللون من ألوان المنتج */}
+                                {product.colors && product.colors.length > 0 && (
+                                    <div className="space-y-3 md:space-y-4">
+                                        <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                                            اختر اللون <span className="text-red-500">*</span>
+                                        </h3>
+                                        <ColorSelector
+                                            colors={product.colors}
+                                            colorNames={product.colorNames}
+                                            selectedColor={selectedColor}
+                                            onColorChange={setSelectedColor}
+                                        />
                                     </div>
-                                </div>
+                                )}
 
                                 {/* خيارات التخصيص الديناميكية */}
-                                <div className="space-y-6">
-                                    {Object.entries(customizationFields).map(([fieldName, field]) =>
-                                        renderField(fieldName, field)
-                                    )}
-                                </div>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                                    {Object.entries(customizationFields).map(([fieldName, field]) => {
+                                        const fieldType = (field as any)?.type;
 
-                                {/* رفع الملفات */}
-                                <div className="space-y-4 md:space-y-6">
-                                    <h3 className="text-base md:text-lg font-semibold text-gray-900">رفع الملفات</h3>
+                                        // الحقول التي تأخذ العرض الكامل (عمود واحد)
+                                        const fullWidthFields = ['dimensions', 'dimensions_3d', 'file_upload'];
 
-                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 text-center">
-                                        <HiUpload className="mx-auto h-8 w-8 md:h-12 md:w-12 text-gray-400 mb-3 md:mb-4" />
-                                        <p className="text-sm md:text-base text-gray-600 mb-2">
-                                            اسحب وأفلت الملفات هنا، أو
-                                        </p>
-                                        <button className="text-primary-yellow hover:text-primary-yellow/80 font-medium text-sm md:text-base">
-                                            اختر الملفات
-                                        </button>
-                                        <p className="text-xs md:text-sm text-gray-500 mt-2">
-                                            PNG, JPG, PDF حتى 10MB
-                                        </p>
-                                    </div>
+                                        // checkbox_multiple للخشبيات (product_options) يأخذ العرض الكامل
+                                        const isProductOptionsField = fieldName === 'product_options' && fieldType === 'checkbox_multiple';
+
+                                        if (fullWidthFields.includes(fieldType) || isProductOptionsField) {
+                                            return (
+                                                <div key={fieldName} className="lg:col-span-2">
+                                                    {renderField(fieldName, field)}
+                                                </div>
+                                            );
+                                        }
+
+                                        // باقي الحقول تظهر في عمودين
+                                        return (
+                                            <div key={fieldName}>
+                                                {renderField(fieldName, field)}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
 
                                 {/* أزرار العمل */}
@@ -436,8 +738,102 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                         color: product.colors[selectedColor],
                         colorName: product.colorNames?.[selectedColor]
                     }),
-                    ...formData,
-                    quantity: quantity
+                    // تجميع البيانات المخصصة للعرض
+                    customizations: Object.entries(customizationFields).reduce((acc, [fieldName, field]) => {
+                        const fieldValue = formData[fieldName];
+                        const fieldType = (field as any)?.type;
+                        const fieldLabel = (field as any)?.label;
+
+                        if (fieldValue !== undefined && fieldValue !== null && fieldValue !== '') {
+                            if (fieldType === 'checkbox_multiple' && Array.isArray(fieldValue) && fieldValue.length > 0) {
+                                const options = (field as any)?.options || {};
+                                acc[fieldName] = {
+                                    type: fieldType,
+                                    label: fieldLabel,
+                                    values: fieldValue,
+                                    displayValues: fieldValue.map(val => options[val]).filter(Boolean)
+                                };
+                            } else if (fieldType === 'select') {
+                                const options = (field as any)?.options || {};
+                                acc[fieldName] = {
+                                    type: fieldType,
+                                    label: fieldLabel,
+                                    value: fieldValue,
+                                    displayValue: options[fieldValue] || fieldValue
+                                };
+                            } else if (fieldType === 'dimensions') {
+                                const width = formData[`${fieldName}_width`];
+                                const height = formData[`${fieldName}_height`];
+                                const unit = formData[`${fieldName}_unit`] || ((field as any)?.units?.[0]);
+
+                                if (width || height) {
+                                    acc[fieldName] = {
+                                        type: fieldType,
+                                        label: fieldLabel,
+                                        width: width || 0,
+                                        height: height || 0,
+                                        unit: unit,
+                                        displayValue: `${width || 0} × ${height || 0} ${unit || ''}`
+                                    };
+                                }
+                            } else if (fieldType === 'dimensions_3d') {
+                                const length = formData[`${fieldName}_length`];
+                                const width = formData[`${fieldName}_width`];
+                                const height = formData[`${fieldName}_height`];
+                                const unit = formData[`${fieldName}_unit`] || ((field as any)?.units?.[0]);
+
+                                if (length || width || height) {
+                                    acc[fieldName] = {
+                                        type: fieldType,
+                                        label: fieldLabel,
+                                        length: length || 0,
+                                        width: width || 0,
+                                        height: height || 0,
+                                        unit: unit,
+                                        displayValue: `${length || 0} × ${width || 0} × ${height || 0} ${unit || ''}`
+                                    };
+                                }
+                            } else if (fieldType === 'file_upload' && uploadedFiles.length > 0) {
+                                acc[fieldName] = {
+                                    type: fieldType,
+                                    label: fieldLabel,
+                                    files: uploadedFiles.map(file => ({
+                                        name: file.name,
+                                        size: file.size,
+                                        uuid: file.uuid,
+                                        type: file.type || '',
+                                        path: file.path || '',
+                                        url: file.url || ''
+                                    }))
+                                };
+                            } else if (fieldType === 'number') {
+                                const units = (field as any)?.units;
+                                acc[fieldName] = {
+                                    type: fieldType,
+                                    label: fieldLabel,
+                                    value: fieldValue,
+                                    displayValue: `${fieldValue}${units ? ` ${units.join('/')}` : ''}`
+                                };
+                            } else {
+                                acc[fieldName] = {
+                                    type: fieldType,
+                                    label: fieldLabel,
+                                    value: fieldValue,
+                                    displayValue: fieldValue
+                                };
+                            }
+                        }
+                        return acc;
+                    }, {} as Record<string, any>),
+                    quantity: formData.quantity || quantity || 1,
+                    uploadedFiles: uploadedFiles.map(file => ({
+                        name: file.name,
+                        path: file.path || '',
+                        url: file.url || '',
+                        size: file.size,
+                        type: file.type || '',
+                        uuid: file.uuid
+                    }))
                 }}
             />
 

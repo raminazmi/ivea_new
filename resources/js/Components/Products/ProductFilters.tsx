@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { HiSearch, HiChevronDown, HiChevronUp, HiX } from 'react-icons/hi';
 
+interface Category {
+    id: number;
+    name: string;
+    slug: string;
+    products_count?: number;
+    parent_id?: number;
+}
+
 interface ProductFiltersProps {
     onFilterChange: (filters: any) => void;
     activeTab?: string;
-    categories?: any[];
+    categories?: Category[];
     filterOptions?: any;
     currentFilters?: any;
+    activeCategory?: string; // Currently selected main category
 }
 
 const ProductFilters: React.FC<ProductFiltersProps> = ({
@@ -14,7 +23,8 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
     activeTab = 'all',
     categories = [],
     filterOptions = {},
-    currentFilters = {}
+    currentFilters = {},
+    activeCategory = 'all'
 }) => {
     const [searchTerm, setSearchTerm] = useState(currentFilters.search || '');
     const [selectedCategories, setSelectedCategories] = useState<string[]>(currentFilters.category ? [currentFilters.category] : []);
@@ -106,7 +116,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
         };
 
         if (searchTerm) filters.search = searchTerm;
-        if (selectedCategories.length > 0) filters.category = selectedCategories[0]; // Single category for now
+        if (selectedCategories.length > 0) filters.category = selectedCategories[0]; // Use slug instead of ID
         if (selectedColors.length > 0) filters.colors = selectedColors;
         if (selectedSizes.length > 0) filters.size = selectedSizes;
         if (selectedOpeningMethods.length > 0) filters.opening_method = selectedOpeningMethods;
@@ -200,38 +210,108 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                     onClick={() => toggleSection('category')}
                     className="flex items-center justify-between w-full text-left font-bold text-gray-900 mb-3"
                 >
-                    الفئات
+                    الفئات الفرعية
                     {expandedSections.category ? <HiChevronUp className="w-5 h-5" /> : <HiChevronDown className="w-5 h-5" />}
                 </button>
                 {expandedSections.category && (
-                    <div className="space-y-2">
-                        <label className="flex items-center px-3 cursor-pointer">
-                            <input
-                                type="radio"
-                                name="category"
-                                checked={selectedCategories.length === 0}
-                                onChange={() => setSelectedCategories([])}
-                                className="w-4 h-4 me-2 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
-                            />
-                            <span className="text-gray-700">الكل</span>
-                        </label>
-                        {categories.map((category) => (
-                            <label key={category.id} className="flex items-center px-3 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="category"
-                                    checked={selectedCategories.includes(category.id.toString())}
-                                    onChange={() => setSelectedCategories([category.id.toString()])}
-                                    className="w-4 h-4 me-2 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
-                                />
-                                <span className="text-gray-700">{category.name} ({category.products_count || 0})</span>
-                            </label>
-                        ))}
+                    <div className="space-y-3">
+                        {activeCategory === 'all' ? (
+                            // Show all subcategories grouped by main category
+                            <div className="space-y-4">
+                                <label className="flex items-center px-3 py-2 cursor-pointer bg-gray-50 rounded-lg">
+                                    <input
+                                        type="radio"
+                                        name="subcategory"
+                                        checked={selectedCategories.length === 0}
+                                        onChange={() => setSelectedCategories([])}
+                                        className="w-4 h-4 me-2 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
+                                    />
+                                    <span className="text-gray-700 font-medium">جميع الفئات</span>
+                                </label>
+
+                                {categories.filter(cat => !cat.parent_id).map((mainCategory: Category) => {
+                                    const subcategories = categories.filter(sub => sub.parent_id === mainCategory.id);
+                                    if (subcategories.length === 0) return null;
+
+                                    return (
+                                        <div key={mainCategory.id} className="border border-gray-200 rounded-lg p-3">
+                                            <h4 className="font-semibold text-gray-900 mb-2 text-sm">{mainCategory.name}</h4>
+                                            <div className="space-y-1">
+                                                {subcategories.map((subCategory: Category) => (
+                                                    <label key={subCategory.id} className="flex items-center px-2 py-1 cursor-pointer hover:bg-gray-50 rounded">
+                                                        <input
+                                                            type="radio"
+                                                            name="subcategory"
+                                                            checked={selectedCategories.includes(subCategory.slug)}
+                                                            onChange={() => setSelectedCategories([subCategory.slug])}
+                                                            className="w-4 h-4 me-2 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
+                                                        />
+                                                        <span className="text-gray-700 text-sm flex-1">{subCategory.name}</span>
+                                                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                                            {subCategory.products_count || 0}
+                                                        </span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            // Show subcategories of active main category
+                            (() => {
+                                const mainCategory = categories.find(cat => cat.slug === activeCategory && !cat.parent_id);
+                                if (!mainCategory) return (
+                                    <p className="text-gray-500 text-center py-4">لا توجد فئات فرعية متاحة</p>
+                                );
+
+                                const subcategories = categories.filter(cat => cat.parent_id === mainCategory.id);
+
+                                return (
+                                    <div className="space-y-2">
+                                        <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                                            <p className="text-sm text-gray-700">
+                                                <span className="font-semibold text-primary-yellow">{mainCategory.name}</span> - الفئات الفرعية
+                                            </p>
+                                        </div>
+
+                                        <label className="flex items-center px-3 py-2 cursor-pointer bg-gray-50 rounded-lg">
+                                            <input
+                                                type="radio"
+                                                name="subcategory"
+                                                checked={selectedCategories.length === 0}
+                                                onChange={() => setSelectedCategories([])}
+                                                className="w-4 h-4 me-2 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
+                                            />
+                                            <span className="text-gray-700 font-medium">جميع فئات {mainCategory.name}</span>
+                                        </label>
+
+                                        {subcategories.map((subCategory: Category) => (
+                                            <label key={subCategory.id} className="flex items-center px-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg border border-gray-100">
+                                                <input
+                                                    type="radio"
+                                                    name="subcategory"
+                                                    checked={selectedCategories.includes(subCategory.slug)}
+                                                    onChange={() => setSelectedCategories([subCategory.slug])}
+                                                    className="w-4 h-4 me-2 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
+                                                />
+                                                <span className="text-gray-700 flex-1">{subCategory.name}</span>
+                                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                                    {subCategory.products_count || 0}
+                                                </span>
+                                            </label>
+                                        ))}
+
+                                        {subcategories.length === 0 && (
+                                            <p className="text-gray-500 text-center py-4 text-sm">لا توجد فئات فرعية في {mainCategory.name}</p>
+                                        )}
+                                    </div>
+                                );
+                            })()
+                        )}
                     </div>
                 )}
-            </div>
-
-            <div className="mb-6">
+            </div>            <div className="mb-6">
                 <button
                     onClick={() => toggleSection('price')}
                     className="flex items-center justify-between w-full text-left font-bold text-gray-900 mb-3"

@@ -2,22 +2,39 @@ import React from 'react';
 import { Head, useForm, Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
-interface CreateCategoryProps {
-    user: any;
+interface Category {
+    id: number;
+    name: string;
+    slug: string;
+    description?: string;
+    image?: string;
+    status: string;
+    sort_order: number;
+    color?: string;
+    parent_id?: number;
 }
 
-const CreateCategory: React.FC<CreateCategoryProps> = ({ user }) => {
+interface CreateCategoryProps {
+    user: any;
+    categories: Category[]; // Main categories for parent selection
+}
+
+const CreateCategory: React.FC<CreateCategoryProps> = ({ user, categories = [] }) => {
+    // Debug: Log categories
+    console.log('Categories received:', categories);
+
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         description: '',
-        image: '',
+        image: '/images/curtain.png', // Fixed default image
         status: 'active',
-        sort_order: 0,
-        color: '#F0F7FF'
+        color: '#3B82F6', // Default blue color
+        parent_id: '' // For selecting parent category
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('Submitting data:', data);
         post('/admin/categories');
     };
 
@@ -38,6 +55,69 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ user }) => {
 
                 <div className="bg-white rounded-lg shadow-md p-6">
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Category Type Selection */}
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-3">نوع الفئة</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div
+                                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${!data.parent_id
+                                        ? 'border-primary-yellow bg-yellow-50 text-gray-900'
+                                        : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                                        }`}
+                                    onClick={() => setData('parent_id', '')}
+                                >
+                                    <div className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="category_type"
+                                            checked={!data.parent_id}
+                                            onChange={() => setData('parent_id', '')}
+                                            className="w-4 h-4 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
+                                        />
+                                        <div className="mr-3">
+                                            <h4 className="font-semibold">فئة رئيسية</h4>
+                                            <p className="text-sm text-gray-500">فئة أساسية تحتوي على فئات فرعية</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${data.parent_id
+                                        ? 'border-primary-yellow bg-yellow-50 text-gray-900'
+                                        : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                                        } ${categories.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    onClick={() => {
+                                        if (categories.length > 0) {
+                                            setData('parent_id', categories[0].id.toString());
+                                        }
+                                    }}
+                                >
+                                    <div className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="category_type"
+                                            checked={!!data.parent_id}
+                                            disabled={categories.length === 0}
+                                            onChange={() => {
+                                                if (categories.length > 0) {
+                                                    setData('parent_id', categories[0].id.toString());
+                                                }
+                                            }}
+                                            className="w-4 h-4 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
+                                        />
+                                        <div className="mr-3">
+                                            <h4 className="font-semibold">فئة فرعية</h4>
+                                            <p className="text-sm text-gray-500">
+                                                {categories.length === 0
+                                                    ? 'يجب إنشاء فئة رئيسية أولاً'
+                                                    : 'فئة تندرج تحت فئة رئيسية'
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -48,39 +128,33 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ user }) => {
                                     value={data.name}
                                     onChange={(e) => setData('name', e.target.value)}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-yellow focus:border-transparent"
-                                    placeholder="اسم الفئة"
+                                    placeholder={data.parent_id ? "مثال: ستائر الويفي" : "مثال: ستائر"}
+                                    required
                                 />
                                 {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    الترتيب
-                                </label>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    value={data.sort_order}
-                                    onChange={(e) => setData('sort_order', parseInt(e.target.value))}
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-yellow focus:border-transparent"
-                                    placeholder="0"
-                                />
-                                {errors.sort_order && <p className="text-red-500 text-sm mt-1">{errors.sort_order}</p>}
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    صورة الفئة
-                                </label>
-                                <input
-                                    type="text"
-                                    value={data.image}
-                                    onChange={(e) => setData('image', e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-yellow focus:border-transparent"
-                                    placeholder="/images/category.jpg"
-                                />
-                                {errors.image && <p className="text-red-500 text-sm mt-1">{errors.image}</p>}
-                            </div>
+                            {data.parent_id && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        الفئة الرئيسية *
+                                    </label>
+                                    <select
+                                        value={data.parent_id}
+                                        onChange={(e) => setData('parent_id', e.target.value)}
+                                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-yellow focus:border-transparent"
+                                        required
+                                    >
+                                        <option value="">اختر الفئة الرئيسية</option>
+                                        {categories.map((category) => (
+                                            <option key={category.id} value={category.id}>
+                                                {category.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.parent_id && <p className="text-red-500 text-sm mt-1">{errors.parent_id}</p>}
+                                </div>
+                            )}
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -111,25 +185,6 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ user }) => {
                                 placeholder="وصف الفئة..."
                             />
                             {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                لون الفئة
-                            </label>
-                            <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                                <input
-                                    type="color"
-                                    value={data.color}
-                                    onChange={(e) => setData('color', e.target.value)}
-                                    className="w-16 h-12 border border-gray-300 rounded-lg"
-                                    title="اختر لون الفئة"
-                                />
-                                <span className="text-sm text-gray-600">
-                                    اختر لون يمثل الفئة في الواجهة
-                                </span>
-                            </div>
-                            {errors.color && <p className="text-red-500 text-sm mt-1">{errors.color}</p>}
                         </div>
 
                         <div className="flex justify-end space-x-4 rtl:space-x-reverse">

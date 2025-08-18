@@ -22,6 +22,7 @@ class Product extends Model
         'tab',
         'category_id',
         'colors',
+        'color_names',
         'status',
         'stock',
         'sku',
@@ -58,6 +59,7 @@ class Product extends Model
         'discount' => 'integer',
         'rating' => 'integer',
         'colors' => 'array',
+        'color_names' => 'array',
         'images' => 'array',
         'dimensions' => 'array',
         'specifications' => 'array',
@@ -213,16 +215,45 @@ class Product extends Model
     {
         $colors = $this->attributes['colors'] ?? null;
 
-        if ($colors && is_array($colors)) {
-            return $colors;
+        if ($colors) {
+            // إذا كان JSON string، قم بفك تشفيره
+            if (is_string($colors)) {
+                $colors = json_decode($colors, true);
+            }
+
+            if (is_array($colors) && !empty($colors)) {
+                return $colors;
+            }
         }
 
+        // ألوان افتراضية كـ fallback
         return ['#FFA500', '#87CEEB', '#DDA0DD', '#9370DB'];
     }
 
     public function getColorNamesAttribute()
     {
-        return ['برتقالي', 'أزرق', 'بنفسجي', 'بنفسجي غامق'];
+        // أولاً، تحقق من وجود أسماء ألوان في قاعدة البيانات
+        if (isset($this->attributes['color_names'])) {
+            $colorNames = $this->attributes['color_names'];
+
+            if (is_string($colorNames)) {
+                $colorNames = json_decode($colorNames, true);
+            }
+
+            if ($colorNames && is_array($colorNames)) {
+                return $colorNames;
+            }
+        }
+
+        // إذا لم تكن هناك أسماء ألوان مخزنة، إرجاع أسماء افتراضية بناءً على عدد الألوان
+        $colors = $this->product_colors;
+        $defaultNames = [];
+
+        for ($i = 0; $i < count($colors); $i++) {
+            $defaultNames[] = 'لون ' . ($i + 1);
+        }
+
+        return $defaultNames;
     }
 
     public function getFeaturesAttribute()

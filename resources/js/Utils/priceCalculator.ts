@@ -5,7 +5,8 @@
 
 export interface Product {
     id: number;
-    base_price: number;
+    price: number; // Changed from base_price to price
+    base_price?: number; // Keep as optional for backward compatibility
     price_per_sqm?: number;
     pricing_method?: 'fixed' | 'per_sqm' | 'tiered';
     min_price?: number;
@@ -24,23 +25,19 @@ export interface Dimensions {
  */
 export const calculateDynamicPrice = (product: Product, dimensions: Dimensions): number => {
     const { width, height } = dimensions;
-    const { base_price, price_per_sqm, pricing_method, min_price, max_price } = product;
+    const { price, base_price, price_per_sqm, pricing_method, min_price, max_price } = product;
 
-    // Now that we've updated the database, base_price should have valid values
-    const basePrice = Number(base_price);
-
-    console.log('[DEBUG] Price calculation - Product:', (product as any).id, 'Base price:', basePrice, 'Price per sqm:', price_per_sqm, 'Dimensions:', dimensions);
+    // Use price if available, otherwise use base_price for backward compatibility
+    const basePrice = Number(price || base_price || 0);
 
     // If no dimensions provided or dimensions are too small, return base price
     if (!width || !height || width < 10 || height < 10) {
-        console.log('[DEBUG] Invalid dimensions, returning base price:', basePrice);
         return basePrice;
     }
 
-    // If basePrice is invalid, fallback to original price
+    // If basePrice is invalid, fallback to a reasonable default
     if (!basePrice || basePrice <= 0 || isNaN(basePrice)) {
-        const fallbackPrice = Number((product as any).price) || 100;
-        console.log('[DEBUG] Invalid basePrice, using fallback:', fallbackPrice);
+        const fallbackPrice = 500; // Set a reasonable default
         return fallbackPrice;
     }
 

@@ -261,23 +261,30 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div>
-                                        <InputLabel htmlFor="category_id" value="الفئة" />
+                                        <InputLabel htmlFor="category_id" value="الفئة الفرعية" />
                                         <select
                                             id="category_id"
                                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                             value={data.category_id}
                                             onChange={(e) => setData('category_id', e.target.value)}
                                             required
-                                            title="اختر فئة المنتج"
+                                            title="اختر الفئة الفرعية للمنتج"
                                         >
-                                            <option value="">اختر الفئة</option>
-                                            {categories.map((category) => (
-                                                <option key={category.id} value={category.id}>
-                                                    {category.name}
-                                                </option>
+                                            <option value="">اختر الفئة الفرعية</option>
+                                            {categories.filter(cat => !cat.parent_id).map((mainCategory) => (
+                                                <optgroup key={`group-${mainCategory.id}`} label={mainCategory.name}>
+                                                    {categories
+                                                        .filter(sub => sub.parent_id === mainCategory.id)
+                                                        .map((subCategory) => (
+                                                            <option key={`sub-${subCategory.id}`} value={subCategory.id}>
+                                                                {subCategory.name}
+                                                            </option>
+                                                        ))}
+                                                </optgroup>
                                             ))}
                                         </select>
                                         <InputError message={errors.category_id} className="mt-2" />
+                                        <p className="mt-1 text-sm text-gray-500">يمكن ربط المنتجات بالفئات الفرعية فقط</p>
                                     </div>
 
                                     <div>

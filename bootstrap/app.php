@@ -17,12 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SEOMiddleware::class,
         ]);
 
-        // إضافة CSRF middleware
         $middleware->validateCsrfTokens(except: [
             '/admin/upload/images',
         ]);
 
-        // تسجيل middleware للمدير
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'seo' => \App\Http\Middleware\SEOMiddleware::class,

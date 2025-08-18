@@ -105,7 +105,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
             price: displayPrice,
             image: product.image,
             selectedDimensions: currentDimensions,
-            selectedPrice: currentPrice
+            selectedPrice: currentPrice,
+            quantity: 1
         }));
         setAdded(true);
         setTimeout(() => setAdded(false), 900);
@@ -142,12 +143,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                                 >
                                     خيارات المنتج
                                 </Link>
-                                <Link
-                                    href={`/products/${product.id}`}
-                                    className="bg-primary-yellow text-gray-900 px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg font-medium hover:bg-yellow-400 transition-colors text-xs sm:text-sm text-center"
-                                >
-                                    اتصل بنا
-                                </Link>
                             </div>
                         </div>
                     </div>
@@ -165,13 +160,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                         <p className="text-xs text-[#64748B] mt-1">{product.category.name}</p>
                     )}
 
-                    <div className="flex justify-start mt-2 mb-1">
-                        {colors.slice(0, 3).map((color, idx) => (
+                    <div className="flex justify-start mt-2 mb-1 flex-wrap gap-1">
+                        {colors.map((color, idx) => (
                             <ColorSwatch
                                 key={idx}
                                 color={color}
                                 size="sm"
-                                className="mx-1"
+                                className=""
                             />
                         ))}
                     </div>

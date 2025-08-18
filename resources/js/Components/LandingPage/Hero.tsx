@@ -7,7 +7,27 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const Hero: React.FC = () => {
+interface Category {
+    id: number;
+    name: string;
+    slug: string;
+    parent_id?: number;
+    products_count?: number;
+}
+
+interface HeroCategoryItem {
+    name: string;
+    image: string;
+    subtitle: string;
+    bgColor: string;
+    slug: string;
+}
+
+interface HeroProps {
+    categories?: Category[];
+}
+
+const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isVisible, setIsVisible] = useState({
         hero: false,
@@ -180,37 +200,6 @@ const Hero: React.FC = () => {
         { name: 'MISSONI HOME', image: '/images/missoni.png' },
     ];
 
-    const categories = [
-        {
-            name: 'ستــائر',
-            image: '/images/curtain.png',
-            subtitle: 'عرض المزيد',
-            bgColor: 'bg-[#F5F5F5]',
-            slug: 'stayr-nbsh'
-        },
-        {
-            name: 'خشبيات',
-            image: '/images/door.png',
-            subtitle: 'عرض المزيد',
-            bgColor: 'bg-[#F5F5F5]',
-            slug: 'stayr-qmashya'
-        },
-        {
-            name: 'كــنب',
-            image: '/images/sofa.png',
-            subtitle: 'عرض المزيد',
-            bgColor: 'bg-[#F5F5F5]',
-            slug: 'knb-wraayk'
-        },
-        {
-            name: 'خــزائن',
-            image: '/images/treasury.png',
-            subtitle: 'عرض المزيد',
-            bgColor: 'bg-[#F5F5F5]',
-            slug: 'tawlat'
-        }
-    ];
-
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % heroImages.length);
@@ -230,6 +219,58 @@ const Hero: React.FC = () => {
     const goToSlide = (index: number) => {
         setCurrentSlide(index);
     };
+
+    // Generate category link with subcategory IDs
+    const getCategoryLink = (categorySlug: string) => {
+        // Find the main category by slug
+        const mainCategory = dbCategories.find((cat: Category) => cat.slug === categorySlug && !cat.parent_id);
+
+        if (mainCategory) {
+            // Get all subcategory IDs for this main category
+            const subcategoryIds = dbCategories
+                .filter((cat: Category) => cat.parent_id === mainCategory.id)
+                .map((cat: Category) => cat.id);
+
+            if (subcategoryIds.length > 0) {
+                const subcategoryParams = subcategoryIds.map((id: number, index: number) => `subcategory_ids[${index}]=${id}`).join('&');
+                return `/products?main_category=${categorySlug}&${subcategoryParams}`;
+            }
+        }
+
+        // Fallback to just main_category if no subcategories found
+        return `/products?main_category=${categorySlug}`;
+    };
+
+    const categories: HeroCategoryItem[] = [
+        {
+            name: 'ستــائر',
+            image: '/images/curtain.png',
+            subtitle: 'عرض المزيد',
+            bgColor: 'bg-[#F5F5F5]',
+            slug: 'curtains'
+        },
+        {
+            name: 'خشبيات',
+            image: '/images/door.png',
+            subtitle: 'عرض المزيد',
+            bgColor: 'bg-[#F5F5F5]',
+            slug: 'wooden'
+        },
+        {
+            name: 'كــنب',
+            image: '/images/sofa.png',
+            subtitle: 'عرض المزيد',
+            bgColor: 'bg-[#F5F5F5]',
+            slug: 'sofas'
+        },
+        {
+            name: 'خــزائن',
+            image: '/images/treasury.png',
+            subtitle: 'عرض المزيد',
+            bgColor: 'bg-[#F5F5F5]',
+            slug: 'cabinets'
+        }
+    ];
 
     return (
         <section className="bg-white py-4 sm:py-6 md:py-8 lg:pt-20">
@@ -400,10 +441,10 @@ const Hero: React.FC = () => {
                     data-section="categories"
                     className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14 sm:gap-8 lg:gap-6 px-2 sm:px-4 mt-32">
                     <div ref={categoriesContainerRef} className="contents">
-                        {categories.map((category, index) => (
+                        {categories.map((category: HeroCategoryItem, index: number) => (
                             <Link
                                 key={index}
-                                href={`/products?category=${category.slug}`}
+                                href={getCategoryLink(category.slug)}
                                 className="group relative overflow-visible rounded-xl sm:rounded-2xl transition-all duration-1000 cursor-pointer hover:scale-105 block"
                             >
                                 <div className={`${category.bgColor} flex justify-between items-center gap-2 rounded-xl sm:rounded-2xl p-3 sm:p-4 pb-2 transition-all duration-700 group-hover:shadow-xl`}>

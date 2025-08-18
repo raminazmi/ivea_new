@@ -6,6 +6,13 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import ScrollToTop from './Components/ScrollToTop';
+import axios from 'axios';
+
+// تأكد من إعداد CSRF token
+const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+if (token) {
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
+}
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 

@@ -13,27 +13,48 @@ class CategoryCustomizationSeeder extends Seeder
      */
     public function run(): void
     {
-        // البحث عن الفئات الموجودة وتحديثها
         $categories = Category::all();
-
         foreach ($categories as $category) {
-            // سيتم استخدام الـ method الموجود في الـ model للحصول على الخيارات الافتراضية
-            // لا نحتاج لحفظ البيانات لأن الـ model سيعيد الخيارات تلقائياً
-            // ولكن يمكننا حفظها إذا أردنا تخصيص معين
-
-            if (stripos($category->name, 'ستائر') !== false) {
+            // فئة الستائر (الفئة الرئيسية والفرعية)
+            if (
+                stripos($category->name, 'ستائر') !== false ||
+                stripos($category->name, 'ويفي') !== false ||
+                stripos($category->name, 'إمريكي') !== false ||
+                stripos($category->name, 'رول') !== false ||
+                stripos($category->name, 'روماني') !== false
+            ) {
                 $category->update([
                     'customization_fields' => [
-                        'color' => [
-                            'label' => 'اللون',
-                            'type' => 'color_selector',
+                        'quantity' => [
+                            'label' => 'الكمية',
+                            'type' => 'number',
+                            'min' => 1,
+                            'max' => 50,
+                            'required' => true,
+                            'default' => 1
+                        ],
+                        'curtain_type' => [
+                            'label' => 'نوع الستارة',
+                            'type' => 'select',
+                            'options' => [
+                                'wave' => 'ستائر الويفي',
+                                'american' => 'ستائر الإمريكي',
+                                'roller' => 'ستائر الرول',
+                                'roman' => 'ستائر الروماني'
+                            ],
                             'required' => true
+                        ],
+                        'color' => [
+                            'label' => 'لون القماش',
+                            'type' => 'color_selector',
+                            'required' => true,
+                            'with_other_option' => true
                         ],
                         'dimensions' => [
                             'label' => 'المقاس (عرض × ارتفاع)',
                             'type' => 'dimensions',
                             'required' => true,
-                            'units' => ['سم', 'متر', 'انش']
+                            'units' => ['سم', 'متر']
                         ],
                         'opening_method' => [
                             'label' => 'طريقة الفتح',
@@ -61,142 +82,256 @@ class CategoryCustomizationSeeder extends Seeder
                                 'without' => 'بدون بطانة'
                             ],
                             'required' => true
+                        ],
+                        'file_upload' => [
+                            'label' => 'رفع صورة المساحة أو التصميم المطلوب',
+                            'type' => 'file_upload',
+                            'accept' => 'image/*,.pdf',
+                            'max_files' => 5,
+                            'required' => false
                         ]
                     ]
                 ]);
-            } elseif (stripos($category->name, 'كنب') !== false) {
+            }
+            // فئة الكنب (الفئة الرئيسية والفرعية)
+            elseif (
+                stripos($category->name, 'كنب') !== false ||
+                stripos($category->name, 'مودرن') !== false ||
+                stripos($category->name, 'كلاسيك') !== false ||
+                stripos($category->name, 'نيو كلاسيك') !== false
+            ) {
                 $category->update([
                     'customization_fields' => [
+                        'quantity' => [
+                            'label' => 'الكمية',
+                            'type' => 'number',
+                            'min' => 1,
+                            'max' => 20,
+                            'required' => true,
+                            'default' => 1
+                        ],
+                        'sofa_style' => [
+                            'label' => 'المنتجات',
+                            'type' => 'select',
+                            'options' => [
+                                'modern' => 'مودرن',
+                                'classic' => 'كلاسيك',
+                                'neo_classic' => 'نيو كلاسيك'
+                            ],
+                            'required' => true
+                        ],
                         'sofa_type' => [
                             'label' => 'نوع الكنب',
                             'type' => 'select',
                             'options' => [
-                                'corner' => 'زاوية',
-                                'triple' => 'ثلاثي',
-                                'double' => 'ثنائي',
-                                'single' => 'مفرد'
+                                'single' => 'كنبة فردية',
+                                'double' => 'كنبة ثنائية',
+                                'triple' => 'كنبة ثلاثية',
+                                'l_shape' => 'زاوية (L Shape)'
                             ],
                             'required' => true
                         ],
                         'fabric_type' => [
-                            'label' => 'القماش',
+                            'label' => 'نوع القماش',
                             'type' => 'select',
                             'options' => [
                                 'velvet' => 'مخمل',
-                                'linen' => 'كتّان',
-                                'leather' => 'جلد'
+                                'cotton' => 'كتان',
+                                'chenille' => 'شانل',
+                                'linen' => 'لينين',
+                                'microfiber' => 'ميكروفيبر',
+                                'natural_leather' => 'جلد طبيعي',
+                                'synthetic_leather' => 'جلد صناعي'
                             ],
                             'required' => true
                         ],
-                        'color' => [
-                            'label' => 'اللون',
+                        'fabric_color' => [
+                            'label' => 'لون القماش',
                             'type' => 'color_selector',
+                            'required' => true,
+                            'with_other_option' => true
+                        ],
+                        'cushion_option' => [
+                            'label' => 'خيار الحشو',
+                            'type' => 'select',
+                            'options' => [
+                                'high_density_foam' => 'إسفنج عالي الكثافة',
+                                'fiber_foam' => 'فيبر + إسفنج'
+                            ],
                             'required' => true
                         ],
-                        'dimensions' => [
-                            'label' => 'القياس (الطول × العمق × الارتفاع)',
-                            'type' => 'dimensions_3d',
-                            'required' => true,
-                            'units' => ['سم', 'متر']
+                        'file_upload' => [
+                            'label' => 'رفع صورة المساحة أو التصميم المطلوب',
+                            'type' => 'file_upload',
+                            'accept' => 'image/*,.pdf',
+                            'max_files' => 5,
+                            'required' => false
                         ]
                     ]
                 ]);
-            } elseif (
+            }
+            // فئة الخزائن (الفئة الرئيسية والفرعية)
+            elseif (
                 stripos($category->name, 'خزان') !== false ||
-                stripos($category->name, 'خزائن') !== false
+                stripos($category->name, 'خزائن') !== false ||
+                stripos($category->name, 'ملابس') !== false ||
+                stripos($category->name, 'تخزين') !== false ||
+                stripos($category->name, 'أحذية') !== false ||
+                stripos($category->name, 'كتب') !== false ||
+                stripos($category->name, 'أطفال') !== false
             ) {
                 $category->update([
                     'customization_fields' => [
-                        'closet_type' => [
-                            'label' => 'نوع الخزانة',
-                            'type' => 'select',
-                            'options' => [
-                                'sliding_doors' => 'أبواب سحاب',
-                                'hinged_doors' => 'مفصلية',
-                                'open' => 'مفتوحة'
-                            ],
-                            'required' => true
-                        ],
-                        'usage' => [
-                            'label' => 'الاستخدام',
-                            'type' => 'select',
-                            'options' => [
-                                'bedroom' => 'غرفة نوم',
-                                'walk_in' => 'غرفة ملابس',
-                                'kitchen' => 'مطبخ'
-                            ],
-                            'required' => true
-                        ],
-                        'interior_color' => [
-                            'label' => 'اللون الداخلي',
-                            'type' => 'color_selector',
-                            'required' => true
-                        ],
-                        'exterior_color' => [
-                            'label' => 'اللون الخارجي',
-                            'type' => 'color_selector',
-                            'required' => true
-                        ],
-                        'drawers_count' => [
-                            'label' => 'عدد الأدراج',
+                        'quantity' => [
+                            'label' => 'الكمية',
                             'type' => 'number',
-                            'min' => 0,
+                            'min' => 1,
                             'max' => 20,
-                            'required' => false
+                            'required' => true,
+                            'default' => 1,
+                            'description' => 'يحدد عدد الخزائن المطلوبة'
                         ],
-                        'shelves_count' => [
-                            'label' => 'عدد الأرفف',
-                            'type' => 'number',
-                            'min' => 0,
-                            'max' => 30,
-                            'required' => false
-                        ],
-                        'interior_lighting' => [
-                            'label' => 'الإضاءة الداخلية',
+                        'cabinet_type' => [
+                            'label' => 'المنتجات',
                             'type' => 'select',
                             'options' => [
-                                'with' => 'مع إضاءة',
-                                'without' => 'بدون إضاءة'
+                                'wardrobe' => 'خزائن ملابس (غرف النوم أو الدريسنج روم)',
+                                'general_storage' => 'خزائن تخزين عامة (مستودعات، مخازن)',
+                                'shoe_storage' => 'خزائن أحذية',
+                                'book_display' => 'خزائن كتب أو عرض',
+                                'children' => 'خزائن أطفال (ملابس وأغراض الأطفال)'
                             ],
+                            'required' => true
+                        ],
+                        'dimensions' => [
+                            'label' => 'المساحة',
+                            'type' => 'dimensions',
+                            'required' => true,
+                            'units' => ['سم'],
+                            'fields' => ['width' => 'العرض', 'height' => 'الارتفاع']
+                        ],
+                        'wood_type' => [
+                            'label' => 'نوع الخشب',
+                            'type' => 'select',
+                            'options' => [
+                                'italian_chipboard' => 'شيورد إيطالي (جودة عالية)'
+                            ],
+                            'required' => true
+                        ],
+                        'opening_type' => [
+                            'label' => 'نوع الفتح',
+                            'type' => 'select',
+                            'options' => [
+                                'hinged' => 'أبواب مفصلية (Hinged)',
+                                'sliding' => 'أبواب سحب (Sliding)',
+                                'open' => 'مفتوحة (بدون أبواب)'
+                            ],
+                            'required' => true
+                        ],
+                        'wood_color' => [
+                            'label' => 'لون الخشب / الطلاء',
+                            'type' => 'color_selector',
+                            'required' => true
+                        ],
+                        'door_material' => [
+                            'label' => 'الخامات للأبواب',
+                            'type' => 'select',
+                            'options' => [
+                                'wood' => 'خشب',
+                                'glass' => 'زجاج'
+                            ],
+                            'required' => true
+                        ],
+                        'hinges_type' => [
+                            'label' => 'المفصلات',
+                            'type' => 'select',
+                            'options' => [
+                                'hydraulic' => 'هيدروليك (إغلاق ناعم)',
+                                'regular' => 'عادي'
+                            ],
+                            'required' => true
+                        ],
+                        'closing_type' => [
+                            'label' => 'الإغلاق',
+                            'type' => 'select',
+                            'options' => [
+                                'soft_close' => 'سوفت كلوز (إغلاق هادئ)',
+                                'regular' => 'عادي'
+                            ],
+                            'required' => true
+                        ],
+                        'additional_features' => [
+                            'label' => 'الإضافات',
+                            'type' => 'checkbox_multiple',
+                            'options' => [
+                                'led_lighting' => 'إضاءة داخلية LED',
+                                'door_mirrors' => 'مرايا على الأبواب',
+                                'organizational_drawers' => 'أدراج تنظيمية'
+                            ],
+                            'required' => false
+                        ],
+                        'file_upload' => [
+                            'label' => 'رفع مخطط أو صورة للتصميم المطلوب',
+                            'type' => 'file_upload',
+                            'accept' => 'image/*,.pdf,.dwg',
+                            'max_files' => 5,
                             'required' => false
                         ]
                     ]
                 ]);
-            } elseif (stripos($category->name, 'خشب') !== false) {
+            }
+            // فئة الخشبيات (الفئة الرئيسية فقط لأنها لا تحتوي على فئات فرعية)
+            elseif (stripos($category->name, 'خشب') !== false) {
                 $category->update([
                     'customization_fields' => [
-                        'product_type' => [
-                            'label' => 'المنتج',
-                            'type' => 'select',
+                        'quantity' => [
+                            'label' => 'الكمية',
+                            'type' => 'number',
+                            'min' => 1,
+                            'max' => 50,
+                            'required' => true,
+                            'default' => 1
+                        ],
+                        'product_options' => [
+                            'label' => 'خيارات المنتج (اختيار أكثر من خيار)',
+                            'type' => 'checkbox_multiple',
                             'options' => [
-                                'buffet' => 'بوفيه',
-                                'coffee_table' => 'طاولة قهوة',
-                                'bedside_table' => 'كومدينو',
-                                'bookshelf' => 'مكتبة'
+                                'decorative_divider' => 'فاصل ديكوري',
+                                'wall_shelf' => 'رف جداري',
+                                'tables_chairs' => 'طاولات وكراسي خشبية',
+                                'wall_panels' => 'ألواح وكسوة جدران',
+                                'bedroom_beds' => 'أسرة غرف نوم',
+                                'dressers' => 'تسريحات'
                             ],
                             'required' => true
                         ],
-                        'material' => [
-                            'label' => 'الخامة',
+                        'wood_material' => [
+                            'label' => 'نوع الخشب',
                             'type' => 'select',
                             'options' => [
-                                'mdf' => 'MDF',
-                                'natural_wood' => 'خشب طبيعي'
+                                'oak' => 'خشب البلوط',
+                                'pine' => 'خشب الصنوبر',
+                                'walnut' => 'خشب الجوز',
+                                'mahogany' => 'خشب الماهوجني',
+                                'mdf' => 'MDF'
                             ],
                             'required' => true
                         ],
-                        'finish' => [
+                        'wood_finish' => [
                             'label' => 'التشطيب',
                             'type' => 'select',
                             'options' => [
+                                'natural' => 'طبيعي',
+                                'polished' => 'مصقول',
+                                'painted' => 'مطلي',
+                                'hand_carved' => 'منحوت يدوياً',
                                 'matte' => 'مطفي',
-                                'glossy' => 'لامع',
-                                'textured' => 'ملمس خشن'
+                                'glossy' => 'لامع'
                             ],
                             'required' => true
                         ],
-                        'color_pattern' => [
-                            'label' => 'اللون والنقشة',
+                        'wood_color' => [
+                            'label' => 'لون الخشب',
                             'type' => 'color_selector',
                             'required' => true
                         ],
@@ -205,6 +340,13 @@ class CategoryCustomizationSeeder extends Seeder
                             'type' => 'dimensions_3d',
                             'required' => false,
                             'units' => ['سم', 'متر']
+                        ],
+                        'file_upload' => [
+                            'label' => 'رفع صورة التصميم أو المخطط المطلوب',
+                            'type' => 'file_upload',
+                            'accept' => 'image/*,.pdf,.dwg',
+                            'max_files' => 5,
+                            'required' => false
                         ]
                     ]
                 ]);

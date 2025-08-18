@@ -48,6 +48,7 @@ interface Category {
     id: number;
     name: string;
     slug: string;
+    parent_id?: number;
     products_count?: number;
 }
 
@@ -63,7 +64,7 @@ const Home: React.FC<HomeProps> = ({ featuredProducts, categories }) => {
     return (
         <AppLayout>
             <div className="container mx-auto px-2 sm:px-4 lg:px-8">
-                <Hero />
+                <Hero categories={categories} />
             </div>
             <FeaturedOffers />
             <PreparingForSummer />

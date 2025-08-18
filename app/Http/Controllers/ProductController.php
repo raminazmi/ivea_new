@@ -32,6 +32,29 @@ class ProductController extends Controller
             }
         }
 
+        // Handle main category filtering - show products from all subcategories or main category itself
+        if ($request->has('main_category') && $request->main_category !== 'all') {
+            $mainCategorySlug = $request->main_category;
+            $mainCategory = Category::where('slug', $mainCategorySlug)->whereNull('parent_id')->first();
+            if ($mainCategory) {
+                // Get all subcategory IDs for this main category
+                $subcategoryIds = Category::where('parent_id', $mainCategory->id)->pluck('id')->toArray();
+                if (!empty($subcategoryIds)) {
+                    // If subcategories exist, search in subcategories
+                    $query->whereIn('category_id', $subcategoryIds);
+                } else {
+                    // If no subcategories exist, search in main category itself
+                    $query->where('category_id', $mainCategory->id);
+                }
+            }
+        }
+
+        // Alternative: Handle subcategory_ids directly
+        if ($request->has('subcategory_ids') && !empty($request->subcategory_ids)) {
+            $subcategoryIds = is_array($request->subcategory_ids) ? $request->subcategory_ids : [$request->subcategory_ids];
+            $query->whereIn('category_id', $subcategoryIds);
+        }
+
         if ($request->has('tab') && $request->tab !== 'all') {
             switch ($request->tab) {
                 case 'new':
@@ -216,6 +239,8 @@ class ProductController extends Controller
             'filters' => $request->only([
                 'category',
                 'tab',
+                'main_category',
+                'subcategory_ids',
                 'search',
                 'min_price',
                 'max_price',

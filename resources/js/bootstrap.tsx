@@ -7,6 +7,9 @@ if (token) {
     axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
 }
 
+// تأكد من إعداد CSRF token لـ Inertia
+window.axios = axios;
+
 createInertiaApp({
     resolve: (name) => resolvePageComponent(
         `./Pages/${name}.tsx`,

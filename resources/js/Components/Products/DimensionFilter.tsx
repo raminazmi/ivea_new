@@ -22,9 +22,6 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
     const [width, setWidth] = useState<number>(defaultWidth);
     const [height, setHeight] = useState<number>(defaultHeight);
     const [isExpanded, setIsExpanded] = useState(true);
-    useEffect(() => {
-        onDimensionChange({ width, height });
-    }, [onDimensionChange]);
 
     useEffect(() => {
         onDimensionChange({ width, height });

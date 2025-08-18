@@ -12,6 +12,26 @@ interface CartItem {
     price: number;
     quantity: number;
     image?: string;
+    color?: string;
+    colorName?: string;
+    customizations?: Record<string, {
+        type: string;
+        label: string;
+        value?: any;
+        values?: any[];
+        displayValue?: string;
+        displayValues?: string[];
+        width?: number;
+        height?: number;
+        length?: number;
+        unit?: string;
+    }>;
+    uploadedFiles?: Array<{
+        name: string;
+        size?: number;
+        type?: string;
+    }> | string[];
+    cartId?: string;
 }
 
 interface Order {
@@ -185,26 +205,98 @@ const OrderShow: React.FC<OrderShowProps> = ({ order }) => {
 
                         <div className="bg-white rounded-lg shadow p-6">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4">عناصر الطلب</h2>
-                            <div className="space-y-4">
+                            <div className="space-y-6">
                                 {order.cart_items.map((item, index) => (
-                                    <div key={index} className="flex items-center justify-between border-b pb-4 last:border-b-0 last:pb-0">
-                                        <div className="flex items-center gap-4">
-                                            {item.image && (
-                                                <img
-                                                    src={item.image}
-                                                    alt={item.name}
-                                                    className="w-12 h-12 rounded-lg object-cover"
-                                                />
-                                            )}
-                                            <div>
-                                                <h3 className="font-medium text-gray-900">{item.name}</h3>
-                                                <p className="text-sm text-gray-600">الكمية: {item.quantity}</p>
+                                    <div key={index} className="border border-gray-200 rounded-lg p-4">
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div className="flex items-center gap-4">
+                                                {item.image && (
+                                                    <img
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        className="w-16 h-16 rounded-lg object-cover"
+                                                    />
+                                                )}
+                                                <div>
+                                                    <h3 className="font-medium text-gray-900 text-lg">{item.name}</h3>
+                                                    <p className="text-sm text-gray-600">الكمية: {item.quantity}</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="font-medium text-gray-900 text-lg">{(Number(item.price) * Number(item.quantity)).toFixed(2)} ر.س</p>
+                                                <p className="text-sm text-gray-600">{Number(item.price).toFixed(2)} ر.س / القطعة</p>
                                             </div>
                                         </div>
-                                        <div className="text-left">
-                                            <p className="font-medium text-gray-900">{(Number(item.price) * Number(item.quantity)).toFixed(2)} ر.س</p>
-                                            <p className="text-sm text-gray-600">{Number(item.price).toFixed(2)} ر.س / القطعة</p>
-                                        </div>
+
+                                        {/* عرض الخيارات المخصصة */}
+                                        {(item.color || item.customizations || item.uploadedFiles) && (
+                                            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                                                <h4 className="font-medium text-gray-900 mb-3">تفاصيل التخصيص:</h4>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+
+                                                    {/* اللون التقليدي */}
+                                                    {item.color && (
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-medium text-gray-700">اللون:</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <span
+                                                                    style={{ backgroundColor: item.color }}
+                                                                    className="inline-block w-4 h-4 rounded-full border border-gray-300"
+                                                                ></span>
+                                                                <span>{item.colorName || item.color}</span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* الخيارات المخصصة الجديدة */}
+                                                    {item.customizations && Object.entries(item.customizations).map(([fieldName, customization]) => {
+                                                        const custom = customization as any;
+                                                        if (!custom || !custom.label) return null;
+
+                                                        return (
+                                                            <div key={fieldName} className="flex items-start gap-2">
+                                                                <span className="font-medium text-gray-700 min-w-fit">{custom.label}:</span>
+                                                                <div className="flex-1">
+                                                                    {custom.type === 'checkbox_multiple' && custom.displayValues ? (
+                                                                        <div className="flex flex-wrap gap-1">
+                                                                            {custom.displayValues.map((value: string, idx: number) => (
+                                                                                <span key={idx} className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                                                                    {value}
+                                                                                </span>
+                                                                            ))}
+                                                                        </div>
+                                                                    ) : custom.displayValue ? (
+                                                                        <span className="text-gray-900">{custom.displayValue}</span>
+                                                                    ) : (
+                                                                        <span className="text-gray-900">{custom.value}</span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+
+                                                    {/* الملفات المرفوعة */}
+                                                    {item.uploadedFiles && item.uploadedFiles.length > 0 && (
+                                                        <div className="md:col-span-2">
+                                                            <span className="font-medium text-gray-700">الملفات المرفوعة:</span>
+                                                            <div className="mt-2 space-y-1">
+                                                                {item.uploadedFiles.map((file: any, fileIndex: number) => (
+                                                                    <div key={fileIndex} className="flex items-center gap-2 text-xs bg-white p-2 rounded border">
+                                                                        <span>📎</span>
+                                                                        <span className="font-medium">{file.name || file}</span>
+                                                                        {file.size && (
+                                                                            <span className="text-gray-500">
+                                                                                ({(file.size / 1024).toFixed(1)} KB)
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>

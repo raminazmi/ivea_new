@@ -12,6 +12,26 @@ interface CartItem {
     price: number;
     quantity: number;
     image?: string;
+    color?: string;
+    colorName?: string;
+    customizations?: Record<string, {
+        type: string;
+        label: string;
+        value?: any;
+        values?: any[];
+        displayValue?: string;
+        displayValues?: string[];
+        width?: number;
+        height?: number;
+        length?: number;
+        unit?: string;
+    }>;
+    uploadedFiles?: Array<{
+        name: string;
+        size?: number;
+        type?: string;
+    }> | string[];
+    cartId?: string;
 }
 
 interface Order {
