@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from '@inertiajs/react';
 import ColorSwatch from '@/Components/Common/ColorSwatch';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '@/store/features/cartSlice';
+import { addToCart, removeFromCart } from '@/store/features/cartSlice';
 import { HiShoppingCart, HiCheck } from 'react-icons/hi';
 import { RootState } from '@/store';
 import { calculateDynamicPrice, formatPriceFrom, getDefaultDimensions, Dimensions } from '@/Utils/priceCalculator';
@@ -112,6 +112,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
         setTimeout(() => setAdded(false), 900);
     };
 
+    const handleRemoveFromCart = () => {
+        dispatch(removeFromCart(product.id));
+    };
+
     return (
         <div className="group transition-all duration-300 hover:-translate-y-1">
             <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group-hover:shadow-lg">
@@ -199,20 +203,42 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                             </div>
                         </div>
                         <button
-                            className={`bg-primary-yellow rounded-full p-1 sm:p-1.5 md:p-2 shadow-sm flex items-center justify-center transition-colors duration-300 ${added ? 'bg-green-500 scale-110' : 'hover:bg-yellow-500'} ${inCart ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            title={inCart ? 'تمت إضافة المنتج للسلة' : 'إضافة المنتج للسلة'}
-                            onClick={inCart ? undefined : handleAddToCart}
-                            disabled={inCart}
+                            className={`relative bg-primary-yellow rounded-full p-1 sm:p-1.5 md:p-2 shadow-sm flex items-center justify-center transition-all duration-300 overflow-hidden
+                                ${added ? 'bg-green-500 scale-110 ring-2 ring-green-300' : inCart ? 'bg-red-100 hover:bg-red-200' : 'hover:bg-yellow-500'}
+                            `}
+                            title={inCart ? 'حذف من السلة' : 'إضافة المنتج للسلة'}
+                            onClick={inCart ? handleRemoveFromCart : handleAddToCart}
+                            style={{ minWidth: 40, minHeight: 40 }}
                         >
-                            {inCart ? (
-                                <span className="flex items-center gap-1 text-xs font-bold text-gray-700">
-                                    <HiCheck className="h-4 w-4 text-green-500" />
-                                </span>
-                            ) : added ? (
-                                <HiCheck className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white transition-transform duration-500 ease-out transform translate-x-8 opacity-0 animate-[slidein_0.5s_ease-out_forwards]" style={{ animation: 'slidein 0.5s ease-out forwards' }} />
-                            ) : (
-                                <HiShoppingCart className="h-5 w-5 text-[#0D1F40]" />
-                            )}
+                            <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                {inCart ? (
+                                    <svg className="h-5 w-5 text-red-600 animate-cart-remove" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                ) : added ? (
+                                    <HiCheck className="h-6 w-6 text-white animate-cart-check" />
+                                ) : (
+                                    <HiShoppingCart className="h-5 w-5 text-[#0D1F40] group-hover:scale-110 transition-transform duration-300" />
+                                )}
+                            </span>
+                            <style>{`
+                                .animate-cart-check {
+                                    animation: cartCheckPop 0.6s cubic-bezier(.36,1.01,.32,1) 1;
+                                }
+                                .animate-cart-remove {
+                                    animation: cartRemoveShake 0.5s cubic-bezier(.36,1.01,.32,1) 1;
+                                }
+                                @keyframes cartCheckPop {
+                                    0% { transform: scale(0.5) rotate(-20deg); opacity: 0; }
+                                    60% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+                                    80% { transform: scale(0.95) rotate(-5deg); }
+                                    100% { transform: scale(1) rotate(0deg); }
+                                }
+                                @keyframes cartRemoveShake {
+                                    0% { transform: scale(1) rotate(0deg); }
+                                    30% { transform: scale(1.1) rotate(-10deg); }
+                                    60% { transform: scale(1.1) rotate(10deg); }
+                                    100% { transform: scale(1) rotate(0deg); }
+                                }
+                            `}</style>
                         </button>
                     </div>
                 </div>

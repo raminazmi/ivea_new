@@ -44,9 +44,39 @@ interface ProjectsProps {
     filters: any;
 }
 
+const SPACE_TYPES: Record<string, string> = {
+    residential: 'سكني',
+    offices: 'مكاتب',
+    hotels: 'فنادق',
+    shops: 'محلات',
+    living_room: 'صالة المعيشة',
+    bedroom: 'غرفة النوم',
+    kitchen: 'المطبخ',
+    office: 'المكتب',
+    restaurant: 'مطعم',
+    hotel: 'فندق',
+    other: 'أخرى'
+};
+const PRODUCT_NEEDS: Record<string, string> = {
+    curtains: 'ستائر',
+    furniture: 'أثاث',
+    cabinets: 'خزائن',
+    doors: 'أبواب',
+    woodwork: 'خشبيات',
+    finishes: 'تشطيبات',
+    other: 'أخرى'
+};
+const PREFERRED_STYLES: Record<string, string> = {
+    modern: 'عصري',
+    classic: 'كلاسيكي',
+    minimalist: 'بساطة',
+    luxury: 'فخم',
+    other: 'أخرى'
+};
+
 const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) => {
     const { flash } = usePage().props as any;
-    const [activeTab, setActiveTab] = useState<'quizzes' | 'submissions'>('quizzes');
+    const [activeTab, setActiveTab] = useState<'quizzes' | 'submissions'>(filters.tab || 'quizzes');
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<ProjectQuiz | ProjectSubmission | null>(null);
@@ -162,119 +192,125 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
 
     const renderQuizzesTable = () => (
         <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200">
-                <thead className="bg-gray-50">
-                    <tr>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <input
-                                type="checkbox"
-                                checked={selectedItems.length === quizzes.data.length && quizzes.data.length > 0}
-                                onChange={toggleSelectAll}
-                                className="rounded border-gray-300"
-                            />
-                        </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            المعلومات الشخصية
-                        </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            نوع المساحة
-                        </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            احتياجات المنتج
-                        </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            الأساليب المفضلة
-                        </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            تاريخ الإرسال
-                        </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            الإجراءات
-                        </th>
-                    </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                    {quizzes.data.map((quiz) => (
-                        <tr key={quiz.id} className="hover:bg-gray-50">
-                            <td className="px-4 py-4 whitespace-nowrap">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedItems.includes(quiz.id)}
-                                    onChange={() => toggleSelection(quiz.id)}
-                                    className="rounded border-gray-300"
-                                />
-                            </td>
-                            <td className="px-4 py-4">
-                                <div>
-                                    <div className="text-sm font-medium text-gray-900">{quiz.name}</div>
-                                    <div className="text-sm text-gray-500 flex items-center gap-1">
-                                        <HiMail className="w-4 h-4" />
-                                        {quiz.email}
-                                    </div>
-                                    <div className="text-sm text-gray-500 flex items-center gap-1">
-                                        <HiPhone className="w-4 h-4" />
-                                        {quiz.phone}
-                                    </div>
-                                </div>
-                            </td>
-                            <td className="px-4 py-4">
-                                <div className="flex flex-wrap gap-1">
-                                    {quiz.space_types.map((type, index) => (
-                                        <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                            {type}
-                                        </span>
-                                    ))}
-                                </div>
-                            </td>
-                            <td className="px-4 py-4">
-                                <div className="flex flex-wrap gap-1">
-                                    {quiz.product_needs.map((need, index) => (
-                                        <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            {need}
-                                        </span>
-                                    ))}
-                                </div>
-                            </td>
-                            <td className="px-4 py-4">
-                                <div className="flex flex-wrap gap-1">
-                                    {quiz.preferred_styles.map((style, index) => (
-                                        <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                            {style}
-                                        </span>
-                                    ))}
-                                </div>
-                            </td>
-                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                <div className="flex items-center gap-1">
-                                    <HiCalendar className="w-4 h-4 text-gray-400" />
-                                    {formatDate(quiz.created_at)}
-                                </div>
-                            </td>
-                            <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                                <div className="flex items-center gap-2">
-                                    <Link
-                                        href={`/admin/projects/quizzes/${quiz.id}`}
-                                        className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
-                                        title="عرض التفاصيل"
-                                    >
-                                        <HiEye className="w-4 h-4" />
-                                    </Link>
-                                    <button
-                                        onClick={() => {
-                                            setItemToDelete(quiz);
-                                            setShowDeleteModal(true);
-                                        }}
-                                        className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
-                                        title="حذف الاختبار"
-                                    >
-                                        <HiTrash className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            {/* تعريف القواميس للتعريب */}
+            {(() => {
+
+                return (
+                    <table className="min-w-full bg-white border border-gray-200">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedItems.length === quizzes.data.length && quizzes.data.length > 0}
+                                        onChange={toggleSelectAll}
+                                        className="rounded border-gray-300"
+                                    />
+                                </th>
+                                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    المعلومات الشخصية
+                                </th>
+                                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    نوع المساحة
+                                </th>
+                                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    احتياجات المنتج
+                                </th>
+                                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    الأساليب المفضلة
+                                </th>
+                                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    تاريخ الإرسال
+                                </th>
+                                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    الإجراءات
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {quizzes.data.map((quiz) => (
+                                <tr key={quiz.id} className="hover:bg-gray-50">
+                                    <td className="px-4 py-4 whitespace-nowrap">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedItems.includes(quiz.id)}
+                                            onChange={() => toggleSelection(quiz.id)}
+                                            className="rounded border-gray-300"
+                                        />
+                                    </td>
+                                    <td className="px-4 py-4">
+                                        <div>
+                                            <div className="text-sm font-medium text-gray-900">{quiz.name}</div>
+                                            <div className="text-sm text-gray-500 flex items-center gap-1">
+                                                <HiMail className="w-4 h-4" />
+                                                {quiz.email}
+                                            </div>
+                                            <div className="text-sm text-gray-500 flex items-center gap-1">
+                                                <HiPhone className="w-4 h-4" />
+                                                {quiz.phone}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-4">
+                                        <div className="flex flex-wrap gap-1">
+                                            {quiz.space_types.map((type, index) => (
+                                                <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    {SPACE_TYPES[type] || type}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-4">
+                                        <div className="flex flex-wrap gap-1">
+                                            {quiz.product_needs.map((need, index) => (
+                                                <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    {PRODUCT_NEEDS[need] || need}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-4">
+                                        <div className="flex flex-wrap gap-1">
+                                            {quiz.preferred_styles.map((style, index) => (
+                                                <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                    {PREFERRED_STYLES[style] || style}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <div className="flex items-center gap-1">
+                                            <HiCalendar className="w-4 h-4 text-gray-400" />
+                                            {formatDate(quiz.created_at)}
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div className="flex items-center gap-2">
+                                            <Link
+                                                href={`/admin/projects/quizzes/${quiz.id}`}
+                                                className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
+                                                title="عرض التفاصيل"
+                                            >
+                                                <HiEye className="w-4 h-4" />
+                                            </Link>
+                                            <button
+                                                onClick={() => {
+                                                    setItemToDelete(quiz);
+                                                    setShowDeleteModal(true);
+                                                }}
+                                                className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                                                title="حذف الاختبار"
+                                            >
+                                                <HiTrash className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                );
+            })()}
         </div>
     );
 
@@ -407,15 +443,6 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
                         <p className="mt-1 text-sm text-gray-600">
                             إدارة اختبارات الأسلوب ومشاريع العملاء المرسلة
                         </p>
-                    </div>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={handleExport}
-                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                        >
-                            <HiDownload className="w-4 h-4" />
-                            تصدير البيانات
-                        </button>
                     </div>
                 </div>
 

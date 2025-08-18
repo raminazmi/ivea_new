@@ -5,6 +5,7 @@ import PreparingForSummer from '@/Components/LandingPage/PreparingForSummer';
 import CategoryShowcase from '@/Components/LandingPage/CategoryShowcase';
 import ProjectShowcase from '@/Components/LandingPage/ProjectShowcase';
 import AppLayout from '@/Components/LandingPage/Layout/AppLayout';
+import PartnersCarousel from '@/Components/LandingPage/PartnersCarousel';
 import { PageProps } from '@inertiajs/core';
 import ContactUs from '@/Components/LandingPage/ContactUs';
 import SectionTitle from '@/Components/SectionTitle';
@@ -73,6 +74,7 @@ const Home: React.FC<HomeProps> = ({ featuredProducts, categories }) => {
                 <SectionTitle text="قائمة المشاريع" />
                 <ProjectShowcase />
             </div>
+            <PartnersCarousel />
             <div className="container mx-auto px-2 sm:px-4 lg:px-8 xl:px-20">
                 <ContactUs />
             </div>

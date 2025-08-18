@@ -34,6 +34,7 @@
         "@types/react-redux": "^7.1.34",
         "framer-motion": "^12.23.12",
         "react-icons": "^5.5.0",
-        "react-redux": "^9.2.0"
+        "react-redux": "^9.2.0",
+        "swiper": "^11.2.10"
     }
 }

@@ -35,6 +35,10 @@ class ProjectQuiz extends Model
     const STATUS_COMPLETED = 'completed';
 
     const SPACE_TYPES = [
+        'residential' => 'سكني',
+        'offices' => 'مكاتب',
+        'hotels' => 'فنادق',
+        'shops' => 'محلات',
         'living_room' => 'صالة المعيشة',
         'bedroom' => 'غرفة النوم',
         'kitchen' => 'المطبخ',
@@ -59,8 +63,6 @@ class ProjectQuiz extends Model
         'classic' => 'كلاسيكي',
         'minimalist' => 'بساطة',
         'luxury' => 'فخم',
-        'industrial' => 'صناعي',
-        'scandinavian' => 'اسكندنافي',
         'other' => 'أخرى'
     ];
 }

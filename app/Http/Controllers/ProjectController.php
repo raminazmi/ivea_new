@@ -32,53 +32,66 @@ class ProjectController extends Controller
 
     public function submitQuiz(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'space_types' => 'required|array|min:1',
-            'space_types.*' => 'string|in:' . implode(',', array_keys(ProjectQuiz::SPACE_TYPES)),
-            'product_needs' => 'required|array|min:1',
-            'product_needs.*' => 'string|in:' . implode(',', array_keys(ProjectQuiz::PRODUCT_NEEDS)),
-            'preferred_styles' => 'required|array|min:1',
-            'preferred_styles.*' => 'string|in:' . implode(',', array_keys(ProjectQuiz::PREFERRED_STYLES)),
-            'space_type_other' => 'nullable|string|max:500',
-            'product_other' => 'nullable|string|max:500',
-            'style_other' => 'nullable|string|max:500',
-            'additional_notes' => 'nullable|string|max:1000'
-        ]);
-
-        $quiz = ProjectQuiz::create($validated);
-
-        return redirect()->back()->with('success', 'تم إرسال بياناتك بنجاح. سيتواصل معك فريقنا قريباً!');
+        \Log::info('submitQuiz request data', $request->all());
+        try {
+            $validated = $request->validate([
+                'name' => 'nullable|string|max:255',
+                'email' => 'nullable|email|max:255',
+                'phone' => 'nullable|string|max:20',
+                'space_types' => 'required|array|min:1',
+                'space_types.*' => 'string|in:' . implode(',', array_keys(ProjectQuiz::SPACE_TYPES)),
+                'product_needs' => 'required|array|min:1',
+                'product_needs.*' => 'string|in:' . implode(',', array_keys(ProjectQuiz::PRODUCT_NEEDS)),
+                'preferred_styles' => 'required|array|min:1',
+                'preferred_styles.*' => 'string|in:' . implode(',', array_keys(ProjectQuiz::PREFERRED_STYLES)),
+                'space_type_other' => 'nullable|string|max:500',
+                'product_other' => 'nullable|string|max:500',
+                'style_other' => 'nullable|string|max:500',
+                'additional_notes' => 'nullable|string|max:1000'
+            ]);
+            \Log::info('submitQuiz validated data', $validated);
+            $quiz = ProjectQuiz::create($validated);
+            return redirect()->back()->with('success', 'تم إرسال بياناتك بنجاح. سيتواصل معك فريقنا قريباً!');
+        } catch (\Exception $e) {
+            \Log::error('submitQuiz error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return redirect()->back()->with('error', 'حدث خطأ أثناء إرسال البيانات. يرجى المحاولة مرة أخرى.');
+        }
     }
 
     public function submitProject(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'required|string|max:20',
-            'description' => 'required|string|max:2000',
-            'product_type' => 'required|string|in:' . implode(',', array_keys(ProjectSubmission::PRODUCT_TYPES)),
-            'images' => 'required|array|min:1|max:5',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
-            'space_details' => 'nullable|array'
-        ]);
+        \Log::info('submitProject request data', $request->all());
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'phone' => 'required|string|max:20',
+                'description' => 'required|string|max:2000',
+                'product_type' => 'required|string|in:' . implode(',', array_keys(ProjectSubmission::PRODUCT_TYPES)),
+                'images' => 'required|array|min:1|max:5',
+                'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
+                'space_details' => 'nullable|array'
+            ]);
+            \Log::info('submitProject validated data', $validated);
 
-        $imagePaths = [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('project-submissions', 'public');
-                $imagePaths[] = $path;
+            $imagePaths = [];
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $path = $image->store('project-submissions', 'public');
+                    $imagePaths[] = $path;
+                }
             }
+
+            $validated['images'] = $imagePaths;
+
+            $submission = ProjectSubmission::create($validated);
+            \Log::info('submitProject created submission', ['id' => $submission->id]);
+
+            return redirect()->back()->with('success', 'تم إرسال مشروعك بنجاح! سنتواصل معك خلال 24 ساعة.');
+        } catch (\Exception $e) {
+            \Log::error('submitProject error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return redirect()->back()->with('error', 'حدث خطأ أثناء إرسال المشروع. يرجى المحاولة مرة أخرى.');
         }
-
-        $validated['images'] = $imagePaths;
-
-        $submission = ProjectSubmission::create($validated);
-
-        return redirect()->back()->with('success', 'تم إرسال مشروعك بنجاح! سنتواصل معك خلال 24 ساعة.');
     }
 
     public function calculateCost(Request $request): RedirectResponse

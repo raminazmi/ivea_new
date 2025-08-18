@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { HiShoppingCart, HiLightningBolt } from 'react-icons/hi';
 
 interface ActionButton {
     label: string;
@@ -16,6 +17,7 @@ interface ActionButtonsProps {
     showQuickOrder?: boolean;
 }
 
+
 const ActionButtons: React.FC<ActionButtonsProps> = ({
     buttons,
     onAddToCart,
@@ -24,6 +26,9 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
     className = "",
     showQuickOrder = true
 }) => {
+    const [added, setAdded] = useState(false);
+    const [cartAnim, setCartAnim] = useState(false);
+
     if (buttons) {
         return (
             <div className={`flex flex-col sm:flex-row gap-3 sm:gap-4 ${className}`}>
@@ -44,25 +49,69 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
         );
     }
 
+    const handleAddToCartClick = () => {
+        if (added || !inStock) return;
+        setCartAnim(true);
+        setAdded(true);
+        if (onAddToCart) onAddToCart();
+        setTimeout(() => setCartAnim(false), 700);
+    };
+
+    const handleRemoveFromCartClick = () => {
+        setAdded(false);
+        // يمكن هنا استدعاء دالة حذف من السلة إذا كانت متوفرة
+        // مثال: if (onRemoveFromCart) onRemoveFromCart();
+    };
+
     return (
         <div className={`flex flex-col sm:flex-row gap-3 sm:gap-4 ${className}`}>
-            <button
-                onClick={onAddToCart}
-                disabled={!inStock}
-                className={`flex-1 font-medium py-3 px-6 rounded-lg transition-colors bg-yellow-400 hover:bg-yellow-500 text-gray-900 ${!inStock ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-                {inStock ? 'أضف إلى السلة' : 'غير متوفر'}
-            </button>
+            {!added ? (
+                <button
+                    onClick={handleAddToCartClick}
+                    disabled={!inStock}
+                    className={`group flex-1 flex items-center justify-center gap-2 font-bold py-3 px-6 rounded-xl transition-all duration-300 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 active:scale-95 ${!inStock ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    style={{ boxShadow: '0 2px 12px 0 rgba(255, 193, 7, 0.15)' }}
+                >
+                    <HiShoppingCart className={`text-xl ${cartAnim ? 'animate-bounce-cart' : ''}`} />
+                    {inStock ? 'أضف إلى السلة' : 'غير متوفر'}
+                </button>
+            ) : (
+                <button
+                    onClick={handleRemoveFromCartClick}
+                    className="flex-1 flex items-center justify-center gap-2 font-bold py-3 px-6 rounded-xl transition-all duration-300 bg-red-500 hover:bg-red-600 text-white shadow-lg focus:outline-none focus:ring-2 focus:ring-red-300 active:scale-95"
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    حذف من السلة
+                </button>
+            )}
 
             {showQuickOrder && (
                 <button
                     onClick={onQuickOrder}
                     disabled={!inStock}
-                    className={`flex-1 font-medium py-3 px-6 rounded-lg transition-colors border-2 border-yellow-400 text-yellow-600 hover:bg-yellow-50 ${!inStock ? 'opacity-50 cursor-not-allowed border-gray-300 text-gray-400' : ''}`}
+                    className={`group flex-1 flex items-center justify-center gap-2 font-bold py-3 px-6 rounded-xl transition-all duration-300 border-2 border-yellow-400 text-yellow-600 hover:bg-yellow-50 bg-white shadow focus:outline-none focus:ring-2 focus:ring-yellow-200 active:scale-95 ${!inStock ? 'opacity-50 cursor-not-allowed border-gray-300 text-gray-400' : ''}`}
                 >
+                    <HiLightningBolt className="text-xl group-active:animate-pulse" />
                     اطلب الآن
                 </button>
             )}
+            <style>{`
+                .animate-bounce-cart {
+                    animation: bounce 0.7s cubic-bezier(.36,1.01,.32,1) 1;
+                }
+                .group-active\\:animate-pulse:active { animation: pulse 0.5s; }
+                @keyframes bounce {
+                    0%, 100% { transform: translateY(0); }
+                    30% { transform: translateY(-10px); }
+                    50% { transform: translateY(-18px); }
+                    70% { transform: translateY(-10px); }
+                }
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.15); }
+                    100% { transform: scale(1); }
+                }
+            `}</style>
         </div>
     );
 };

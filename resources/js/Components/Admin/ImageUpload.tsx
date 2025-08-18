@@ -127,7 +127,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                             >
                                 {uploading ? 'جاري الرفع...' : 'اختر الصور'}
                             </button>
-                            <span className="text-gray-500"> أو اسحب وأفلت الصور هنا</span>
+                            <span className="text-gray-500">رفع مخطط أو صورة للتصميم والمكان المطلوب</span>
                         </div>
                         <p className="text-xs text-gray-500">
                             PNG, JPG, GIF حتى 2MB

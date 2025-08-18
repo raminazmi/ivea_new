@@ -1,9 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from '@inertiajs/react';
 import { FaWhatsapp, FaCouch, FaShieldAlt, FaTruck } from 'react-icons/fa';
 import { HiChevronRight, HiChevronLeft } from 'react-icons/hi';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -28,13 +34,7 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const [isVisible, setIsVisible] = useState({
-        hero: false,
-        features: false,
-        brands: false,
-        categories: false
-    });
+    // Removed local slider state, using Swiper instead
 
     const heroRef = useRef<HTMLDivElement>(null);
     const featuresRef = useRef<HTMLDivElement>(null);
@@ -200,25 +200,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
         { name: 'MISSONI HOME', image: '/images/missoni.png' },
     ];
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % heroImages.length);
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    const nextSlide = () => {
-        setCurrentSlide((prev) => (prev + 1) % heroImages.length);
-    };
-
-    const prevSlide = () => {
-        setCurrentSlide((prev) => (prev - 1 + heroImages.length) % heroImages.length);
-    };
-
-    const goToSlide = (index: number) => {
-        setCurrentSlide(index);
-    };
+    // Swiper handles slide state and navigation
 
     // Generate category link with subcategory IDs
     const getCategoryLink = (categorySlug: string) => {
@@ -286,24 +268,28 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                             maxHeight: '340px',
                             minHeight: '220px'
                         }}>
-                            <div className="relative w-full h-full overflow-hidden">
+                            <Swiper
+                                slidesPerView={1}
+                                loop
+                                autoplay={{ delay: 5000, disableOnInteraction: false }}
+                                pagination={{ clickable: true, el: '.hero-swiper-pagination' }}
+                                navigation={{ nextEl: '.hero-swiper-next', prevEl: '.hero-swiper-prev' }}
+                                modules={[Pagination, Autoplay, Navigation]}
+                                className="w-full h-full"
+                            >
                                 {heroImages.map((image, index) => (
-                                    <div
-                                        key={index}
-                                        className={`absolute inset-0 w-full h-full transition-all duration-1500 ease-in-out ${index === currentSlide
-                                            ? 'opacity-100 scale-100 translate-x-0'
-                                            : 'opacity-0 scale-95 translate-x-4'
-                                            }`}
-                                    >
-                                        <img
-                                            src={image.src}
-                                            alt={image.alt}
-                                            className="w-full h-full object-cover"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                                    </div>
+                                    <SwiperSlide key={index}>
+                                        <div className="absolute inset-0 w-full h-full transition-all duration-1500 ease-in-out opacity-100 scale-100 translate-x-0">
+                                            <img
+                                                src={image.src}
+                                                alt={image.alt}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                        </div>
+                                    </SwiperSlide>
                                 ))}
-                            </div>
+                            </Swiper>
 
                             <div className="absolute top-3 sm:top-4 md:top-6 right-3 sm:right-4 md:right-6 bg-[#0D1D25] p-1.5 sm:p-2 md:p-2 rounded-lg z-10">
                                 <img
@@ -315,34 +301,20 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
 
                             <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 left-3 sm:left-4 md:left-6 flex gap-1.5 sm:gap-2 z-10">
                                 <button
-                                    onClick={prevSlide}
-                                    className="bg-white/90 hover:bg-white text-[#0D1D25] p-1 sm:p-1.5 md:p-2 rounded-full shadow-md transition-all duration-500 hover:scale-110 hover:shadow-lg"
+                                    className="hero-swiper-prev bg-white/90 hover:bg-white text-[#0D1D25] p-1 sm:p-1.5 md:p-2 rounded-full shadow-md transition-all duration-500 hover:scale-110 hover:shadow-lg"
                                     title="السابق"
                                 >
                                     <HiChevronRight className="text-base sm:text-lg md:text-xl" />
                                 </button>
                                 <button
-                                    onClick={nextSlide}
-                                    className="bg-white/90 hover:bg-white text-[#0D1D25] p-1 sm:p-1.5 md:p-2 rounded-full shadow-md transition-all duration-500 hover:scale-110 hover:shadow-lg"
+                                    className="hero-swiper-next bg-white/90 hover:bg-white text-[#0D1D25] p-1 sm:p-1.5 md:p-2 rounded-full shadow-md transition-all duration-500 hover:scale-110 hover:shadow-lg"
                                     title="التالي"
                                 >
                                     <HiChevronLeft className="text-base sm:text-lg md:text-xl" />
                                 </button>
                             </div>
 
-                            <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 right-3 sm:right-4 md:right-6 flex gap-1.5 sm:gap-2 z-10">
-                                {heroImages.map((_, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => goToSlide(index)}
-                                        className={`w-2 sm:w-3 h-2 sm:h-3 rounded-full transition-all duration-500 ${index === currentSlide
-                                            ? 'bg-white scale-125'
-                                            : 'bg-white/50 hover:bg-white/75'
-                                            }`}
-                                        title={`انتقل إلى الصورة ${index + 1}`}
-                                    />
-                                ))}
-                            </div>
+                            <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 right-3 sm:right-4 md:right-6 flex gap-1.5 sm:gap-2 z-10 hero-swiper-pagination"></div>
                         </div>
                     </div>
 
@@ -410,29 +382,45 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                 <div
                     ref={brandsRef}
                     data-section="brands"
-                    className="mt-16 sm:mt-20 md:mt-24 lg:mt-32 mb-12 sm:mb-16 md:mb-20 lg:mb-24 -mx-4 sm:-mx-6 lg:-mx-8">
+                    className="mt-16 sm:mt-20 md:mt-24 lg:mt-32 mb-12 sm:mb-16 md:mb-20 lg:mb-24 -mx-4 sm:-mx-6 lg:-mx-16">
                     <div ref={brandsContainerRef} className="relative overflow-hidden">
-                        <div className="flex animate-scroll-brands">
-                            <div className="flex items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 px-4 sm:px-6 lg:px-8">
-                                {brands.map((brand, index) => (
-                                    <div
-                                        key={`first-${index}`}
-                                        className="flex flex-col items-center opacity-70 transition-all duration-700"
-                                    >
-                                        <div className="p-1.5 sm:p-2 md:p-1 transition-all duration-700">                                            <img
-                                            src={brand.image}
-                                            alt={brand.name}
-                                            className="h-4 sm:h-5 md:h-6 lg:h-8 min-w-[100px] object-contain"
-                                            style={{
-                                                filter: 'grayscale(100%)',
-                                                opacity: 0.8
-                                            }}
-                                        />
+                        <Swiper
+                            slidesPerView={3}
+                            breakpoints={{
+                                640: { slidesPerView: 5 }
+                            }}
+                            spaceBetween={0}
+                            loop={true}
+                            freeMode={{
+                                enabled: true,
+                                momentum: false,
+                                sticky: false,
+                                minimumVelocity: 0.05
+                            }}
+                            speed={8000}
+                            autoplay={{ delay: 0, disableOnInteraction: false, pauseOnMouseEnter: false }}
+                            allowTouchMove={false}
+                            modules={[Autoplay]}
+                            className="px-4 sm:px-6 lg:px-8"
+                        >
+                            {[...brands, ...brands, ...brands].map((brand, index) => (
+                                <SwiperSlide key={`brand-${index}`}>
+                                    <div className="flex flex-col items-center opacity-70 transition-all duration-700">
+                                        <div className="p-1.5 sm:p-2 md:p-1 transition-all duration-700">
+                                            <img
+                                                src={brand.image}
+                                                alt={brand.name}
+                                                className="h-4 sm:h-5 md:h-6 lg:h-8 min-w-[100px] object-contain"
+                                                style={{
+                                                    filter: 'grayscale(100%)',
+                                                    opacity: 0.8
+                                                }}
+                                            />
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
                     </div>
                 </div>
 

@@ -22,7 +22,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
     hasDiscount,
     discount,
     showLabel = true,
-    label = "السعر يبدأ من",
+    label = "سعر المتر المربع يبدأ من",
     className = "",
     pricesFrom,
     priceRange,

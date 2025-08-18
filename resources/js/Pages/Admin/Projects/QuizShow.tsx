@@ -33,6 +33,37 @@ const QuizShow: React.FC<QuizShowProps> = ({ quiz }) => {
         });
     };
 
+    // تعريف القواميس للتعريب
+    const SPACE_TYPES: Record<string, string> = {
+        residential: 'سكني',
+        offices: 'مكاتب',
+        hotels: 'فنادق',
+        shops: 'محلات',
+        living_room: 'صالة المعيشة',
+        bedroom: 'غرفة النوم',
+        kitchen: 'المطبخ',
+        office: 'المكتب',
+        restaurant: 'مطعم',
+        hotel: 'فندق',
+        other: 'أخرى'
+    };
+    const PRODUCT_NEEDS: Record<string, string> = {
+        curtains: 'ستائر',
+        furniture: 'أثاث',
+        cabinets: 'خزائن',
+        doors: 'أبواب',
+        woodwork: 'خشبيات',
+        finishes: 'تشطيبات',
+        other: 'أخرى'
+    };
+    const PREFERRED_STYLES: Record<string, string> = {
+        modern: 'عصري',
+        classic: 'كلاسيكي',
+        minimalist: 'بساطة',
+        luxury: 'فخم',
+        other: 'أخرى'
+    };
+
     return (
         <AdminLayout>
             <Head title={`تفاصيل اختبار - ${quiz.name}`} />
@@ -98,7 +129,7 @@ const QuizShow: React.FC<QuizShowProps> = ({ quiz }) => {
                                 <div className="flex flex-wrap gap-2">
                                     {quiz.space_types.map((type, index) => (
                                         <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                            {type}
+                                            {SPACE_TYPES[type] || type}
                                         </span>
                                     ))}
                                 </div>
@@ -115,7 +146,7 @@ const QuizShow: React.FC<QuizShowProps> = ({ quiz }) => {
                                 <div className="flex flex-wrap gap-2">
                                     {quiz.product_needs.map((need, index) => (
                                         <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                            {need}
+                                            {PRODUCT_NEEDS[need] || need}
                                         </span>
                                     ))}
                                 </div>
@@ -132,7 +163,7 @@ const QuizShow: React.FC<QuizShowProps> = ({ quiz }) => {
                                 <div className="flex flex-wrap gap-2">
                                     {quiz.preferred_styles.map((style, index) => (
                                         <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
-                                            {style}
+                                            {PREFERRED_STYLES[style] || style}
                                         </span>
                                     ))}
                                 </div>

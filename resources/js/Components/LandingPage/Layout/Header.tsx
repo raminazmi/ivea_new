@@ -59,7 +59,7 @@ const Header = () => {
                                     className="flex items-center text-gray-300 hover:text-white transition whitespace-nowrap"
                                 >
                                     <FaTachometerAlt className="ml-1 text-xs" />
-                                    {isAdmin ? 'داشبورد المدير' : 'داشبورد'}
+                                    {isAdmin ? 'داشبورد' : 'داشبورد'}
                                 </Link>
                             ) : (
                                 <Link href="/login" className="flex items-center text-gray-300 hover:text-white transition whitespace-nowrap">

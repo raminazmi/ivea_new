@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HiMinus, HiPlus, HiUpload, HiCheck, HiShoppingCart } from 'react-icons/hi';
+import { HiMinus, HiPlus, HiUpload, HiCheck, HiShoppingCart, HiChevronDown, HiChevronUp, HiAdjustments } from 'react-icons/hi';
 import { useDispatch } from 'react-redux';
 import Breadcrumb from '@/Components/Common/Breadcrumb';
 import ColorSelector from '@/Components/Common/ColorSelector';
@@ -65,6 +65,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     const [inCart, setInCart] = useState(false);
     const [added, setAdded] = useState(false);
     const [showQuickOrderModal, setShowQuickOrderModal] = useState(false);
+    const [showMoreOptions, setShowMoreOptions] = useState(false);
     const dispatch = useDispatch();
 
     const customizationFields = product.category?.customization_fields || {}; const handleQuantityChange = (increment: boolean) => {
@@ -407,7 +408,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                         )}
                         <div className="space-y-2">
                             {Object.entries(options).map(([key, value]) => (
-                                <label key={key} className="flex items-center gap-3 rtl:flex-row-reverse">
+                                <label key={key} className="flex items-center gap-3">
                                     <input
                                         type="checkbox"
                                         checked={(formData[fieldName] || []).includes(key)}
@@ -431,7 +432,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 text-center">
                             <HiUpload className="mx-auto h-8 w-8 md:h-12 md:w-12 text-gray-400 mb-3 md:mb-4" />
                             <p className="text-sm md:text-base text-gray-600 mb-2">
-                                اسحب وأفلت الملفات هنا، أو
+                                رفع مخطط أو صورة للتصميم والمكان المطلوب
                             </p>
                             <label className="cursor-pointer">
                                 <span className="text-primary-yellow hover:text-primary-yellow/80 font-medium text-sm md:text-base">
@@ -680,33 +681,60 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 )}
 
+                                {/* زر عرض المزيد مع تحسينات UI/UX وأيقونة متحركة */}
+                                <div className="mb-4 flex justify-start">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowMoreOptions((prev) => !prev)}
+                                        className={
+                                            `group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-xl text-base font-bold shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-300`
+                                        }
+                                        style={{ boxShadow: '0 2px 12px 0 rgba(255, 193, 7, 0.15)' }}
+                                    >
+                                        <span className="flex items-center gap-1">
+                                            {showMoreOptions ? 'إخفاء الخيارات' : 'عرض المزيد من الخيارات'}
+                                        </span>
+                                        {showMoreOptions ? (
+                                            <HiChevronUp className="text-xl transition-transform duration-300 group-hover:-translate-y-1" />
+                                        ) : (
+                                            <HiChevronDown className="text-xl transition-transform duration-300 group-hover:translate-y-1" />
+                                        )}
+                                    </button>
+                                </div>
+                                <style>{`
+                                    @keyframes spin-slow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                                    .animate-spin-slow { animation: spin-slow 2.5s linear infinite; }
+                                `}</style>
+
                                 {/* خيارات التخصيص الديناميكية */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                                    {Object.entries(customizationFields).map(([fieldName, field]) => {
-                                        const fieldType = (field as any)?.type;
+                                {showMoreOptions && (
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                                        {Object.entries(customizationFields).map(([fieldName, field]) => {
+                                            const fieldType = (field as any)?.type;
 
-                                        // الحقول التي تأخذ العرض الكامل (عمود واحد)
-                                        const fullWidthFields = ['dimensions', 'dimensions_3d', 'file_upload'];
+                                            // الحقول التي تأخذ العرض الكامل (عمود واحد)
+                                            const fullWidthFields = ['dimensions', 'dimensions_3d', 'file_upload'];
 
-                                        // checkbox_multiple للخشبيات (product_options) يأخذ العرض الكامل
-                                        const isProductOptionsField = fieldName === 'product_options' && fieldType === 'checkbox_multiple';
+                                            // checkbox_multiple للخشبيات (product_options) يأخذ العرض الكامل
+                                            const isProductOptionsField = fieldName === 'product_options' && fieldType === 'checkbox_multiple';
 
-                                        if (fullWidthFields.includes(fieldType) || isProductOptionsField) {
+                                            if (fullWidthFields.includes(fieldType) || isProductOptionsField) {
+                                                return (
+                                                    <div key={fieldName} className="lg:col-span-2">
+                                                        {renderField(fieldName, field)}
+                                                    </div>
+                                                );
+                                            }
+
+                                            // باقي الحقول تظهر في عمودين
                                             return (
-                                                <div key={fieldName} className="lg:col-span-2">
+                                                <div key={fieldName}>
                                                     {renderField(fieldName, field)}
                                                 </div>
                                             );
-                                        }
-
-                                        // باقي الحقول تظهر في عمودين
-                                        return (
-                                            <div key={fieldName}>
-                                                {renderField(fieldName, field)}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
+                                        })}
+                                    </div>
+                                )}
 
                                 {/* أزرار العمل */}
                                 <div className="pt-4">

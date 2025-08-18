@@ -3,13 +3,13 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import AppLayout from '@/Components/LandingPage/Layout/AppLayout';
 import CoverSection from '@/Components/LandingPage/Layout/CoverSection';
 import SectionTitle from '@/Components/SectionTitle';
-import ProjectShowcase from '@/Components/LandingPage/ProjectShowcase';
 import ContactUs from '@/Components/LandingPage/ContactUs';
 import { Link } from '@inertiajs/react';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { HiCheckCircle, HiUpload } from 'react-icons/hi';
 import Toast from '@/Components/Common/Toast';
+import PartnersCarousel from '@/Components/LandingPage/PartnersCarousel';
 
 interface ProjectsPageProps {
     spaceTypes: Record<string, string>;
@@ -224,7 +224,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
                                                 }`}
                                         >
-                                            اختبر ذوقك الآن
+                                            ما نوع مساحتك ؟
                                         </button>
                                         <button
                                             onClick={() => setActiveSection('calculator')}
@@ -252,10 +252,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                                             <div className="bg-white rounded-xl shadow-lg p-8">
                                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                                                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">اختبر ذوقك</h2>
-                                                    <SecondaryButton onClick={() => setActiveSection('quiz')}>
-                                                        إغلاق الاختبار
-                                                    </SecondaryButton>
+                                                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">ما نوع مساحتك ؟</h2>
                                                 </div>
                                                 <div className="text-center mb-8">
                                                     <div className="flex justify-center mb-6">
@@ -274,7 +271,13 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                             <div>
                                                                 <h3 className="text-xl font-semibold mb-6">ما نوع مساحتك؟</h3>
                                                                 <div className="grid md:grid-cols-2 gap-4">
-                                                                    {Object.entries(spaceTypes || {}).map(([key, value]) => (
+                                                                    {[
+                                                                        { key: 'residential', value: 'المنازل السكنية' },
+                                                                        { key: 'offices', value: 'المكاتب والشركات' },
+                                                                        { key: 'shops', value: 'المحلات التجارية' },
+                                                                        { key: 'hotels', value: 'الفنادق والمنتجعات' },
+                                                                        { key: 'other', value: 'أخرى' },
+                                                                    ].map(({ key, value }) => (
                                                                         <label key={key} className="flex items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
                                                                             <input
                                                                                 type="checkbox"
@@ -401,18 +404,25 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                             )}
 
                                                             {quizStep < 4 ? (
-                                                                <PrimaryButton
+                                                                <button
                                                                     type="button"
-                                                                    onClick={() => setQuizStep(quizStep + 1)}
+                                                                    onClick={() => {
+                                                                        if (
+                                                                            (quizStep === 1 && quizForm.data.space_types.length === 0) ||
+                                                                            (quizStep === 2 && quizForm.data.product_needs.length === 0) ||
+                                                                            (quizStep === 3 && quizForm.data.preferred_styles.length === 0)
+                                                                        ) return;
+                                                                        setQuizStep(quizStep + 1);
+                                                                    }}
                                                                     disabled={
                                                                         (quizStep === 1 && quizForm.data.space_types.length === 0) ||
                                                                         (quizStep === 2 && quizForm.data.product_needs.length === 0) ||
                                                                         (quizStep === 3 && quizForm.data.preferred_styles.length === 0)
                                                                     }
-                                                                    className="mr-auto"
+                                                                    className="mr-auto inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900"
                                                                 >
                                                                     التالي
-                                                                </PrimaryButton>
+                                                                </button>
                                                             ) : (
                                                                 <PrimaryButton
                                                                     type="submit"
@@ -433,9 +443,6 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                             <PrimaryButton onClick={() => setActiveSection('calculator')}>
                                                                 احسب التكلفة الآن
                                                             </PrimaryButton>
-                                                            <SecondaryButton onClick={() => setActiveSection('quiz')}>
-                                                                إغلاق النتائج
-                                                            </SecondaryButton>
                                                         </div>
                                                     </div>
                                                 )}
@@ -450,9 +457,6 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                             <div className="bg-white rounded-xl shadow-lg p-8">
                                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                                                     <h2 className="text-2xl md:text-3xl font-bold text-gray-900">احسب تكلفة مشروعك</h2>
-                                                    <SecondaryButton onClick={() => setActiveSection('calculator')}>
-                                                        إغلاق الحاسبة
-                                                    </SecondaryButton>
                                                 </div>
 
                                                 <div className="grid md:grid-cols-2 gap-8">
@@ -563,9 +567,6 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                             <PrimaryButton onClick={() => setActiveSection('upload')}>
                                                                 اطلب عرض سعر دقيق
                                                             </PrimaryButton>
-                                                            <SecondaryButton onClick={() => setActiveSection('calculator')}>
-                                                                إغلاق التقدير
-                                                            </SecondaryButton>
                                                         </div>
                                                     </div>
                                                 )}
@@ -580,9 +581,6 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                             <div className="bg-white rounded-xl shadow-lg p-8">
                                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                                                     <h2 className="text-2xl md:text-3xl font-bold text-gray-900">ارفع صور مساحتك</h2>
-                                                    <SecondaryButton onClick={() => setActiveSection('upload')}>
-                                                        إغلاق النموذج
-                                                    </SecondaryButton>
                                                 </div>
 
                                                 <form onSubmit={handleProjectSubmit} className="space-y-6">
@@ -679,7 +677,6 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                         </div>
                     </div>
                 </section>
-                <ProjectShowcase />
             </div>
             <section className="py-12 md:py-16 lg:py-20 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
@@ -742,7 +739,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                     </div>
                 </div>
             </section>
-
+            <PartnersCarousel />
             <section>
                 <div className="">
                     <div className="bg-peach1 text-center flex justify-center items-center">
@@ -781,4 +778,4 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
     );
 };
 
-export default Projects; 
+export default Projects;

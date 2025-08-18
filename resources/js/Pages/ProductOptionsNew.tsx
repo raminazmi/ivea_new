@@ -365,7 +365,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 text-center">
                             <HiUpload className="mx-auto h-8 w-8 md:h-12 md:w-12 text-gray-400 mb-3 md:mb-4" />
                             <p className="text-sm md:text-base text-gray-600 mb-2">
-                                اسحب وأفلت الملفات هنا، أو
+                                رفع مخطط أو صورة للتصميم والمكان المطلوب
                             </p>
                             <label className="cursor-pointer">
                                 <span className="text-primary-yellow hover:text-primary-yellow/80 font-medium text-sm md:text-base">
