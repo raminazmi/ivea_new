@@ -221,6 +221,12 @@ class ProductController extends Controller
 
         $products = $query->paginate(12);
 
+        // Add features to each product
+        $products->getCollection()->transform(function ($product) {
+            $product->features = $product->features;
+            return $product;
+        });
+
         $categories = Category::active()->ordered()->withCount(['products' => function ($query) {
             $query->active();
         }])->get();
@@ -349,6 +355,7 @@ class ProductController extends Controller
             'colorNames' => $product->color_names,
             'image' => $product->main_image,
             'images' => $product->product_images,
+            'features' => $product->features,
             'defaultWidth' => (float) ($product->default_width ?? 150),
             'defaultHeight' => (float) ($product->default_height ?? 200),
             'fabricReduction' => (float) ($product->fabric_reduction ?? 0),
@@ -409,6 +416,32 @@ class ProductController extends Controller
             ->paginate(12);
 
         return ResponseFacade::json($products);
+    }
+
+    public function getByCategorySlug($categorySlug): JsonResponse
+    {
+        $category = Category::where('slug', $categorySlug)->first();
+
+        if (!$category) {
+            return response()->json(['data' => []], 404);
+        }
+
+        // Get all subcategory IDs for this main category
+        $subcategoryIds = Category::where('parent_id', $category->id)->pluck('id')->toArray();
+
+        $query = Product::with('category')->active();
+
+        if (!empty($subcategoryIds)) {
+            // If subcategories exist, search in subcategories
+            $query->whereIn('category_id', $subcategoryIds);
+        } else {
+            // If no subcategories exist, search in main category itself
+            $query->where('category_id', $category->id);
+        }
+
+        $products = $query->take(8)->get();
+
+        return response()->json($products);
     }
 
     public function getFeatured(): JsonResponse

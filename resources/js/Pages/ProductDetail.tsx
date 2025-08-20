@@ -86,7 +86,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts 
             colorName: product.colorNames?.[selectedColor],
             width: selectedDimensions.width,
             height: selectedDimensions.height,
-            measurementUnit: 'cm'
+            measurementUnit: 'cm',
+            quantity: 1
         }));
     };
 
@@ -156,6 +157,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts 
                                 {product.description}
                             </div>
 
+                            {product.features && product.features.length > 0 && (
+                                <FeatureList features={product.features} />
+                            )}
+                            
                             {product.colors && product.colors.length > 0 && (
                                 <ColorSelector
                                     colors={product.colors}
@@ -163,10 +168,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts 
                                     selectedColor={selectedColor}
                                     onColorSelect={setSelectedColor}
                                 />
-                            )}
-
-                            {product.features && product.features.length > 0 && (
-                                <FeatureList features={product.features} />
                             )}
 
                             {product.pricingMethod && product.pricingMethod !== 'fixed' && (

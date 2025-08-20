@@ -20,6 +20,7 @@ class ProjectQuiz extends Model
         'product_other',
         'style_other',
         'additional_notes',
+        'images',
         'status'
     ];
 
@@ -27,6 +28,7 @@ class ProjectQuiz extends Model
         'space_types' => 'array',
         'product_needs' => 'array',
         'preferred_styles' => 'array',
+        'images' => 'array',
     ];
 
     const STATUS_PENDING = 'pending';

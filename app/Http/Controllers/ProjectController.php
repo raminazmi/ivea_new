@@ -47,9 +47,24 @@ class ProjectController extends Controller
                 'space_type_other' => 'nullable|string|max:500',
                 'product_other' => 'nullable|string|max:500',
                 'style_other' => 'nullable|string|max:500',
-                'additional_notes' => 'nullable|string|max:1000'
+                'additional_notes' => 'nullable|string|max:1000',
+                'images' => 'nullable|array|max:5',
+                'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120'
             ]);
             \Log::info('submitQuiz validated data', $validated);
+
+            // معالجة الصور
+            $imagePaths = [];
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $path = $image->store('project-quizzes', 'public');
+                    $imagePaths[] = $path;
+                }
+            }
+
+            $validated['images'] = $imagePaths;
+            \Log::info('submitQuiz image paths', $imagePaths);
+
             $quiz = ProjectQuiz::create($validated);
             return redirect()->back()->with('success', 'تم إرسال بياناتك بنجاح. سيتواصل معك فريقنا قريباً!');
         } catch (\Exception $e) {

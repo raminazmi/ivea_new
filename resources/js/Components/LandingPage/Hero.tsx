@@ -232,13 +232,6 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
             slug: 'curtains'
         },
         {
-            name: 'خشبيات',
-            image: '/images/door.png',
-            subtitle: 'عرض المزيد',
-            bgColor: 'bg-[#F5F5F5]',
-            slug: 'wooden'
-        },
-        {
             name: 'كــنب',
             image: '/images/sofa.png',
             subtitle: 'عرض المزيد',
@@ -251,6 +244,13 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
             subtitle: 'عرض المزيد',
             bgColor: 'bg-[#F5F5F5]',
             slug: 'cabinets'
+        },
+        {
+            name: 'خشبيات',
+            image: '/images/door.png',
+            subtitle: 'عرض المزيد',
+            bgColor: 'bg-[#F5F5F5]',
+            slug: 'wooden'
         }
     ];
 
@@ -336,6 +336,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                             <a
                                 href="https://wa.me/966123456789?text=مرحباً، أود الحصول على استشارة مجانية"
                                 target="_blank"
+                                rel="noopener noreferrer"
                                 className="flex items-center justify-center gap-2 text-[#616161] font-medium transition-all duration-500 hover:scale-105"
                             >
                                 <FaWhatsapp className="text-xl sm:text-2xl md:text-3xl text-white bg-[#4CAF50] hover:bg-[#3d8b40] rounded-full p-1 sm:p-1.5 md:p-2 transition-all duration-500 hover:scale-110" />

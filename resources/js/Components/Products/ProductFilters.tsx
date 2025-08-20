@@ -201,117 +201,13 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                         onChange={(e) => setSearchTerm(e.target.value)}
                         onKeyPress={handleSearchKeyPress}
                         className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm sm:text-base"
+                        title="ابحث عن المنتجات باستخدام الاسم أو الوصف"
                     />
                 </div>
             </div>
 
+           
             <div className="mb-6">
-                <button
-                    onClick={() => toggleSection('category')}
-                    className="flex items-center justify-between w-full text-left font-bold text-gray-900 mb-3"
-                >
-                    الفئات الفرعية
-                    {expandedSections.category ? <HiChevronUp className="w-5 h-5" /> : <HiChevronDown className="w-5 h-5" />}
-                </button>
-                {expandedSections.category && (
-                    <div className="space-y-3">
-                        {activeCategory === 'all' ? (
-                            // Show all subcategories grouped by main category
-                            <div className="space-y-4">
-                                <label className="flex items-center px-3 py-2 cursor-pointer bg-gray-50 rounded-lg">
-                                    <input
-                                        type="radio"
-                                        name="subcategory"
-                                        checked={selectedCategories.length === 0}
-                                        onChange={() => setSelectedCategories([])}
-                                        className="w-4 h-4 me-2 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
-                                    />
-                                    <span className="text-gray-700 font-medium">جميع الفئات</span>
-                                </label>
-
-                                {categories.filter(cat => !cat.parent_id).map((mainCategory: Category) => {
-                                    const subcategories = categories.filter(sub => sub.parent_id === mainCategory.id);
-                                    if (subcategories.length === 0) return null;
-
-                                    return (
-                                        <div key={mainCategory.id} className="border border-gray-200 rounded-lg p-3">
-                                            <h4 className="font-semibold text-gray-900 mb-2 text-sm">{mainCategory.name}</h4>
-                                            <div className="space-y-1">
-                                                {subcategories.map((subCategory: Category) => (
-                                                    <label key={subCategory.id} className="flex items-center px-2 py-1 cursor-pointer hover:bg-gray-50 rounded">
-                                                        <input
-                                                            type="radio"
-                                                            name="subcategory"
-                                                            checked={selectedCategories.includes(subCategory.slug)}
-                                                            onChange={() => setSelectedCategories([subCategory.slug])}
-                                                            className="w-4 h-4 me-2 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
-                                                        />
-                                                        <span className="text-gray-700 text-sm flex-1">{subCategory.name}</span>
-                                                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                                                            {subCategory.products_count || 0}
-                                                        </span>
-                                                    </label>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        ) : (
-                            // Show subcategories of active main category
-                            (() => {
-                                const mainCategory = categories.find(cat => cat.slug === activeCategory && !cat.parent_id);
-                                if (!mainCategory) return (
-                                    <p className="text-gray-500 text-center py-4">لا توجد فئات فرعية متاحة</p>
-                                );
-
-                                const subcategories = categories.filter(cat => cat.parent_id === mainCategory.id);
-
-                                return (
-                                    <div className="space-y-2">
-                                        <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                                            <p className="text-sm text-gray-700">
-                                                <span className="font-semibold text-primary-yellow">{mainCategory.name}</span> - الفئات الفرعية
-                                            </p>
-                                        </div>
-
-                                        <label className="flex items-center px-3 py-2 cursor-pointer bg-gray-50 rounded-lg">
-                                            <input
-                                                type="radio"
-                                                name="subcategory"
-                                                checked={selectedCategories.length === 0}
-                                                onChange={() => setSelectedCategories([])}
-                                                className="w-4 h-4 me-2 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
-                                            />
-                                            <span className="text-gray-700 font-medium">جميع فئات {mainCategory.name}</span>
-                                        </label>
-
-                                        {subcategories.map((subCategory: Category) => (
-                                            <label key={subCategory.id} className="flex items-center px-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg border border-gray-100">
-                                                <input
-                                                    type="radio"
-                                                    name="subcategory"
-                                                    checked={selectedCategories.includes(subCategory.slug)}
-                                                    onChange={() => setSelectedCategories([subCategory.slug])}
-                                                    className="w-4 h-4 me-2 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
-                                                />
-                                                <span className="text-gray-700 flex-1">{subCategory.name}</span>
-                                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                                                    {subCategory.products_count || 0}
-                                                </span>
-                                            </label>
-                                        ))}
-
-                                        {subcategories.length === 0 && (
-                                            <p className="text-gray-500 text-center py-4 text-sm">لا توجد فئات فرعية في {mainCategory.name}</p>
-                                        )}
-                                    </div>
-                                );
-                            })()
-                        )}
-                    </div>
-                )}
-            </div>            <div className="mb-6">
                 <button
                     onClick={() => toggleSection('price')}
                     className="flex items-center justify-between w-full text-left font-bold text-gray-900 mb-3"
@@ -334,6 +230,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                                     value={priceRange.min}
                                     onChange={(e) => setPriceRange(prev => ({ ...prev, min: Number(e.target.value) }))}
                                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-blue"
+                                    title="اختر الحد الأدنى للسعر"
                                 />
                                 <div className="flex justify-between text-xs text-gray-500">
                                     <span>{filterOptions.priceRange?.min || 0} ريال</span>
@@ -355,6 +252,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                                     value={priceRange.max}
                                     onChange={(e) => setPriceRange(prev => ({ ...prev, max: Number(e.target.value) }))}
                                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-blue"
+                                    title="اختر الحد الأقصى للسعر"
                                 />
                                 <div className="flex justify-between text-xs text-gray-500">
                                     <span>{filterOptions.priceRange?.min || 0} ريال</span>
@@ -394,6 +292,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                                     <div
                                         className="w-6 h-6 rounded-full border-2 border-gray-300"
                                         style={{ backgroundColor: color }}
+                                        title={`اللون ${colorNames[color] || color}`}
                                     ></div>
                                     <span className="text-gray-700 text-sm">{colorNames[color] || color}</span>
                                 </div>

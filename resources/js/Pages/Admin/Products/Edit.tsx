@@ -29,11 +29,11 @@ interface EditProductProps {
         sku: string;
         featured: boolean;
         specifications: {
-            features: string[];
             material: string;
             dimensions: string;
             installation: string;
         };
+        features: string[];
         weight: number;
         dimensions: {
             width: string;
@@ -63,11 +63,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
         sku: product.sku || '',
         featured: product.featured,
         specifications: {
-            features: product.specifications?.features || [],
             material: product.specifications?.material || '',
             dimensions: product.specifications?.dimensions || '',
             installation: product.specifications?.installation || ''
         },
+        features: product.features || [],
         weight: product.weight ? product.weight.toString() : '',
         dimensions: {
             width: product.dimensions?.width || '',
@@ -108,19 +108,13 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
 
     const addFeature = () => {
         if (newFeature.trim()) {
-            setData('specifications', {
-                ...data.specifications,
-                features: [...data.specifications.features, newFeature.trim()]
-            });
+            setData('features', [...data.features, newFeature.trim()]);
             setNewFeature('');
         }
     };
 
     const removeFeature = (index: number) => {
-        setData('specifications', {
-            ...data.specifications,
-            features: data.specifications.features.filter((_, i) => i !== index)
-        });
+        setData('features', data.features.filter((_, i) => i !== index));
     };
 
 
@@ -367,12 +361,15 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                 </div>
 
                                 <div>
-                                    <InputLabel value="المميزات" />
+                                    <InputLabel value="المميزات (اختياري)" />
+                                    <p className="text-sm text-gray-600 mt-1 mb-3">
+                                        يمكنك إضافة مميزات للمنتج أو تركه فارغاً. إذا لم تقم بإضافة مميزات، سيتم عرض المميزات الافتراضية.
+                                    </p>
                                     <div className="mt-2 space-y-2">
                                         <div className="flex gap-2">
                                             <TextInput
                                                 type="text"
-                                                placeholder="أضف ميزة جديدة"
+                                                placeholder="أضف ميزة جديدة (مثال: مقاومة للحريق، عازلة للحرارة)"
                                                 className="flex-1"
                                                 value={newFeature}
                                                 onChange={(e) => setNewFeature(e.target.value)}
@@ -382,9 +379,9 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                                 إضافة
                                             </SecondaryButton>
                                         </div>
-                                        {data.specifications.features.length > 0 && (
+                                        {data.features.length > 0 && (
                                             <ul className="list-disc list-inside space-y-1">
-                                                {data.specifications.features.map((feature, index) => (
+                                                {data.features.map((feature: string, index: number) => (
                                                     <li key={index} className="flex items-center gap-2">
                                                         <span>{feature}</span>
                                                         <button
@@ -398,6 +395,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                                     </li>
                                                 ))}
                                             </ul>
+                                        )}
+                                        {data.features.length === 0 && (
+                                            <p className="text-sm text-gray-500 italic">
+                                                لم يتم إضافة مميزات بعد. سيتم عرض المميزات الافتراضية للمنتج.
+                                            </p>
                                         )}
                                     </div>
                                 </div>
@@ -575,6 +577,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                                 className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                                 value={data.pricing_method}
                                                 onChange={(e) => setData('pricing_method', e.target.value)}
+                                                title="اختر طريقة التسعير للمنتج"
                                             >
                                                 <option value="fixed">ثابت</option>
                                                 <option value="area_based">حسب المساحة</option>

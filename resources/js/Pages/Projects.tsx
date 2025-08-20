@@ -25,10 +25,9 @@ interface ProjectsPageProps {
 
 const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, preferredStyles, productTypes, flash }) => {
     const { flash: flashMessages } = usePage().props as any;
-    const [activeSection, setActiveSection] = useState<'quiz' | 'calculator' | 'upload'>('quiz');
+    const [activeSection, setActiveSection] = useState<'quiz'>('quiz');
     const [quizStep, setQuizStep] = useState(1);
     const [showQuizResult, setShowQuizResult] = useState(false);
-    const [costEstimate, setCostEstimate] = useState<any>(null);
     const [toast, setToast] = useState<{
         isVisible: boolean;
         message: string;
@@ -42,7 +41,6 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
     useEffect(() => {
         const successMessage = flashMessages?.success || flash?.success;
         const errorMessage = flashMessages?.error || flash?.error;
-        const costData = flashMessages?.costEstimate || flash?.costEstimate;
 
         if (successMessage) {
             setToast({
@@ -57,10 +55,6 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                 type: 'error'
             });
         }
-
-        if (costData) {
-            setCostEstimate(costData);
-        }
     }, [flashMessages, flash]);
 
     const quizForm = useForm({
@@ -73,46 +67,36 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
         name: '',
         email: '',
         phone: '',
-        additional_notes: ''
-    });
-
-    const calculatorForm = useForm({
-        rooms_count: 1,
-        service_type: 'custom',
-        material_type: 'economy',
-        project_type: [] as string[]
-    });
-
-    const submissionForm = useForm({
-        name: '',
-        email: '',
-        phone: '',
-        product_type: '',
-        description: '',
+        additional_notes: '',
         images: [] as File[]
     });
 
-    const handleCheckboxChange = (form: 'quiz' | 'calculator', field: string, value: string, checked: boolean) => {
-        if (form === 'quiz') {
+    const handleCheckboxChange = (field: string, value: string, checked: boolean) => {
             const currentValues = quizForm.data[field as keyof typeof quizForm.data] as string[];
             if (checked) {
                 quizForm.setData(field as any, [...currentValues, value]);
             } else {
                 quizForm.setData(field as any, currentValues.filter(v => v !== value));
-            }
-        } else if (form === 'calculator') {
-            const currentValues = calculatorForm.data[field as keyof typeof calculatorForm.data] as string[];
-            if (checked) {
-                calculatorForm.setData(field as any, [...currentValues, value]);
-            } else {
-                calculatorForm.setData(field as any, currentValues.filter(v => v !== value));
-            }
         }
     };
 
     const handleQuizSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        const formData = new FormData();
+
+        // إضافة البيانات النصية
+        Object.keys(quizForm.data).forEach(key => {
+            if (key === 'images') {
+                quizForm.data.images.forEach((file, index) => {
+                    formData.append(`images[${index}]`, file);
+                });
+            } else {
+                formData.append(key, (quizForm.data as any)[key]);
+            }
+        });
+
         quizForm.post('/projects/quiz', {
+            forceFormData: true,
             onSuccess: () => {
                 setShowQuizResult(true);
                 setToast({
@@ -125,61 +109,6 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                 setToast({
                     isVisible: true,
                     message: 'حدث خطأ أثناء إرسال البيانات. يرجى المحاولة مرة أخرى.',
-                    type: 'error',
-                });
-            },
-        });
-    };
-
-    const calculateCost = () => {
-        calculatorForm.post('/projects/calculate-cost', {
-            onSuccess: (page: any) => {
-                setCostEstimate(page.props.costEstimate);
-                setToast({
-                    isVisible: true,
-                    message: 'تم حساب التكلفة التقديرية بنجاح!',
-                    type: 'success',
-                });
-            },
-            onError: () => {
-                setToast({
-                    isVisible: true,
-                    message: 'حدث خطأ أثناء حساب التكلفة. يرجى المحاولة مرة أخرى.',
-                    type: 'error',
-                });
-            },
-        });
-    };
-
-    const handleProjectSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const formData = new FormData();
-
-        Object.keys(submissionForm.data).forEach(key => {
-            if (key === 'images') {
-                submissionForm.data.images.forEach((file, index) => {
-                    formData.append(`images[${index}]`, file);
-                });
-            } else {
-                formData.append(key, (submissionForm.data as any)[key]);
-            }
-        });
-
-        submissionForm.post('/projects/submit', {
-            forceFormData: true,
-            onSuccess: () => {
-                setActiveSection('quiz');
-                submissionForm.reset();
-                setToast({
-                    isVisible: true,
-                    message: 'تم إرسال مشروعك بنجاح! سيتواصل معك فريقنا خلال 24 ساعة.',
-                    type: 'success',
-                });
-            },
-            onError: () => {
-                setToast({
-                    isVisible: true,
-                    message: 'حدث خطأ أثناء إرسال المشروع. يرجى المحاولة مرة أخرى.',
                     type: 'error',
                 });
             },
@@ -213,7 +142,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                             />
                             <div className="mt-6 md:mt-8 max-w-4xl mx-auto">
                                 <p className="text-base md:text-lg text-gray-700 leading-relaxed">
-                                    لست متأكدًا مما إذا كان أسلوبك وهميًا أم فخمًا أم عصريًا؟ تساعدك اختباراتنا على اكتشاف أسلوبك الفريد في التصميم. بمجرد حصولك على نتائجك الشخصية، سيساعدك فريقنا الموهوب من المصممين في تصميم منزل تحب العيش فيه.
+                                    لست متأكدًا مما إذا كان أسلوبك وهميًا أم فخمًا أم عصريًا؟ يساعدك نموذجنا على اكتشاف أسلوبك الفريد في التصميم. بمجرد إرسال بياناتك، سيساعدك فريقنا الموهوب من المصممين في تصميم منزل تحب العيش فيه.
                                 </p>
                                 <div className="mt-8 flex flex-wrap justify-center gap-2">
                                     <div className="flex gap-1 bg-gray-100 rounded-lg p-1 mb-8">
@@ -225,24 +154,6 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                 }`}
                                         >
                                             ما نوع مساحتك ؟
-                                        </button>
-                                        <button
-                                            onClick={() => setActiveSection('calculator')}
-                                            className={`px-6 py-3 rounded-md text-sm font-semibold transition-all duration-300 ${activeSection === 'calculator'
-                                                ? 'bg-primary-yellow text-gray-900 shadow-lg'
-                                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
-                                                }`}
-                                        >
-                                            احسب التكلفة
-                                        </button>
-                                        <button
-                                            onClick={() => setActiveSection('upload')}
-                                            className={`px-6 py-3 rounded-md text-sm font-semibold transition-all duration-300 ${activeSection === 'upload'
-                                                ? 'bg-primary-yellow text-gray-900 shadow-lg'
-                                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
-                                                }`}
-                                        >
-                                            ارفع صور مساحتك
                                         </button>
                                     </div>
                                 </div>
@@ -283,7 +194,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                                                 type="checkbox"
                                                                                 className="ml-3 h-4 w-4 text-primary-yellow"
                                                                                 checked={quizForm.data.space_types.includes(key)}
-                                                                                onChange={(e) => handleCheckboxChange('quiz', 'space_types', key, e.target.checked)}
+                                                                                onChange={(e) => handleCheckboxChange('space_types', key, e.target.checked)}
                                                                             />
                                                                             <span>{value}</span>
                                                                         </label>
@@ -311,7 +222,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                                                 type="checkbox"
                                                                                 className="ml-3 h-4 w-4 text-primary-yellow"
                                                                                 checked={quizForm.data.product_needs.includes(key)}
-                                                                                onChange={(e) => handleCheckboxChange('quiz', 'product_needs', key, e.target.checked)}
+                                                                                onChange={(e) => handleCheckboxChange('product_needs', key, e.target.checked)}
                                                                             />
                                                                             <span>{value}</span>
                                                                         </label>
@@ -339,7 +250,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                                                 type="checkbox"
                                                                                 className="ml-3 h-4 w-4 text-primary-yellow"
                                                                                 checked={quizForm.data.preferred_styles.includes(key)}
-                                                                                onChange={(e) => handleCheckboxChange('quiz', 'preferred_styles', key, e.target.checked)}
+                                                                                onChange={(e) => handleCheckboxChange('preferred_styles', key, e.target.checked)}
                                                                             />
                                                                             <span>{value}</span>
                                                                         </label>
@@ -359,7 +270,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
 
                                                         {quizStep === 4 && (
                                                             <div>
-                                                                <h3 className="text-xl font-semibold mb-6">معلومات التواصل (اختيارية)</h3>
+                                                                <h3 className="text-xl font-semibold mb-6">معلومات التواصل ورفع الصور</h3>
                                                                 <div className="grid md:grid-cols-2 gap-6">
                                                                     <input
                                                                         type="text"
@@ -367,6 +278,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                                         className="w-full p-3 border rounded-lg"
                                                                         value={quizForm.data.name}
                                                                         onChange={(e) => quizForm.setData('name', e.target.value)}
+                                                                        title="أدخل اسمك الكامل"
                                                                     />
                                                                     <input
                                                                         type="email"
@@ -374,6 +286,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                                         className="w-full p-3 border rounded-lg"
                                                                         value={quizForm.data.email}
                                                                         onChange={(e) => quizForm.setData('email', e.target.value)}
+                                                                        title="أدخل بريدك الإلكتروني"
                                                                     />
                                                                     <input
                                                                         type="tel"
@@ -381,6 +294,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                                         className="w-full p-3 border rounded-lg"
                                                                         value={quizForm.data.phone}
                                                                         onChange={(e) => quizForm.setData('phone', e.target.value)}
+                                                                        title="أدخل رقم هاتفك"
                                                                     />
                                                                 </div>
                                                                 <textarea
@@ -389,7 +303,38 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                                     className="mt-4 w-full p-3 border rounded-lg"
                                                                     value={quizForm.data.additional_notes}
                                                                     onChange={(e) => quizForm.setData('additional_notes', e.target.value)}
+                                                                    title="أضف أي ملاحظات إضافية حول مشروعك"
                                                                 />
+                                                                
+                                                                <div className="mt-6">
+                                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                                        صور المساحة (اختيارية - 1-5 صور)
+                                                                    </label>
+                                                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary-yellow transition-colors">
+                                                                        <HiUpload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                                                                        <input
+                                                                            type="file"
+                                                                            multiple
+                                                                            accept="image/*"
+                                                                            className="hidden"
+                                                                            id="quiz-images"
+                                                                            onChange={(e) => {
+                                                                                const files = Array.from(e.target.files || []);
+                                                                                quizForm.setData('images', files.slice(0, 5) as File[]);
+                                                                            }}
+                                                                            title="اختر صور مساحتك"
+                                                                        />
+                                                                        <label htmlFor="quiz-images" className="cursor-pointer">
+                                                                            <span className="text-primary-yellow font-medium">اختر الصور</span>
+                                                                            <p className="text-sm text-gray-500 mt-2">JPG, PNG, GIF حتى 5MB لكل صورة</p>
+                                                                        </label>
+                                                                        {quizForm.data.images.length > 0 && (
+                                                                            <p className="mt-2 text-sm text-green-600">
+                                                                                تم اختيار {quizForm.data.images.length} صورة
+                                                                            </p>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         )}
 
@@ -440,8 +385,12 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                         <h3 className="text-2xl font-bold text-gray-900 mb-4">نحن نقدر ذوقك الرائع!</h3>
                                                         <p className="text-lg text-gray-600 mb-8">فريقنا جاهز لمساعدتك في تحقيق حلمك</p>
                                                         <div className="flex gap-4 justify-center">
-                                                            <PrimaryButton onClick={() => setActiveSection('calculator')}>
-                                                                احسب التكلفة الآن
+                                                            <PrimaryButton onClick={() => {
+                                                                setShowQuizResult(false);
+                                                                setQuizStep(1);
+                                                                quizForm.reset();
+                                                            }}>
+                                                                إرسال مشروع جديد
                                                             </PrimaryButton>
                                                         </div>
                                                     </div>
@@ -451,228 +400,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                     </section>
                                 )}
 
-                                {activeSection === 'calculator' && (
-                                    <section className="py-20 bg-gray-50">
-                                        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                                            <div className="bg-white rounded-xl shadow-lg p-8">
-                                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                                                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">احسب تكلفة مشروعك</h2>
-                                                </div>
 
-                                                <div className="grid md:grid-cols-2 gap-8">
-                                                    <div className="space-y-6">
-                                                        <div>
-                                                            <label className="block text-sm font-medium text-gray-700 mb-2">عدد الغرف أو المكاتب</label>
-                                                            <input
-                                                                type="number"
-                                                                min="1"
-                                                                max="20"
-                                                                className="w-full p-3 border rounded-lg"
-                                                                value={calculatorForm.data.rooms_count}
-                                                                onChange={(e) => calculatorForm.setData('rooms_count', parseInt(e.target.value))}
-                                                            />
-                                                        </div>
-
-                                                        <div>
-                                                            <label className="block text-sm font-medium text-gray-700 mb-2">نوع الخدمة</label>
-                                                            <div className="space-y-2">
-                                                                <label className="flex items-center">
-                                                                    <input
-                                                                        type="radio"
-                                                                        className="ml-2"
-                                                                        checked={calculatorForm.data.service_type === 'custom'}
-                                                                        onChange={() => calculatorForm.setData('service_type', 'custom')}
-                                                                    />
-                                                                    تفصيل حسب الطلب
-                                                                </label>
-                                                                <label className="flex items-center">
-                                                                    <input
-                                                                        type="radio"
-                                                                        className="ml-2"
-                                                                        checked={calculatorForm.data.service_type === 'installation'}
-                                                                        onChange={() => calculatorForm.setData('service_type', 'installation')}
-                                                                    />
-                                                                    تركيب فقط
-                                                                </label>
-                                                            </div>
-                                                        </div>
-
-                                                        <div>
-                                                            <label className="block text-sm font-medium text-gray-700 mb-2">نوع الخامة</label>
-                                                            <div className="space-y-2">
-                                                                <label className="flex items-center">
-                                                                    <input
-                                                                        type="radio"
-                                                                        className="ml-2"
-                                                                        checked={calculatorForm.data.material_type === 'economy'}
-                                                                        onChange={() => calculatorForm.setData('material_type', 'economy')}
-                                                                    />
-                                                                    اقتصادية
-                                                                </label>
-                                                                <label className="flex items-center">
-                                                                    <input
-                                                                        type="radio"
-                                                                        className="ml-2"
-                                                                        checked={calculatorForm.data.material_type === 'premium'}
-                                                                        onChange={() => calculatorForm.setData('material_type', 'premium')}
-                                                                    />
-                                                                    فاخرة
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div>
-                                                        <label className="block text-sm font-medium text-gray-700 mb-2">نوع المشروع</label>
-                                                        <div className="space-y-2">
-                                                            {Object.entries({
-                                                                curtains: 'ستائر',
-                                                                furniture: 'كنب',
-                                                                cabinets: 'خزائن',
-                                                                woodwork: 'خشبيات',
-                                                                finishes: 'تشطيبات'
-                                                            }).map(([key, value]) => (
-                                                                <label key={key} className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        className="ml-3 h-4 w-4 text-primary-yellow"
-                                                                        checked={calculatorForm.data.project_type.includes(key)}
-                                                                        onChange={(e) => handleCheckboxChange('calculator', 'project_type', key, e.target.checked)}
-                                                                    />
-                                                                    <span>{value}</span>
-                                                                </label>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="mt-8 text-center">
-                                                    <PrimaryButton
-                                                        onClick={calculateCost}
-                                                        disabled={calculatorForm.processing || calculatorForm.data.project_type.length === 0}
-                                                    >
-                                                        احسب التكلفة
-                                                    </PrimaryButton>
-                                                </div>
-
-                                                {costEstimate && (
-                                                    <div className="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
-                                                        <h3 className="text-xl font-bold text-blue-800 mb-4">التقدير التقريبي</h3>
-                                                        <div className="space-y-2 text-blue-700">
-                                                            <p>إجمالي التكلفة المقدرة: <span className="font-bold">{costEstimate.total} {costEstimate.currency}</span></p>
-                                                            <p>التكلفة لكل غرفة: <span className="font-bold">{costEstimate.per_room} {costEstimate.currency}</span></p>
-                                                            <p className="text-sm text-blue-600 mt-4">{costEstimate.note}</p>
-                                                        </div>
-                                                        <div className="mt-6 flex gap-4 justify-center">
-                                                            <PrimaryButton onClick={() => setActiveSection('upload')}>
-                                                                اطلب عرض سعر دقيق
-                                                            </PrimaryButton>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </section>
-                                )}
-
-                                {activeSection === 'upload' && (
-                                    <section className="py-20 bg-gray-50">
-                                        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                                            <div className="bg-white rounded-xl shadow-lg p-8">
-                                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                                                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">ارفع صور مساحتك</h2>
-                                                </div>
-
-                                                <form onSubmit={handleProjectSubmit} className="space-y-6">
-                                                    <div className="grid md:grid-cols-2 gap-6">
-                                                        <input
-                                                            type="text"
-                                                            placeholder="الاسم *"
-                                                            required
-                                                            className="w-full p-3 border rounded-lg"
-                                                            value={submissionForm.data.name}
-                                                            onChange={(e) => submissionForm.setData('name', e.target.value)}
-                                                        />
-                                                        <input
-                                                            type="email"
-                                                            placeholder="البريد الإلكتروني *"
-                                                            required
-                                                            className="w-full p-3 border rounded-lg"
-                                                            value={submissionForm.data.email}
-                                                            onChange={(e) => submissionForm.setData('email', e.target.value)}
-                                                        />
-                                                        <input
-                                                            type="tel"
-                                                            placeholder="رقم الهاتف *"
-                                                            required
-                                                            className="w-full p-3 border rounded-lg"
-                                                            value={submissionForm.data.phone}
-                                                            onChange={(e) => submissionForm.setData('phone', e.target.value)}
-                                                        />
-                                                        <select
-                                                            required
-                                                            className="w-full p-3 border rounded-lg"
-                                                            value={submissionForm.data.product_type}
-                                                            onChange={(e) => submissionForm.setData('product_type', e.target.value)}
-                                                        >
-                                                            <option value="">اختر نوع المنتج *</option>
-                                                            {Object.entries(productTypes || {}).map(([key, value]) => (
-                                                                <option key={key} value={key}>{value}</option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
-
-                                                    <textarea
-                                                        placeholder="وصف المشروع (مثلاً: أحتاج ستائر بلون بيج تغطي الجدار بالكامل) *"
-                                                        rows={4}
-                                                        required
-                                                        className="w-full p-3 border rounded-lg"
-                                                        value={submissionForm.data.description}
-                                                        onChange={(e) => submissionForm.setData('description', e.target.value)}
-                                                    />
-
-                                                    <div>
-                                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                            صور المساحة (1-5 صور) *
-                                                        </label>
-                                                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary-yellow transition-colors">
-                                                            <HiUpload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                                                            <input
-                                                                type="file"
-                                                                multiple
-                                                                accept="image/*"
-                                                                className="hidden"
-                                                                id="images"
-                                                                onChange={(e) => {
-                                                                    const files = Array.from(e.target.files || []);
-                                                                    submissionForm.setData('images', files.slice(0, 5) as File[]);
-                                                                }}
-                                                            />
-                                                            <label htmlFor="images" className="cursor-pointer">
-                                                                <span className="text-primary-yellow font-medium">اختر الصور</span>
-                                                                <p className="text-sm text-gray-500 mt-2">JPG, PNG, GIF حتى 5MB لكل صورة</p>
-                                                            </label>
-                                                            {submissionForm.data.images.length > 0 && (
-                                                                <p className="mt-2 text-sm text-green-600">
-                                                                    تم اختيار {submissionForm.data.images.length} صورة
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="flex gap-4 justify-center">
-                                                        <PrimaryButton
-                                                            type="submit"
-                                                            disabled={submissionForm.processing}
-                                                        >
-                                                            {submissionForm.processing ? 'جاري الإرسال...' : 'ارسل مشروعك'}
-                                                        </PrimaryButton>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </section>
-                                )}
                             </div>
                         </div>
                     </div>

@@ -16,6 +16,9 @@ class Job extends Model
         'category',
         'salary_range',
         'location',
+        'requirements',
+        'benefits',
+        'deadline',
         'status',
     ];
 

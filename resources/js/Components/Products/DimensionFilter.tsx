@@ -21,7 +21,25 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
 }) => {
     const [width, setWidth] = useState<number>(defaultWidth);
     const [height, setHeight] = useState<number>(defaultHeight);
-    const [isExpanded, setIsExpanded] = useState(true);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Check if device is mobile on mount and resize
+    useEffect(() => {
+        const checkIsMobile = () => {
+            setIsMobile(window.innerWidth < 768); // md breakpoint
+        };
+        
+        checkIsMobile();
+        window.addEventListener('resize', checkIsMobile);
+        
+        return () => window.removeEventListener('resize', checkIsMobile);
+    }, []);
+
+    // Set initial expanded state based on device type
+    useEffect(() => {
+        setIsExpanded(!isMobile);
+    }, [isMobile]);
 
     useEffect(() => {
         onDimensionChange({ width, height });
@@ -150,6 +168,8 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
                                         value={width}
                                         onChange={(e) => handleWidthChange(Number(e.target.value))}
                                         className="w-full h-10 bg-primary-yellow rounded-lg appearance-none cursor-pointer relative -mt-8 z-10"
+                                        aria-label="عرض المنتج"
+                                        title="عرض المنتج"
                                     />
 
                                     {/* Orange circular indicator like in the image */}
@@ -166,6 +186,9 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
                                     value={width}
                                     onChange={(e) => handleWidthChange(Number(e.target.value))}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    aria-label="عرض المنتج بالسم"
+                                    title="عرض المنتج بالسم"
+                                    placeholder="أدخل العرض"
                                 />
                             </div>
                         </div>
@@ -204,6 +227,8 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
                                         value={height}
                                         onChange={(e) => handleHeightChange(Number(e.target.value))}
                                         className="w-full h-10 bg-primary-yellow rounded-lg cursor-pointer relative -mt-8 z-10"
+                                        aria-label="ارتفاع المنتج"
+                                        title="ارتفاع المنتج"
                                     />
 
                                     {/* Orange circular indicator like in the image */}
@@ -220,6 +245,9 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
                                     value={height}
                                     onChange={(e) => handleHeightChange(Number(e.target.value))}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    aria-label="ارتفاع المنتج بالسم"
+                                    title="ارتفاع المنتج بالسم"
+                                    placeholder="أدخل الارتفاع"
                                 />
                             </div>
                         </div>

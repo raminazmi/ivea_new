@@ -84,6 +84,13 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
         }
         return 'all';
     });
+    const [activeSubTab, setActiveSubTab] = useState(() => {
+        // Set initial active sub tab based on filters
+        if (filters.category) {
+            return filters.category;
+        }
+        return '';
+    });
     const [loading, setLoading] = useState(false);
 
     React.useEffect(() => {
@@ -92,6 +99,7 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                 ...prevFilters,
                 category: filters.category
             }));
+            setActiveSubTab(filters.category);
         }
 
         // Update active tab based on filters
@@ -205,6 +213,7 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
     const handleTabChange = (tab: string) => {
         setLoading(true);
         setActiveTab(tab);
+        setActiveSubTab(''); // Reset sub tab when main tab changes
 
         // If it's a main category tab, filter by that main category and its subcategories
         let newFilters;
@@ -228,6 +237,44 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                 // Fallback to old tab system
                 newFilters = { ...currentFilters, tab, page: 1 };
             }
+        }
+
+        setCurrentFilters(newFilters);
+        setCurrentPage(1);
+        router.get('/products', newFilters, {
+            preserveState: true,
+            onFinish: () => setLoading(false)
+        });
+    };
+
+    const handleSubTabChange = (subTab: string) => {
+        setLoading(true);
+        setActiveSubTab(subTab);
+
+        let newFilters;
+        if (subTab === '') {
+            // Show all subcategories of the active main category
+            const mainCategory = categories.find(cat => cat.slug === activeTab && !cat.parent_id);
+            if (mainCategory) {
+                const subcategoryIds = categories
+                    .filter(cat => cat.parent_id === mainCategory.id)
+                    .map(cat => cat.id);
+
+                newFilters = {
+                    main_category: activeTab,
+                    subcategory_ids: subcategoryIds,
+                    page: 1
+                };
+            } else {
+                newFilters = { ...currentFilters, page: 1 };
+            }
+        } else {
+            // Filter by specific subcategory
+            newFilters = {
+                ...currentFilters,
+                category: subTab,
+                page: 1
+            };
         }
 
         setCurrentFilters(newFilters);
@@ -280,7 +327,7 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                 <section className="py-8 md:py-12 lg:py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
-                            <div className="lg:w-1/4 space-y-6">
+                            <div className="lg:w-1/4 space-y-6 md:mt-[120px]">
                                 <DimensionFilter
                                     onDimensionChange={handleDimensionChange}
                                     defaultWidth={globalDimensions.width}
@@ -290,13 +337,13 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                                     minHeight={dimensionLimits.minHeight}
                                     maxHeight={dimensionLimits.maxHeight}
                                 />
-                                <ProductFilters
+                                {/* <ProductFilters
                                     onFilterChange={handleFilterChange}
                                     activeTab={activeTab}
                                     categories={categories}
                                     filterOptions={filterOptions}
                                     currentFilters={currentFilters}
-                                />
+                                /> */}
                             </div>
 
                             <div className="lg:w-3/4">
@@ -334,21 +381,76 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                                     </div>
                                 </div>
 
-                                <div className="flex justify-center mb-8">
-                                    <div className="flex flex-wrap justify-center gap-2 md:gap-4">
-                                        {tabs.map((tab) => (
-                                            <button
-                                                key={tab.id}
-                                                onClick={() => handleTabChange(tab.id)}
-                                                className={`px-4 py-2 rounded-full text-sm md:text-base font-medium transition-all duration-700 hover:duration-1000 flex items-center gap-2 ${activeTab === tab.id
-                                                    ? 'bg-primary-yellow text-white shadow-lg'
-                                                    : 'bg-white/80 text-gray-700 hover:bg-white hover:shadow-md border border-gray-200'
-                                                    }`}
-                                            >
-                                                <span>{tab.label}</span>
-                                            </button>
-                                        ))}
+                                <div className="space-y-4 mb-10 relative px-2">
+                                    {/* Main Category Tabs */}
+                                    <div className="relative">
+                                        <div className="flex justify-center">
+                                            <div className="bg-primary-gray py-1.5 px-2 rounded-xl md:rounded-full flex flex-wrap justify-center gap-1 shadow-sm border border-gray-100 max-w-full overflow-x-auto">
+                                                {tabs.map((tab) => (
+                                                    <button
+                                                        key={tab.id}
+                                                        onClick={() => handleTabChange(tab.id)}
+                                                        className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 flex items-center gap-1.5 relative overflow-hidden group hover:scale-102 whitespace-nowrap ${activeTab === tab.id
+                                                            ? 'bg-primary-black text-white shadow-md'
+                                                            : 'text-gray-700 hover:bg-primary-gray hover:text-gray-800'
+                                                            }`}
+                                                    >
+                                                        <span className="relative z-10">{tab.label}</span>
+                                                        {activeTab === tab.id && (
+                                                            <div className="absolute inset-0 bg-primary-yellow opacity-10 rounded-full"></div>
+                                                        )}
+                                                        <div className={`absolute inset-0 bg-primary-yellow opacity-0 group-hover:opacity-5 transition-opacity duration-200 rounded-full ${activeTab === tab.id ? 'hidden' : ''}`}></div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
+
+                                    {/* Sub Category Tabs - Only show when a main category is selected */}
+                                    {activeTab !== 'all' && (() => {
+                                        const mainCategory = categories.find(cat => cat.slug === activeTab && !cat.parent_id);
+                                        if (!mainCategory) return null;
+
+                                        const subcategories = categories.filter(cat => cat.parent_id === mainCategory.id);
+                                        if (subcategories.length === 0) return null;
+
+                                        const subTabs = [
+                                            { id: '', label: `الكل`, count: 0 },
+                                            ...subcategories.map(subCat => ({
+                                                id: subCat.slug,
+                                                label: subCat.name,
+                                                count: subCat.products_count || 0
+                                            }))
+                                        ];
+
+                                        return (
+                                            <div className="relative">
+                                                <div className="flex justify-center">
+                                                    <div className="bg-white border border-gray-100 py-1.5 px-2 rounded-xl md:rounded-full flex flex-wrap justify-center gap-1 shadow-sm max-w-full overflow-x-auto">
+                                                        {subTabs.map((subTab) => (
+                                                            <button
+                                                                key={subTab.id}
+                                                                onClick={() => handleSubTabChange(subTab.id)}
+                                                                className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-200 flex items-center gap-1.5 relative overflow-hidden group hover:scale-102 whitespace-nowrap ${activeSubTab === subTab.id
+                                                                    ? 'bg-primary-yellow text-white shadow-sm'
+                                                                    : 'text-gray-600 hover:bg-primary-gray hover:text-gray-700'
+                                                                    }`}
+                                                            >
+                                                                <span className="relative z-10">{subTab.label}</span>
+                                                                {activeSubTab === subTab.id && (
+                                                                    <div className="absolute inset-0 bg-primary-yellow opacity-10 rounded-full"></div>
+                                                                )}
+                                                                <div className={`absolute inset-0 bg-primary-yellow opacity-0 group-hover:opacity-5 transition-opacity duration-200 rounded-full ${activeSubTab === subTab.id ? 'hidden' : ''}`}></div>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                
+                                                {/* Decorative line */}
+                                                <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-16 h-[3px] bg-gradient-to-r from-transparent via-primary-yellow to-transparent"></div>
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
 
                                 {loading ? (

@@ -32,7 +32,11 @@ class JobController extends Controller
             'description' => 'required|string',
             'type' => 'required|in:full-time,part-time,contract',
             'category' => 'required|string|max:255',
+            'salary_range' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
+            'requirements' => 'nullable|string',
+            'benefits' => 'nullable|string',
+            'deadline' => 'nullable|date',
             'status' => 'required|in:active,inactive,closed',
         ]);
 
@@ -63,7 +67,11 @@ class JobController extends Controller
             'description' => 'required|string',
             'type' => 'required|in:full-time,part-time,contract',
             'category' => 'required|string|max:255',
+            'salary_range' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
+            'requirements' => 'nullable|string',
+            'benefits' => 'nullable|string',
+            'deadline' => 'nullable|date',
             'status' => 'required|in:active,inactive,closed',
         ]);
 

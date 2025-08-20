@@ -17,7 +17,7 @@ const FeatureList: React.FC<FeatureListProps> = ({
             {title && (
                 <div className="text-sm font-medium text-gray-900">{title}</div>
             )}
-            <ul className="space-y-2">
+            <ul className="space-y-2 grid grid-cols-2 gap-2">
                 {features.map((feature, index) => (
                     <li key={index} className="flex items-start space-x-2">
                         <HiCheck className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" />

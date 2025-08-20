@@ -9,6 +9,7 @@ import StockStatus from '@/Components/Common/StockStatus';
 import ImageGallery from '@/Components/Common/ImageGallery';
 import ActionButtons from '@/Components/Common/ActionButtons';
 import QuickOrderModal from '@/Components/Common/QuickOrderModal';
+import FeatureList from '@/Components/Common/FeatureList';
 import AppLayout from '@/Components/LandingPage/Layout/AppLayout';
 import ContactUs from '@/Components/LandingPage/ContactUs';
 import { addToCart, syncCartData } from '@/store/features/cartSlice';
@@ -37,6 +38,7 @@ interface ProductOptionsProps {
         colorNames: string[];
         image: string;
         images: string[];
+        features: string[];
         defaultWidth?: number;
         defaultHeight?: number;
         fabricReduction?: number;
@@ -68,7 +70,27 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     const [showMoreOptions, setShowMoreOptions] = useState(false);
     const dispatch = useDispatch();
 
-    const customizationFields = product.category?.customization_fields || {}; const handleQuantityChange = (increment: boolean) => {
+    const customizationFields = product.category?.customization_fields || {};
+    
+    // تحديد نوع الفئة لتخصيص عرض الخيارات
+    const categoryName = product.category?.name?.toLowerCase();
+    const isCurtainsOrCabinets = categoryName?.includes('ستا') || categoryName?.includes('خزا');
+    const isSofaOrWood = categoryName?.includes('كنب') || categoryName?.includes('خشب');
+    
+    // فصل الحقول حسب الأولوية
+    const priorityFields = ['quantity', 'dimensions', 'dimensions_3d']; // الحقول ذات الأولوية للستائر والخزائن
+    const mainFields: Record<string, any> = {};
+    const extraFields: Record<string, any> = {};
+    
+    Object.entries(customizationFields).forEach(([fieldName, field]) => {
+        if (isCurtainsOrCabinets && (priorityFields.includes((field as any)?.type) || fieldName === 'quantity' || (field as any)?.label?.includes('كمية') || (field as any)?.label?.includes('Quantity'))) {
+            mainFields[fieldName] = field;
+        } else {
+            extraFields[fieldName] = field;
+        }
+    });
+
+    const handleQuantityChange = (increment: boolean) => {
         if (increment) {
             setQuantity(prev => prev + 1);
         } else if (quantity > 1) {
@@ -276,6 +298,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                             onChange={(e) => handleFieldChange(fieldName, e.target.value)}
                             className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
                             required={required}
+                            title={`اختر ${label}`}
                         >
                             <option value="">اختر {label}</option>
                             {Object.entries(options).map(([key, value]) => (
@@ -481,62 +504,47 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                     </div>
                 );
 
-            case 'dimensions':
-                return (
-                    <div key={fieldName} className="space-y-4 md:space-y-6">
-                        <h3 className="text-base md:text-lg font-semibold text-gray-900">
-                            {label} {required && <span className="text-red-500">*</span>}
-                        </h3>
-
-                        {units && (
-                            <div>
-                                <label className="block text-sm md:text-base font-medium text-gray-700 mb-2">
-                                    وحدة القياس
-                                </label>
-                                <select
-                                    value={formData[`${fieldName}_unit`] || units[0]}
-                                    onChange={(e) => handleFieldChange(`${fieldName}_unit`, e.target.value)}
-                                    className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
-                                >
-                                    {units.map((unit: string) => (
-                                        <option key={unit} value={unit}>
-                                            {unit}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        )}
-
-                        <div className="grid grid-cols-2 gap-4 md:gap-6">
-                            <div>
-                                <label className="block text-sm md:text-base font-medium text-gray-700 mb-2">
-                                    العرض
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData[`${fieldName}_width`] || product.defaultWidth || ''}
-                                    onChange={(e) => handleFieldChange(`${fieldName}_width`, parseFloat(e.target.value) || 0)}
-                                    className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
-                                    step="0.001"
-                                    required={required}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm md:text-base font-medium text-gray-700 mb-2">
-                                    الارتفاع
-                                </label>
-                                <input
-                                    type="number"
-                                    value={formData[`${fieldName}_height`] || product.defaultHeight || ''}
-                                    onChange={(e) => handleFieldChange(`${fieldName}_height`, parseFloat(e.target.value) || 0)}
-                                    className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
-                                    step="0.001"
-                                    required={required}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                );
+                case 'dimensions':
+                 return (
+                     <div key={fieldName} className="space-y-4 md:space-y-6">
+                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                             {label} {required && <span className="text-red-500">*</span>}
+                         </h3>
+ 
+                         <div className="grid grid-cols-2 gap-4 md:gap-6">
+                             <div>
+                                 <label className="block text-sm md:text-base font-medium text-gray-700 mb-2">
+                                     العرض
+                                 </label>
+                                 <input
+                                     type="number"
+                                     value={formData[`${fieldName}_width`] || product.defaultWidth || ''}
+                                     onChange={(e) => handleFieldChange(`${fieldName}_width`, parseFloat(e.target.value) || 0)}
+                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                     title="أدخل العرض"
+                                     placeholder="أدخل العرض"
+                                     step="0.001"
+                                     required={required}
+                                 />
+                             </div>
+                             <div>
+                                 <label className="block text-sm md:text-base font-medium text-gray-700 mb-2">
+                                     الارتفاع
+                                 </label>
+                                 <input
+                                     type="number"
+                                     value={formData[`${fieldName}_height`] || product.defaultHeight || ''}
+                                     onChange={(e) => handleFieldChange(`${fieldName}_height`, parseFloat(e.target.value) || 0)}
+                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                     title="أدخل الارتفاع"
+                                     placeholder="أدخل الارتفاع"
+                                     step="0.001"
+                                     required={required}
+                                 />
+                             </div>
+                         </div>
+                     </div>
+                 );
 
             case 'dimensions_3d':
                 return (
@@ -554,6 +562,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     value={formData[`${fieldName}_unit`] || units[0]}
                                     onChange={(e) => handleFieldChange(`${fieldName}_unit`, e.target.value)}
                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                    title="اختر وحدة القياس"
                                 >
                                     {units.map((unit: string) => (
                                         <option key={unit} value={unit}>
@@ -574,6 +583,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     value={formData[`${fieldName}_length`] || ''}
                                     onChange={(e) => handleFieldChange(`${fieldName}_length`, parseFloat(e.target.value) || 0)}
                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                    title="أدخل الطول"
+                                    placeholder="أدخل الطول"
                                     step="0.001"
                                     required={required}
                                 />
@@ -587,6 +598,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     value={formData[`${fieldName}_width`] || ''}
                                     onChange={(e) => handleFieldChange(`${fieldName}_width`, parseFloat(e.target.value) || 0)}
                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                    title="أدخل العرض"
+                                    placeholder="أدخل العرض"
                                     step="0.001"
                                     required={required}
                                 />
@@ -600,6 +613,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     value={formData[`${fieldName}_height`] || ''}
                                     onChange={(e) => handleFieldChange(`${fieldName}_height`, parseFloat(e.target.value) || 0)}
                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                    title="أدخل الارتفاع"
+                                    placeholder="أدخل الارتفاع"
                                     step="0.001"
                                     required={required}
                                 />
@@ -664,6 +679,13 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     <div className="text-sm md:text-base text-gray-600 leading-relaxed">
                                         {product.description}
                                     </div>
+
+                                    {/* عرض مميزات المنتج */}
+                                    {product.features && product.features.length > 0 && (
+                                        <div className="mt-4">
+                                            <FeatureList features={product.features} />
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* اختيار اللون من ألوان المنتج */}
@@ -681,35 +703,110 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 )}
 
-                                {/* زر عرض المزيد مع تحسينات UI/UX وأيقونة متحركة */}
-                                <div className="mb-4 flex justify-start">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowMoreOptions((prev) => !prev)}
-                                        className={
-                                            `group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-xl text-base font-bold shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-300`
-                                        }
-                                        style={{ boxShadow: '0 2px 12px 0 rgba(255, 193, 7, 0.15)' }}
-                                    >
-                                        <span className="flex items-center gap-1">
-                                            {showMoreOptions ? 'إخفاء الخيارات' : 'عرض المزيد من الخيارات'}
-                                        </span>
-                                        {showMoreOptions ? (
-                                            <HiChevronUp className="text-xl transition-transform duration-300 group-hover:-translate-y-1" />
-                                        ) : (
-                                            <HiChevronDown className="text-xl transition-transform duration-300 group-hover:translate-y-1" />
-                                        )}
-                                    </button>
-                                </div>
+                                {/* الحقول الأساسية للستائر والخزائن (الكمية والأبعاد) */}
+                                {isCurtainsOrCabinets && Object.keys(mainFields).length > 0 && (
+                                    <div className="space-y-4 md:space-y-6">
+                                        <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                                            الخيارات الأساسية
+                                        </h3>
+                                                                                 <div className="space-y-6">
+                                             {/* الصف الأول: الكمية ووحدة القياس */}
+                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                                                 {Object.entries(mainFields).map(([fieldName, field]) => {
+                                                     const fieldType = (field as any)?.type;
+                                                     const isQuantity = fieldName === 'quantity' || (field as any)?.label?.includes('كمية');
+                                                     
+                                                     // حقل الكمية في العمود الأول
+                                                     if (isQuantity) {
+                                                         return (
+                                                             <div key={fieldName} className="lg:col-span-1">
+                                                                 {renderField(fieldName, field)}
+                                                             </div>
+                                                         );
+                                                     }
+                                                     
+                                                     return null;
+                                                 })}
+                                                 
+                                                 {/* حقل وحدة القياس في العمود الثاني */}
+                                                 {Object.entries(mainFields).some(([fieldName, field]) => {
+                                                     const fieldType = (field as any)?.type;
+                                                     return ['dimensions', 'dimensions_3d'].includes(fieldType) && (field as any)?.units;
+                                                 }) && (
+                                                     <div className="lg:col-span-1">
+                                                         <div className="space-y-2">
+                                                             <label className="block text-sm md:text-base font-medium text-gray-700">
+                                                                وحدة القياس <span className="text-red-500">*</span>
+                                                             </label>
+                                                             <select
+                                                                 value={formData['measurement_unit'] || 'سم'}
+                                                                 onChange={(e) => handleFieldChange('measurement_unit', e.target.value)}
+                                                                 className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                                                 title="اختر وحدة القياس"
+                                                             >
+                                                                 <option value="سم">سم</option>
+                                                                 <option value="م">م</option>
+                                                             </select>
+                                                         </div>
+                                                     </div>
+                                                 )}
+                                             </div>
+                                             
+                                             {/* الصف الثاني: العرض والارتفاع */}
+                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                                                 {Object.entries(mainFields).map(([fieldName, field]) => {
+                                                     const fieldType = (field as any)?.type;
+                                                     const isDimensions = ['dimensions', 'dimensions_3d'].includes(fieldType);
+                                                     const isQuantity = fieldName === 'quantity' || (field as any)?.label?.includes('كمية');
+                                                     
+                                                     // حقل الأبعاد يأخذ العرض الكامل
+                                                     if (isDimensions && !isQuantity) {
+                                                         return (
+                                                             <div key={fieldName} className="lg:col-span-2">
+                                                                 {renderField(fieldName, field)}
+                                                             </div>
+                                                         );
+                                                     }
+                                                     
+                                                     return null;
+                                                 })}
+                                             </div>
+                                         </div>
+                                    </div>
+                                )}
+
+                                {/* زر عرض المزيد مع تحسينات UI/UX وأيقونة متحركة - فقط للستائر والخزائن */}
+                                {isCurtainsOrCabinets && Object.keys(extraFields).length > 0 && (
+                                    <div className="mb-4 flex justify-start">
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowMoreOptions((prev) => !prev)}
+                                            className={
+                                                `group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white rounded-xl text-base font-bold shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-300`
+                                            }
+                                            style={{ boxShadow: '0 2px 12px 0 rgba(17, 24, 39, 0.15)' }}
+                                        >
+                                            <span className="flex items-center gap-1">
+                                                {showMoreOptions ? 'إخفاء الخيارات' : 'عرض المزيد من الخيارات'}
+                                            </span>
+                                            {showMoreOptions ? (
+                                                <HiChevronUp className="text-xl transition-transform duration-300 group-hover:-translate-y-1" />
+                                            ) : (
+                                                <HiChevronDown className="text-xl transition-transform duration-300 group-hover:translate-y-1" />
+                                            )}
+                                        </button>
+                                    </div>
+                                )}
                                 <style>{`
                                     @keyframes spin-slow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
                                     .animate-spin-slow { animation: spin-slow 2.5s linear infinite; }
                                 `}</style>
 
                                 {/* خيارات التخصيص الديناميكية */}
-                                {showMoreOptions && (
+                                {/* للستائر والخزائن: عرض الخيارات الإضافية عند الضغط على الزر */}
+                                {isCurtainsOrCabinets && showMoreOptions && Object.keys(extraFields).length > 0 && (
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                                        {Object.entries(customizationFields).map(([fieldName, field]) => {
+                                        {Object.entries(extraFields).map(([fieldName, field]) => {
                                             const fieldType = (field as any)?.type;
 
                                             // الحقول التي تأخذ العرض الكامل (عمود واحد)
@@ -733,6 +830,76 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                 </div>
                                             );
                                         })}
+                                    </div>
+                                )}
+
+                                {/* للكنب والخشبيات: عرض جميع الخيارات مباشرة */}
+                                {isSofaOrWood && Object.keys(customizationFields).length > 0 && (
+                                    <div className="space-y-4 md:space-y-6">
+                                        <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                                            خيارات التخصيص
+                                        </h3>
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                                            {Object.entries(customizationFields).map(([fieldName, field]) => {
+                                                const fieldType = (field as any)?.type;
+
+                                                // الحقول التي تأخذ العرض الكامل (عمود واحد)
+                                                const fullWidthFields = ['dimensions', 'dimensions_3d', 'file_upload'];
+
+                                                // checkbox_multiple للخشبيات (product_options) يأخذ العرض الكامل
+                                                const isProductOptionsField = fieldName === 'product_options' && fieldType === 'checkbox_multiple';
+
+                                                if (fullWidthFields.includes(fieldType) || isProductOptionsField) {
+                                                    return (
+                                                        <div key={fieldName} className="lg:col-span-2">
+                                                            {renderField(fieldName, field)}
+                                                        </div>
+                                                    );
+                                                }
+
+                                                // باقي الحقول تظهر في عمودين
+                                                return (
+                                                    <div key={fieldName}>
+                                                        {renderField(fieldName, field)}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* للفئات الأخرى: عرض جميع الخيارات مباشرة */}
+                                {!isCurtainsOrCabinets && !isSofaOrWood && Object.keys(customizationFields).length > 0 && (
+                                    <div className="space-y-4 md:space-y-6">
+                                        <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                                            خيارات التخصيص
+                                        </h3>
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                                            {Object.entries(customizationFields).map(([fieldName, field]) => {
+                                                const fieldType = (field as any)?.type;
+
+                                                // الحقول التي تأخذ العرض الكامل (عمود واحد)
+                                                const fullWidthFields = ['dimensions', 'dimensions_3d', 'file_upload'];
+
+                                                // checkbox_multiple للخشبيات (product_options) يأخذ العرض الكامل
+                                                const isProductOptionsField = fieldName === 'product_options' && fieldType === 'checkbox_multiple';
+
+                                                if (fullWidthFields.includes(fieldType) || isProductOptionsField) {
+                                                    return (
+                                                        <div key={fieldName} className="lg:col-span-2">
+                                                            {renderField(fieldName, field)}
+                                                        </div>
+                                                    );
+                                                }
+
+                                                // باقي الحقول تظهر في عمودين
+                                                return (
+                                                    <div key={fieldName}>
+                                                        {renderField(fieldName, field)}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 )}
 

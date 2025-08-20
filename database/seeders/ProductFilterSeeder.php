@@ -21,6 +21,7 @@ class ProductFilterSeeder extends Seeder
             $measurementUnits = $this->getRandomMeasurementUnits();
             $dimensions = $this->getRandomDimensions();
             $specifications = $this->getRandomSpecifications();
+            $features = $this->getRandomFeatures();
             $product->update([
                 'colors' => $colors,
                 'opening_methods' => $openingMethods,
@@ -30,6 +31,7 @@ class ProductFilterSeeder extends Seeder
                 'measurement_units' => $measurementUnits,
                 'dimensions' => $dimensions,
                 'specifications' => $specifications,
+                'features' => $features,
                 'min_width' => rand(30, 100),
                 'max_width' => rand(150, 300),
                 'min_height' => rand(30, 100),
@@ -162,6 +164,34 @@ class ProductFilterSeeder extends Seeder
             'height' => rand(50, 200) . ' سم',
             'depth' => rand(5, 15) . ' سم'
         ];
+    }
+
+    private function getRandomFeatures(): array
+    {
+        $features = [
+            'تمنع ما يقارب 90 - 96% من الأشعة فوق البنفسجية الضارة',
+            'شديدة التحمل و سهلة التنظيف',
+            'يمكن تثبيتها بوضعيات متنوعة',
+            'مقاومة للحريق',
+            'عازلة للحرارة',
+            'مقاومة للرطوبة',
+            'مقاومة للبقع',
+            'سهلة التركيب',
+            'تصميم عصري وأنيق',
+            'جودة عالية ومتانة',
+            'تنظيف سهل',
+            'ألوان ثابتة لا تبهت'
+        ];
+
+        $selectedFeatures = [];
+        $numFeatures = rand(3, 6);
+        $shuffledFeatures = shuffle($features);
+
+        for ($i = 0; $i < $numFeatures; $i++) {
+            $selectedFeatures[] = $features[$i];
+        }
+
+        return $selectedFeatures;
     }
 
     private function getRandomSpecifications(): array

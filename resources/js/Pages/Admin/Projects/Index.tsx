@@ -205,6 +205,7 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
                                         checked={selectedItems.length === quizzes.data.length && quizzes.data.length > 0}
                                         onChange={toggleSelectAll}
                                         className="rounded border-gray-300"
+                                        title="تحديد جميع الاختبارات"
                                     />
                                 </th>
                                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -236,6 +237,7 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
                                             checked={selectedItems.includes(quiz.id)}
                                             onChange={() => toggleSelection(quiz.id)}
                                             className="rounded border-gray-300"
+                                            title={`تحديد اختبار ${quiz.name}`}
                                         />
                                     </td>
                                     <td className="px-4 py-4">
@@ -325,6 +327,7 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
                                 checked={selectedItems.length === submissions.data.length && submissions.data.length > 0}
                                 onChange={toggleSelectAll}
                                 className="rounded border-gray-300"
+                                title="تحديد جميع المشاريع"
                             />
                         </th>
                         <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -356,6 +359,7 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
                                     checked={selectedItems.includes(submission.id)}
                                     onChange={() => toggleSelection(submission.id)}
                                     className="rounded border-gray-300"
+                                    title={`تحديد مشروع ${submission.name}`}
                                 />
                             </td>
                             <td className="px-4 py-4">
@@ -491,6 +495,7 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
                                 value={dateFilter}
                                 onChange={(e) => setDateFilter(e.target.value)}
                                 className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                title="اختر فترة زمنية للفلترة"
                             >
                                 <option value="all">جميع التواريخ</option>
                                 <option value="today">اليوم</option>

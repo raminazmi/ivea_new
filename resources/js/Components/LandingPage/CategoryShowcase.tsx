@@ -41,16 +41,27 @@ interface Product {
     featured?: boolean;
 }
 
-interface CategoryShowcaseProps {
-    featuredProducts: Product[];
+interface Category {
+    id: number;
+    name: string;
+    slug: string;
+    parent_id?: number;
+    products_count?: number;
 }
 
-const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts }) => {
+interface CategoryShowcaseProps {
+    featuredProducts: Product[];
+    categories?: Category[];
+}
+
+const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts, categories = [] }) => {
     const [activeTab, setActiveTab] = useState('all');
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef<HTMLDivElement>(null);
+    
+    console.log('CategoryShowcase props:', { featuredProducts: featuredProducts.length, categories: categories.length });
 
     const tabs = [
         { id: 'all', label: 'الكل' },
@@ -60,6 +71,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts })
     ];
 
     useEffect(() => {
+        console.log('Active tab changed to:', activeTab);
         if (activeTab === 'all') {
             setProducts(featuredProducts);
             setLoading(false);
@@ -83,10 +95,14 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts })
                             url = '/api/products';
                             break;
                     }
+                    
+                    console.log('Fetching from URL:', url);
 
                     const response = await fetch(url);
+                    console.log('API Response for', activeTab, ':', response.status);
                     if (response.ok) {
                         const data = await response.json();
+                        console.log('API Data for', activeTab, ':', data);
                         setProducts(Array.isArray(data) ? data : data.data || []);
                     } else {
                         console.error('Error fetching products:', response.status);

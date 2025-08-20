@@ -80,11 +80,11 @@ class ProductController extends Controller
             'sku' => 'nullable|string|max:255|unique:products,sku',
             'featured' => 'boolean',
             'specifications' => 'nullable|array',
-            'specifications.features' => 'nullable|array',
-            'specifications.features.*' => 'string',
             'specifications.material' => 'nullable|string',
             'specifications.dimensions' => 'nullable|string',
             'specifications.installation' => 'nullable|string',
+            'features' => 'nullable|array',
+            'features.*' => 'string',
             'weight' => 'nullable|numeric|min:0',
             'dimensions' => 'nullable|array',
             'dimensions.width' => 'nullable|string',
@@ -102,12 +102,14 @@ class ProductController extends Controller
             'max_width' => 'nullable|numeric|min:1|max:1000',
             'min_height' => 'nullable|numeric|min:1|max:1000',
             'max_height' => 'nullable|numeric|min:1|max:1000',
+            'published_at' => 'nullable|date',
         ]);
 
         $validated['featured'] = $validated['featured'] ?? false;
         $validated['images'] = $validated['images'] ?? [];
         $validated['colors'] = $validated['colors'] ?? [];
         $validated['specifications'] = $validated['specifications'] ?? [];
+        $validated['features'] = $validated['features'] ?? [];
         $validated['dimensions'] = $validated['dimensions'] ?? [];
         $validated['pricing_method'] = $validated['pricing_method'] ?? 'area_based';
         $validated['base_price'] = $validated['base_price'] ?? $validated['price'];
@@ -170,11 +172,11 @@ class ProductController extends Controller
             'sku' => 'nullable|string|max:255|unique:products,sku,' . $product->id,
             'featured' => 'boolean',
             'specifications' => 'nullable|array',
-            'specifications.features' => 'nullable|array',
-            'specifications.features.*' => 'string',
             'specifications.material' => 'nullable|string',
             'specifications.dimensions' => 'nullable|string',
             'specifications.installation' => 'nullable|string',
+            'features' => 'nullable|array',
+            'features.*' => 'string',
             'weight' => 'nullable|numeric|min:0',
             'dimensions' => 'nullable|array',
             'dimensions.width' => 'nullable|string',
@@ -194,17 +196,8 @@ class ProductController extends Controller
             'max_width' => 'nullable|numeric|min:1|max:1000',
             'min_height' => 'nullable|numeric|min:1|max:1000',
             'max_height' => 'nullable|numeric|min:1|max:1000',
+            'published_at' => 'nullable|date',
         ]);
-
-        // Set default values
-        $validated['featured'] = $validated['featured'] ?? false;
-        $validated['images'] = $validated['images'] ?? [];
-        $validated['colors'] = $validated['colors'] ?? [];
-        $validated['specifications'] = $validated['specifications'] ?? [];
-        $validated['dimensions'] = $validated['dimensions'] ?? [];
-        $validated['pricing_method'] = $validated['pricing_method'] ?? 'fixed';
-        $validated['base_price'] = $validated['base_price'] ?? $validated['price'];
-        $validated['price_modifiers'] = $validated['price_modifiers'] ?? [];
 
         $product->update($validated);
 
@@ -220,16 +213,15 @@ class ProductController extends Controller
             ->with('success', 'تم حذف المنتج بنجاح');
     }
 
-    public function updateStatus(Request $request, Product $product): JsonResponse
+    public function toggleStatus(Product $product): JsonResponse
     {
-        $validated = $request->validate([
-            'status' => 'required|in:active,inactive'
+        $product->update([
+            'status' => $product->status === 'active' ? 'inactive' : 'active'
         ]);
-
-        $product->update($validated);
 
         return response()->json([
             'success' => true,
+            'status' => $product->status,
             'message' => 'تم تحديث حالة المنتج بنجاح'
         ]);
     }

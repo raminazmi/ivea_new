@@ -367,10 +367,48 @@ class SimpleCategoriesProductsSeeder extends Seeder
         ];
 
         foreach ($products as $productData) {
+            // Add features to each product
+            $productData['features'] = $this->getRandomFeatures();
             Product::create($productData);
         }
 
         echo 'الفئات الرئيسية والفرعية: ستائر، كنب، خشبيات (منتج واحد بخيارات متعددة)، خزائن مع فئاتها الفرعية تم إنشاؤها بنجاح!' . PHP_EOL;
         echo 'تم إنشاء ' . count($products) . ' منتج!' . PHP_EOL;
+    }
+
+    private function getRandomFeatures(): array
+    {
+        $features = [
+            'تمنع ما يقارب 90 - 96% من الأشعة فوق البنفسجية الضارة',
+            'شديدة التحمل و سهلة التنظيف',
+            'يمكن تثبيتها بوضعيات متنوعة',
+            'مقاومة للحريق',
+            'عازلة للحرارة',
+            'مقاومة للرطوبة',
+            'مقاومة للبقع',
+            'سهلة التركيب',
+            'تصميم عصري وأنيق',
+            'جودة عالية ومتانة',
+            'تنظيف سهل',
+            'ألوان ثابتة لا تبهت',
+            'مقاومة للتمزق',
+            'عازلة للصوت',
+            'مقاومة للعفن',
+            'سهلة الطي والتخزين',
+            'تصميم قابل للتخصيص',
+            'مواد صديقة للبيئة',
+            'ضمان الجودة',
+            'خدمة ما بعد البيع'
+        ];
+
+        $selectedFeatures = [];
+        $numFeatures = rand(4, 8);
+        $shuffledFeatures = shuffle($features);
+
+        for ($i = 0; $i < $numFeatures; $i++) {
+            $selectedFeatures[] = $features[$i];
+        }
+
+        return $selectedFeatures;
     }
 }

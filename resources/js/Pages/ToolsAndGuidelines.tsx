@@ -162,36 +162,6 @@ const ToolsAndGuidelines: React.FC<ToolsAndGuidelinesProps> = ({
                                     </div>
                                 </div>
 
-                                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 md:p-8 mb-6 md:mb-8">
-                                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">قوة علامتنا التجارية</h2>
-
-                                    <div
-                                        className="prose prose-lg max-w-none text-justify mb-4 md:mb-6"
-                                        style={{ fontSize: `${fontSize}px` }}
-                                    >
-                                        <p className="leading-relaxed">في نفس الوقت، إيمانًا منا بأهمية الثقافة الإيجابية في تحقيق التفوق المؤسسي وتحقيق مكانة رائدة في السوق المحلي.إن قوة علامتنا التجارية بنيت على ثقافتنا المؤسسية وأصولها الثابتة من اهتمام بالغ بعملائنا ورفعنا لمسؤوليتنا الاجتماعية على رأس قائمة اهتماماتنا، إلى جانب المنظومة الداخلية للمنشأة من فريق عمل لديه خبرات عريقة إلى جانب الثوابتالأخلاقية والمهنية لكل فرد فيه.</p>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
-                                            <span className="text-gray-700"> تنوع الاستثمارات.</span>
-                                        </div>
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
-                                            <span className="text-gray-700">الشفافية والمصداقية.</span>
-                                        </div>
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
-                                            <span className="text-gray-700">التحليل الاستثماري الدقيق.</span>
-                                        </div>
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
-                                            <span className="text-gray-700">التوجه نحو الاستدامة.</span>
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <div className="bg-gray-50 rounded-lg p-4 md:p-6">
                                     <div className="flex items-start gap-3 md:gap-4">
                                         <img

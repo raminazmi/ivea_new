@@ -74,6 +74,7 @@ Route::get('/api/products/tab/{tab}', [ProductController::class, 'getByTab'])->n
 Route::get('/api/products/new', [ProductController::class, 'getNew'])->name('api.products.new');
 Route::get('/api/products/offers', [ProductController::class, 'getOffers'])->name('api.products.offers');
 Route::get('/api/products/bestsellers', [ProductController::class, 'getBestsellers'])->name('api.products.bestsellers');
+Route::get('/api/products/category/{categorySlug}', [ProductController::class, 'getByCategorySlug'])->name('api.products.by-category');
 Route::get('/api/products/filter-options', [ProductController::class, 'getFilterOptionsApi'])->name('api.products.filter-options');
 
 // Jobs routes

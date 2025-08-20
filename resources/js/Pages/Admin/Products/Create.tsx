@@ -34,11 +34,11 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
         sku: product?.sku || '',
         featured: product?.featured || false as boolean,
         specifications: {
-            features: product?.specifications?.features || [] as string[],
             material: product?.specifications?.material || '',
             dimensions: product?.specifications?.dimensions || '',
             installation: product?.specifications?.installation || ''
         },
+        features: product?.features || [] as string[],
         weight: product?.weight?.toString() || '',
         dimensions: {
             width: product?.dimensions?.width?.toString() || '',
@@ -55,7 +55,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
         min_width: product?.min_width?.toString() || '50',
         max_width: product?.max_width?.toString() || '500',
         min_height: product?.min_height?.toString() || '50',
-        max_height: product?.max_height?.toString() || '400'
+        max_height: product?.max_height?.toString() || '400',
+        published_at: product?.published_at || ''
     });
 
     const [newColor, setNewColor] = useState('');
@@ -83,19 +84,13 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
 
     const addFeature = () => {
         if (newFeature.trim()) {
-            setData('specifications', {
-                ...data.specifications,
-                features: [...data.specifications.features, newFeature.trim()]
-            });
+            setData('features', [...data.features, newFeature.trim()]);
             setNewFeature('');
         }
     };
 
     const removeFeature = (index: number) => {
-        setData('specifications', {
-            ...data.specifications,
-            features: data.specifications.features.filter((_: string, i: number) => i !== index)
-        });
+        setData('features', data.features.filter((_: string, i: number) => i !== index));
     };
 
 
@@ -296,6 +291,20 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                         </select>
                                         <InputError message={errors.status} className="mt-2" />
                                     </div>
+
+                                    <div>
+                                        <InputLabel htmlFor="published_at" value="تاريخ النشر (للمنتجات الجديدة)" />
+                                        <TextInput
+                                            id="published_at"
+                                            type="datetime-local"
+                                            className="mt-1 block w-full"
+                                            value={data.published_at}
+                                            onChange={(e) => setData('published_at', e.target.value)}
+                                            title="تاريخ النشر للمنتجات الجديدة"
+                                        />
+                                        <InputError message={errors.published_at} className="mt-2" />
+                                        <p className="mt-1 text-sm text-gray-500">اتركه فارغاً إذا لم يكن منتج جديد</p>
+                                    </div>
                                 </div>
 
                                 <ImageUpload
@@ -344,12 +353,15 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                 </div>
 
                                 <div>
-                                    <InputLabel value="المميزات" />
+                                    <InputLabel value="المميزات (اختياري)" />
+                                    <p className="text-sm text-gray-600 mt-1 mb-3">
+                                        يمكنك إضافة مميزات للمنتج أو تركه فارغاً. إذا لم تقم بإضافة مميزات، سيتم عرض المميزات الافتراضية.
+                                    </p>
                                     <div className="mt-2 space-y-2">
                                         <div className="flex gap-2">
                                             <TextInput
                                                 type="text"
-                                                placeholder="أضف ميزة جديدة"
+                                                placeholder="أضف ميزة جديدة (مثال: مقاومة للحريق، عازلة للحرارة)"
                                                 className="flex-1"
                                                 value={newFeature}
                                                 onChange={(e) => setNewFeature(e.target.value)}
@@ -359,9 +371,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                                 إضافة
                                             </SecondaryButton>
                                         </div>
-                                        {data.specifications.features.length > 0 && (
+                                        {data.features.length > 0 && (
                                             <ul className="list-disc list-inside space-y-1">
-                                                {data.specifications.features.map((feature: string, index: number) => (
+                                                {data.features.map((feature: string, index: number) => (
                                                     <li key={index} className="flex items-center gap-2">
                                                         <span>{feature}</span>
                                                         <button
@@ -375,6 +387,11 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                                     </li>
                                                 ))}
                                             </ul>
+                                        )}
+                                        {data.features.length === 0 && (
+                                            <p className="text-sm text-gray-500 italic">
+                                                لم يتم إضافة مميزات بعد. سيتم عرض المميزات الافتراضية للمنتج.
+                                            </p>
                                         )}
                                     </div>
                                 </div>
@@ -552,6 +569,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                                 className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                                 value={data.pricing_method}
                                                 onChange={(e) => setData('pricing_method', e.target.value)}
+                                                title="اختر طريقة التسعير للمنتج"
                                             >
                                                 <option value="fixed">ثابت</option>
                                                 <option value="area_based">حسب المساحة</option>

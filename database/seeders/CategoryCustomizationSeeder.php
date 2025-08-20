@@ -33,17 +33,6 @@ class CategoryCustomizationSeeder extends Seeder
                             'required' => true,
                             'default' => 1
                         ],
-                        'curtain_type' => [
-                            'label' => 'نوع الستارة',
-                            'type' => 'select',
-                            'options' => [
-                                'wave' => 'ستائر الويفي',
-                                'american' => 'ستائر الإمريكي',
-                                'roller' => 'ستائر الرول',
-                                'roman' => 'ستائر الروماني'
-                            ],
-                            'required' => true
-                        ],
                         'color' => [
                             'label' => 'لون القماش',
                             'type' => 'color_selector',
@@ -109,16 +98,6 @@ class CategoryCustomizationSeeder extends Seeder
                             'max' => 20,
                             'required' => true,
                             'default' => 1
-                        ],
-                        'sofa_style' => [
-                            'label' => 'المنتجات',
-                            'type' => 'select',
-                            'options' => [
-                                'modern' => 'مودرن',
-                                'classic' => 'كلاسيك',
-                                'neo_classic' => 'نيو كلاسيك'
-                            ],
-                            'required' => true
                         ],
                         'sofa_type' => [
                             'label' => 'نوع الكنب',
@@ -190,18 +169,6 @@ class CategoryCustomizationSeeder extends Seeder
                             'required' => true,
                             'default' => 1,
                             'description' => 'يحدد عدد الخزائن المطلوبة'
-                        ],
-                        'cabinet_type' => [
-                            'label' => 'المنتجات',
-                            'type' => 'select',
-                            'options' => [
-                                'wardrobe' => 'خزائن ملابس (غرف النوم أو الدريسنج روم)',
-                                'general_storage' => 'خزائن تخزين عامة (مستودعات، مخازن)',
-                                'shoe_storage' => 'خزائن أحذية',
-                                'book_display' => 'خزائن كتب أو عرض',
-                                'children' => 'خزائن أطفال (ملابس وأغراض الأطفال)'
-                            ],
-                            'required' => true
                         ],
                         'dimensions' => [
                             'label' => 'المساحة',

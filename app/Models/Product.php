@@ -14,6 +14,7 @@ class Product extends Model
         'brand',
         'collection',
         'description',
+        'features',
         'price',
         'discount',
         'image',
@@ -63,6 +64,7 @@ class Product extends Model
         'images' => 'array',
         'dimensions' => 'array',
         'specifications' => 'array',
+        'features' => 'array',
         'stock' => 'integer',
         'weight' => 'decimal:2',
         'featured' => 'boolean',
@@ -258,16 +260,26 @@ class Product extends Model
 
     public function getFeaturesAttribute()
     {
-        $specifications = $this->attributes['specifications'] ?? null;
+        $features = $this->attributes['features'] ?? null;
 
-        if ($specifications && isset($specifications['features'])) {
-            return $specifications['features'];
+        if ($features) {
+            if (is_string($features)) {
+                $features = json_decode($features, true);
+            }
+
+            if (is_array($features) && !empty($features)) {
+                return $features;
+            }
         }
 
+        // Fallback to default features if none are set
         return [
-            'تمنع ما يقارب 90 - 96% من الأشعة فوق البنفسجية الضارة ، ظاهرة الوهج.',
+            'تمنع ما يقارب 90 - 96% من الأشعة فوق البنفسجية الضارة',
             'شديدة التحمل و سهلة التنظيف',
-            'يمكن تثبيتها بوضعيات متنوعة'
+            'يمكن تثبيتها بوضعيات متنوعة',
+            'مقاومة للحريق',
+            'عازلة للحرارة',
+            'مقاومة للرطوبة'
         ];
     }
 
