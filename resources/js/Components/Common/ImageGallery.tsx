@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 interface ImageGalleryProps {
     images: string[];
@@ -8,14 +8,23 @@ interface ImageGalleryProps {
     className?: string;
 }
 
-const ImageGallery: React.FC<ImageGalleryProps> = ({
+const ImageGallery: React.FC<ImageGalleryProps> = React.memo(({
     images,
     selectedImage,
     onImageSelect,
     productName,
     className = ""
 }) => {
-    const validImages = images.filter(image => image && image.trim() !== '');
+    // استخدام useMemo لتجنب إعادة حساب validImages في كل render
+    const validImages = useMemo(() => {
+        return images.filter(image => image && image.trim() !== '');
+    }, [images]);
+
+    // استخدام useMemo لحفظ الصورة المحددة
+    const currentImage = useMemo(() => {
+        return validImages[selectedImage] || validImages[0];
+    }, [validImages, selectedImage]);
+
     if (validImages.length === 0) {
         return (
             <div className={`space-y-4 flex flex-col items-center justify-start ${className}`}>
@@ -31,13 +40,41 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
         );
     }
 
+    // استخدام useMemo لحفظ thumbnail images
+    const thumbnailImages = useMemo(() => {
+        return validImages.map((image, index) => (
+            <button
+                key={`${image}-${index}`}
+                onClick={() => onImageSelect(index)}
+                title={`عرض صورة ${index + 1}`}
+                className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === index
+                    ? 'border-blue-600'
+                    : 'border-gray-200 hover:border-gray-300'
+                    }`}
+            >
+                <img
+                    src={image}
+                    alt={`${productName} ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/images/placeholder.jpg';
+                        target.onerror = null;
+                    }}
+                />
+            </button>
+        ));
+    }, [validImages, selectedImage, onImageSelect, productName]);
+
     return (
         <div className={`space-y-4 flex flex-col items-center justify-start ${className}`}>
             <div className="bg-gray-100 rounded-lg overflow-hidden shadow-sm">
                 <img
-                    src={validImages[selectedImage] || validImages[0]}
+                    src={currentImage}
                     alt={productName}
                     className="w-full h-96 md:h-[500px] object-cover"
+                    loading="eager"
                     onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/images/placeholder.jpg';
@@ -48,32 +85,13 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
 
             {validImages.length > 1 && (
                 <div className="flex gap-3 flex-wrap justify-center">
-                    {validImages.map((image, index) => (
-                        <button
-                            key={index}
-                            onClick={() => onImageSelect(index)}
-                            title={`عرض صورة ${index + 1}`}
-                            className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === index
-                                ? 'border-blue-600'
-                                : 'border-gray-200 hover:border-gray-300'
-                                }`}
-                        >
-                            <img
-                                src={image}
-                                alt={`${productName} ${index + 1}`}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    target.src = '/images/placeholder.jpg';
-                                    target.onerror = null;
-                                }}
-                            />
-                        </button>
-                    ))}
+                    {thumbnailImages}
                 </div>
             )}
         </div>
     );
-};
+});
+
+ImageGallery.displayName = 'ImageGallery';
 
 export default ImageGallery; 

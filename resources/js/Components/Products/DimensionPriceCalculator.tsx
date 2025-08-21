@@ -12,6 +12,8 @@ interface DimensionPriceCalculatorProps {
     pricingMethod?: 'fixed' | 'area_based' | 'size_based' | 'custom';
     basePrice?: number;
     pricePerSqm?: number;
+    unit?: 'سم' | 'م';
+    quantity?: number;
     onPriceChange?: (price: number, area: number) => void;
     onDimensionsChange?: (width: number, height: number) => void;
 }
@@ -27,6 +29,8 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
     pricingMethod = 'area_based',
     basePrice = 0,
     pricePerSqm = 50,
+    unit = 'سم',
+    quantity = 1,
     onPriceChange,
     onDimensionsChange
 }) => {
@@ -38,7 +42,13 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
     const [errors, setErrors] = useState<{ width?: string, height?: string }>({});
 
     const calculateArea = (w: number, h: number) => {
+        if (unit === 'م') {
+            // إذا كانت الوحدة متر، المساحة = العرض × الارتفاع
+            return w * h;
+        } else {
+            // إذا كانت الوحدة سم، تحويل إلى متر مربع
         return (w * h) / 10000;
+        }
     };
 
     const calculatePrice = async (w: number, h: number) => {
@@ -46,7 +56,9 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
         setArea(newArea);
 
         if (pricingMethod === 'fixed') {
-            setCalculatedPrice(basePrice);
+            const totalPrice = basePrice * quantity;
+            setCalculatedPrice(totalPrice);
+            onPriceChange && onPriceChange(totalPrice, newArea);
             return;
         }
 
@@ -59,14 +71,16 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
                 pricing_method: pricingMethod
             });
 
-            const price = response.data.price;
-            setCalculatedPrice(price);
-            onPriceChange && onPriceChange(price, newArea);
+            const unitPrice = response.data.price;
+            const totalPrice = unitPrice * quantity;
+            setCalculatedPrice(totalPrice);
+            onPriceChange && onPriceChange(totalPrice, newArea);
         } catch (error) {
             console.error('خطأ في حساب السعر:', error);
-            const fallbackPrice = basePrice + (newArea * pricePerSqm);
-            setCalculatedPrice(fallbackPrice);
-            onPriceChange && onPriceChange(fallbackPrice, newArea);
+            const unitPrice = basePrice + (newArea * pricePerSqm);
+            const totalPrice = unitPrice * quantity;
+            setCalculatedPrice(totalPrice);
+            onPriceChange && onPriceChange(totalPrice, newArea);
         } finally {
             setLoading(false);
         }
@@ -76,15 +90,15 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
         const newErrors: { width?: string, height?: string } = {};
 
         if (w < minWidth) {
-            newErrors.width = `العرض يجب أن يكون على الأقل ${minWidth} سم`;
+            newErrors.width = `العرض يجب أن يكون على الأقل ${minWidth} ${unit}`;
         } else if (w > maxWidth) {
-            newErrors.width = `العرض يجب ألا يزيد عن ${maxWidth} سم`;
+            newErrors.width = `العرض يجب ألا يزيد عن ${maxWidth} ${unit}`;
         }
 
         if (h < minHeight) {
-            newErrors.height = `الارتفاع يجب أن يكون على الأقل ${minHeight} سم`;
+            newErrors.height = `الارتفاع يجب أن يكون على الأقل ${minHeight} ${unit}`;
         } else if (h > maxHeight) {
-            newErrors.height = `الارتفاع يجب ألا يزيد عن ${maxHeight} سم`;
+            newErrors.height = `الارتفاع يجب ألا يزيد عن ${maxHeight} ${unit}`;
         }
 
         setErrors(newErrors);
@@ -110,6 +124,32 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
         calculatePrice(width, height);
     }, []);
 
+    // تحديث القيم عند تغيير الوحدة
+    useEffect(() => {
+        // تجنب التحديث عند التحميل الأولي
+        if (width === defaultWidth && height === defaultHeight) {
+            return;
+        }
+        
+        if (unit === 'م' && width > 10) {
+            // تحويل من سم إلى م (إذا كانت القيم كبيرة، فهي بالسم)
+            const newWidth = width / 100;
+            const newHeight = height / 100;
+            setWidth(newWidth);
+            setHeight(newHeight);
+            calculatePrice(newWidth, newHeight);
+            onDimensionsChange && onDimensionsChange(newWidth, newHeight);
+        } else if (unit === 'سم' && width < 10) {
+            // تحويل من م إلى سم (إذا كانت القيم صغيرة، فهي بالمتر)
+            const newWidth = width * 100;
+            const newHeight = height * 100;
+            setWidth(newWidth);
+            setHeight(newHeight);
+            calculatePrice(newWidth, newHeight);
+            onDimensionsChange && onDimensionsChange(newWidth, newHeight);
+        }
+    }, [unit]);
+
     return (
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -120,7 +160,7 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            العرض (سم)
+                            العرض ({unit})
                         </label>
                         <div className="space-y-2">
                             <input
@@ -133,8 +173,8 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
                                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-blue"
                             />
                             <div className="flex justify-between text-xs text-gray-500">
-                                <span>{minWidth} سم</span>
-                                <span>{maxWidth} سم</span>
+                                <span>{minWidth} {unit}</span>
+                                <span>{maxWidth} {unit}</span>
                             </div>
                             <input
                                 type="number"
@@ -152,7 +192,7 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            الارتفاع (سم)
+                            الارتفاع ({unit})
                         </label>
                         <div className="space-y-2">
                             <input
@@ -165,8 +205,8 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
                                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-blue"
                             />
                             <div className="flex justify-between text-xs text-gray-500">
-                                <span>{minHeight} سم</span>
-                                <span>{maxHeight} سم</span>
+                                <span>{minHeight} {unit}</span>
+                                <span>{maxHeight} {unit}</span>
                             </div>
                             <input
                                 type="number"
@@ -195,22 +235,27 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
                         <div className="text-center">
                             <div className="text-sm text-gray-600 mb-1">الأبعاد</div>
                             <div className="text-lg font-semibold text-gray-800">
-                                {width} × {height} سم
+                                {width} × {height} {unit}
                             </div>
                         </div>
 
                         <div className="text-center">
-                            <div className="text-sm text-gray-600 mb-1">السعر المحسوب</div>
+                            <div className="text-sm text-gray-600 mb-1">السعر الإجمالي</div>
                             {loading ? (
                                 <div className="animate-pulse">
                                     <div className="h-6 bg-gray-300 rounded w-20 mx-auto"></div>
                                 </div>
                             ) : (
+                                <div className="flex flex-col items-center gap-1">
                                 <div className="flex items-center justify-center gap-2">
                                     <span className="text-xl font-bold text-green-600">
                                         {calculatedPrice.toFixed(2)}
                                     </span>
                                     <span className="text-sm text-gray-600">ر.س</span>
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                        (الكمية: {quantity})
+                                    </div>
                                 </div>
                             )}
                         </div>

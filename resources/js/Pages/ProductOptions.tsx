@@ -12,6 +12,7 @@ import QuickOrderModal from '@/Components/Common/QuickOrderModal';
 import FeatureList from '@/Components/Common/FeatureList';
 import AppLayout from '@/Components/LandingPage/Layout/AppLayout';
 import ContactUs from '@/Components/LandingPage/ContactUs';
+import DimensionPriceCalculator from '@/Components/Products/DimensionPriceCalculator';
 import { addToCart, syncCartData } from '@/store/features/cartSlice';
 
 interface ProductOptionsProps {
@@ -60,6 +61,16 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedColor, setSelectedColor] = useState(0);
     const [quantity, setQuantity] = useState(1);
+    const [showColorPicker, setShowColorPicker] = useState(false);
+    const [customColor, setCustomColor] = useState('#000000');
+    const [useCustomColor, setUseCustomColor] = useState(false);
+    const [calculatedPrice, setCalculatedPrice] = useState<number>(product.finalPrice || product.price);
+    const [calculatedArea, setCalculatedArea] = useState<number>(0);
+    const [basePrice, setBasePrice] = useState<number>(product.finalPrice || product.price);
+    const [dimensions, setDimensions] = useState<{ width: number, height: number }>({
+        width: product.defaultWidth || 150,
+        height: product.defaultHeight || 200
+    });
     const [formData, setFormData] = useState<Record<string, any>>({
         quantity: 1
     });
@@ -98,11 +109,120 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
         }
     };
 
+    const handleColorChange = (index: number) => {
+        setSelectedColor(index);
+        setUseCustomColor(false);
+        setShowColorPicker(false);
+    };
+
+    const handleCustomColorChange = (color: string) => {
+        setCustomColor(color);
+        setUseCustomColor(true);
+        setSelectedColor(-1); // إلغاء اختيار الألوان المحددة مسبقاً
+    };
+
+    const getSelectedColorInfo = () => {
+        if (useCustomColor) {
+            return {
+                color: customColor,
+                colorName: 'لون مخصص'
+            };
+        } else if (product.colors && product.colors[selectedColor]) {
+            return {
+                color: product.colors[selectedColor],
+                colorName: product.colorNames?.[selectedColor] || `اللون ${selectedColor + 1}`
+            };
+        }
+        return null;
+    };
+
+    const handlePriceChange = (price: number, area: number) => {
+        // السعر الذي يأتي من الحاسبة هو السعر الإجمالي مع الكمية
+        setCalculatedPrice(price);
+        setCalculatedArea(area);
+        // حساب السعر الأساسي للقطعة الواحدة
+        const unitPrice = price / (formData.quantity || quantity || 1);
+        setBasePrice(unitPrice);
+    };
+
+    const handleDimensionsChange = (width: number, height: number) => {
+        setDimensions({ width, height });
+        // تحديث البيانات في formData للأبعاد
+        setFormData(prev => ({
+            ...prev,
+            dimensions_width: width,
+            dimensions_height: height,
+            dimensions_unit: formData.measurement_unit || 'سم'
+        }));
+    };
+
+    const calculateFinalPrice = () => {
+        if (isCurtainsOrCabinets) {
+            // للستائر والخزائن: السعر الأساسي × الكمية
+            return basePrice * (formData.quantity || quantity || 1);
+        } else if (isSofaOrWood) {
+            // للكنب والخشبيات: السعر العادي × الكمية
+            return (product.finalPrice || product.price) * (formData.quantity || quantity || 1);
+        } else {
+            // للفئات الأخرى: السعر العادي × الكمية
+            return (product.finalPrice || product.price) * (formData.quantity || quantity || 1);
+        }
+    };
+
+    const handleUnitChange = (unit: string) => {
+        const currentUnit = formData.measurement_unit || 'سم';
+        
+        setFormData(prev => ({
+            ...prev,
+            measurement_unit: unit
+        }));
+        
+        // تحويل الأبعاد عند تغيير الوحدة
+        if (unit === 'م' && currentUnit === 'سم') {
+            // تحويل من سم إلى م
+            const newWidth = dimensions.width / 100;
+            const newHeight = dimensions.height / 100;
+            setDimensions({ width: newWidth, height: newHeight });
+            handleDimensionsChange(newWidth, newHeight);
+        } else if (unit === 'سم' && currentUnit === 'م') {
+            // تحويل من م إلى سم
+            const newWidth = dimensions.width * 100;
+            const newHeight = dimensions.height * 100;
+            setDimensions({ width: newWidth, height: newHeight });
+            handleDimensionsChange(newWidth, newHeight);
+        }
+        
+        // إعادة حساب السعر بعد تغيير الوحدة
+        setTimeout(() => {
+            const finalPrice = calculateFinalPrice();
+            setCalculatedPrice(finalPrice);
+        }, 100);
+    };
+
+    // تحديث الحاسبة عند تغيير وحدة القياس أو الكمية
+    useEffect(() => {
+        if (isCurtainsOrCabinets) {
+            // إعادة حساب السعر عند تغيير الوحدة أو الكمية
+            const finalPrice = calculateFinalPrice();
+            setCalculatedPrice(finalPrice);
+        } else if (isSofaOrWood) {
+            // إعادة حساب السعر عند تغيير الكمية للكنب والخشبيات
+            const finalPrice = calculateFinalPrice();
+            setCalculatedPrice(finalPrice);
+        }
+    }, [formData.measurement_unit, basePrice, formData.quantity, quantity]);
+
     const handleFieldChange = (fieldName: string, value: any) => {
         setFormData(prev => ({
             ...prev,
             [fieldName]: value
         }));
+        
+        // إذا كان التغيير في الكمية، حدث السعر النهائي
+        if (fieldName === 'quantity') {
+            const finalPrice = calculateFinalPrice();
+            setCalculatedPrice(finalPrice);
+        }
     };
 
     const handleMultipleCheckboxChange = (fieldName: string, optionKey: string, checked: boolean) => {
@@ -238,16 +358,19 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
             }
         });
 
+        const selectedColorInfo = getSelectedColorInfo();
+
         const cartItem = {
             id: product.id,
             name: product.name,
-            price: product.finalPrice || product.price,
+            price: isCurtainsOrCabinets ? basePrice : (product.finalPrice || product.price), // السعر الأساسي للقطعة الواحدة
+            finalPrice: calculateFinalPrice(), // السعر النهائي مع الكمية
             image: product.image,
             quantity: formData.quantity || quantity || 1,
-            // إضافة اللون المختار إذا كان متوفراً
-            ...(product.colors && product.colors[selectedColor] && {
-                color: product.colors[selectedColor],
-                colorName: product.colorNames?.[selectedColor]
+            // إضافة اللون المختار أو اللون المخصص
+            ...(selectedColorInfo && {
+                color: selectedColorInfo.color,
+                colorName: selectedColorInfo.colorName
             }),
             // إضافة البيانات المخصصة المنظمة
             customizations: customizationData,
@@ -667,12 +790,46 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </h1>
 
                                     <div className="flex items-center gap-4">
-                                        <PriceDisplay
-                                            price={product.price}
-                                            discount={product.discount}
-                                        />
-                                        {product.hasDiscount && (
-                                            <DiscountBadge discount={product.discount!} />
+                                        {isCurtainsOrCabinets ? (
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-2xl md:text-3xl font-bold text-green-600">
+                                                        {calculatedPrice.toFixed(2)} ر.س
+                                                    </span>
+                                                    <span className="text-sm text-gray-500">
+                                                        (السعر الإجمالي)
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ) : isSofaOrWood ? (
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-2xl md:text-3xl font-bold text-green-600">
+                                                        {calculatedPrice.toFixed(2)} ر.س
+                                                    </span>
+                                                    <span className="text-sm text-gray-500">
+                                                        (السعر الإجمالي)
+                                                    </span>
+                                                </div>
+                                                <div className="text-sm text-gray-600">
+                                                    السعر الأساسي: {(product.finalPrice || product.price).toFixed(2)} ر.س × الكمية: {formData.quantity || quantity || 1} = {calculatedPrice.toFixed(2)} ر.س
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex items-center gap-2">
+                                                    <PriceDisplay
+                                                        price={product.price}
+                                                        discount={product.discount}
+                                                    />
+                                                    {product.hasDiscount && (
+                                                        <DiscountBadge discount={product.discount!} />
+                                                    )}
+                                                </div>
+                                                <div className="text-sm text-gray-600">
+                                                    السعر الإجمالي: {(calculateFinalPrice()).toFixed(2)} ر.س
+                                                </div>
+                                            </div>
                                         )}
                                     </div>
 
@@ -688,8 +845,367 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     )}
                                 </div>
 
-                                {/* اختيار اللون من ألوان المنتج */}
-                                {product.colors && product.colors.length > 0 && (
+                                {/* اختيار اللون والكمية للستائر والخزائن */}
+                                {isCurtainsOrCabinets && product.colors && product.colors.length > 0 && (
+                                    <div className="space-y-4 md:space-y-6">
+                                        <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                                            الخيارات الأساسية
+                                        </h3>
+                                        
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                                            {/* اختيار اللون */}
+                                            <div className="space-y-3">
+                                                <label className="block text-sm md:text-base font-medium text-gray-700">
+                                                    اللون
+                                                </label>
+                                                
+                                                {/* الألوان الرئيسية للمنتج */}
+                                                <div className="space-y-4">
+                                                    {/* الألوان من قاعدة البيانات في سطر واحد */}
+                                                    <div className="flex flex-wrap items-center gap-3">
+                                                        {product.colors.map((color, index) => (
+                                                            <label
+                                                                key={index}
+                                                                className="relative cursor-pointer group"
+                                                                title={product.colorNames?.[index] || `اللون ${index + 1}`}
+                                                            >
+                                                                <div
+                                                                    className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 ${
+                                                                        selectedColor === index && !useCustomColor
+                                                                            ? 'border-primary-yellow scale-110'
+                                                                            : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
+                                                                    }`}
+                                                                    style={{ backgroundColor: color }}
+                                                                >
+                                                                    {selectedColor === index && !useCustomColor && (
+                                                                        <div className="absolute inset-0 flex items-center justify-center">
+                                                                            <HiCheck className="text-white text-sm font-bold" />
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                <input
+                                                                    type="radio"
+                                                                    name="color"
+                                                                    value={index}
+                                                                    checked={selectedColor === index && !useCustomColor}
+                                                                    onChange={() => handleColorChange(index)}
+                                                                    className="sr-only"
+                                                                    aria-label={product.colorNames?.[index] || `اللون ${index + 1}`}
+                                                                />
+                                                            </label>
+                                                        ))}
+                                                        
+                                                        {/* خيار اللون المخصص */}
+                                                        <label
+                                                            className="relative cursor-pointer group"
+                                                            title="لون مخصص"
+                                                        >
+                                                            <div
+                                                                className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 flex items-center justify-center ${
+                                                                    useCustomColor
+                                                                        ? 'border-primary-yellow scale-110'
+                                                                        : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
+                                                                }`}
+                                                                style={{ backgroundColor: customColor }}
+                                                            >
+                                                                <HiPlus className="text-white text-sm font-bold" />
+                                                            </div>
+                                                            <input
+                                                                type="radio"
+                                                                name="color"
+                                                                checked={useCustomColor}
+                                                                onChange={() => {
+                                                                    setUseCustomColor(true);
+                                                                    setSelectedColor(-1);
+                                                                    setShowColorPicker(true);
+                                                                }}
+                                                                className="sr-only"
+                                                                aria-label="لون مخصص"
+                                                            />
+                                                        </label>
+                                                    </div>
+                                                    
+                                                    {/* عرض أسماء الألوان المختارة */}
+                                                    <div className="text-sm text-gray-600">
+                                                        {useCustomColor ? (
+                                                            <span>اللون المختار: <span className="font-medium">لون مخصص</span></span>
+                                                        ) : selectedColor >= 0 ? (
+                                                            <span>اللون المختار: <span className="font-medium">{product.colorNames?.[selectedColor] || `اللون ${selectedColor + 1}`}</span></span>
+                                                        ) : (
+                                                            <span className="text-gray-400">اختر لون</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                
+
+                                            </div>
+                                            
+                                            {/* اختيار الكمية */}
+                                            <div className="space-y-3">
+                                                <label className="block text-sm md:text-base font-medium text-gray-700">
+                                                    الكمية
+                                                </label>
+                                                <div className="relative w-full  inline-flex items-center bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus-within:border-primary-yellow focus-within:ring-2 focus-within:ring-primary-yellow focus-within:ring-opacity-20 transition-all duration-200">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const currentValue = formData.quantity || quantity;
+                                                            if (currentValue > 1) {
+                                                                handleFieldChange('quantity', currentValue - 1);
+                                                                setQuantity(currentValue - 1);
+                                                            }
+                                                        }}
+                                                        className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 focus:outline-none focus:bg-gray-100 rounded-r-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        title="تقليل الكمية"
+                                                        disabled={(formData.quantity || quantity) <= 1}
+                                                    >
+                                                        <HiMinus className="h-4 w-4" />
+                                                    </button>
+                                                    <div className="flex-1 text-center px-2">
+                                                        <input
+                                                            type="number"
+                                                            value={formData.quantity || quantity}
+                                                            onChange={(e) => {
+                                                                const value = parseInt(e.target.value) || 1;
+                                                                handleFieldChange('quantity', value);
+                                                                setQuantity(value);
+                                                            }}
+                                                            className="w-full border-0 bg-transparent focus:ring-0 focus:outline-none text-sm md:text-base font-medium text-gray-900 text-center"
+                                                            min="1"
+                                                            placeholder="1"
+                                                            title="كمية المنتج"
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const currentValue = formData.quantity || quantity;
+                                                            handleFieldChange('quantity', currentValue + 1);
+                                                            setQuantity(currentValue + 1);
+                                                        }}
+                                                        className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 focus:outline-none focus:bg-gray-100 rounded-l-lg transition-colors duration-150"
+                                                        title="زيادة الكمية"
+                                                    >
+                                                        <HiPlus className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {/* Color Picker للون المخصص */}
+                                        {useCustomColor && (
+                                            <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                                <div className="space-y-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <label className="text-sm font-medium text-gray-700">
+                                                            اختر اللون المخصص
+                                                        </label>
+                                                        <span className="text-xs text-gray-500">
+                                                            {customColor}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="relative">
+                                                            <input
+                                                                type="color"
+                                                                value={customColor}
+                                                                onChange={(e) => handleCustomColorChange(e.target.value)}
+                                                                className="w-10 h-10 rounded-lg border-2 border-gray-300 cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-200"
+                                                                title="اختر اللون"
+                                                            />
+                                                            <div className="absolute inset-0 rounded-lg border-2 border-transparent pointer-events-none"></div>
+                                                        </div>
+                                                        <div className="text-xs text-gray-500">
+                                                            انقر لاختيار لون مخصص
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* اختيار اللون والكمية للكنب والخشبيات */}
+                                {isSofaOrWood && product.colors && product.colors.length > 0 && (
+                                    <div className="space-y-4 md:space-y-6">
+                                        <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                                            الخيارات الأساسية
+                                        </h3>
+                                        
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                                            {/* اختيار اللون */}
+                                            <div className="space-y-3">
+                                                <label className="block text-sm md:text-base font-medium text-gray-700">
+                                                    اللون
+                                                </label>
+                                                
+                                                {/* الألوان الرئيسية للمنتج */}
+                                                <div className="space-y-4">
+                                                    {/* الألوان من قاعدة البيانات في سطر واحد */}
+                                                    <div className="flex flex-wrap items-center gap-3">
+                                                        {product.colors.map((color, index) => (
+                                                            <label
+                                                                key={index}
+                                                                className="relative cursor-pointer group"
+                                                                title={product.colorNames?.[index] || `اللون ${index + 1}`}
+                                                            >
+                                                                <div
+                                                                    className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 ${
+                                                                        selectedColor === index && !useCustomColor
+                                                                            ? 'border-primary-yellow scale-110'
+                                                                            : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
+                                                                    }`}
+                                                                    style={{ backgroundColor: color }}
+                                                                >
+                                                                    {selectedColor === index && !useCustomColor && (
+                                                                        <div className="absolute inset-0 flex items-center justify-center">
+                                                                            <HiCheck className="text-white text-sm font-bold" />
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                <input
+                                                                    type="radio"
+                                                                    name="color"
+                                                                    value={index}
+                                                                    checked={selectedColor === index && !useCustomColor}
+                                                                    onChange={() => handleColorChange(index)}
+                                                                    className="sr-only"
+                                                                    aria-label={product.colorNames?.[index] || `اللون ${index + 1}`}
+                                                                />
+                                                            </label>
+                                                        ))}
+                                                        
+                                                        {/* خيار اللون المخصص */}
+                                                        <label
+                                                            className="relative cursor-pointer group"
+                                                            title="لون مخصص"
+                                                        >
+                                                            <div
+                                                                className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 flex items-center justify-center ${
+                                                                    useCustomColor
+                                                                        ? 'border-primary-yellow scale-110'
+                                                                        : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
+                                                                }`}
+                                                                style={{ backgroundColor: customColor }}
+                                                            >
+                                                                <HiPlus className="text-white text-sm font-bold" />
+                                                            </div>
+                                                            <input
+                                                                type="radio"
+                                                                name="color"
+                                                                checked={useCustomColor}
+                                                                onChange={() => {
+                                                                    setUseCustomColor(true);
+                                                                    setSelectedColor(-1);
+                                                                    setShowColorPicker(true);
+                                                                }}
+                                                                className="sr-only"
+                                                                aria-label="لون مخصص"
+                                                            />
+                                                        </label>
+                                                    </div>
+                                                    
+                                                    {/* عرض أسماء الألوان المختارة */}
+                                                    <div className="text-sm text-gray-600">
+                                                        {useCustomColor ? (
+                                                            <span>اللون المختار: <span className="font-medium">لون مخصص</span></span>
+                                                        ) : selectedColor >= 0 ? (
+                                                            <span>اللون المختار: <span className="font-medium">{product.colorNames?.[selectedColor] || `اللون ${selectedColor + 1}`}</span></span>
+                                                        ) : (
+                                                            <span className="text-gray-400">اختر لون</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* اختيار الكمية */}
+                                            <div className="space-y-3">
+                                                <label className="block text-sm md:text-base font-medium text-gray-700">
+                                                    الكمية
+                                                </label>
+                                                <div className="relative w-full inline-flex items-center bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus-within:border-primary-yellow focus-within:ring-2 focus-within:ring-primary-yellow focus-within:ring-opacity-20 transition-all duration-200">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const currentValue = formData.quantity || quantity;
+                                                            if (currentValue > 1) {
+                                                                handleFieldChange('quantity', currentValue - 1);
+                                                                setQuantity(currentValue - 1);
+                                                            }
+                                                        }}
+                                                        className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 focus:outline-none focus:bg-gray-100 rounded-r-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        title="تقليل الكمية"
+                                                        disabled={(formData.quantity || quantity) <= 1}
+                                                    >
+                                                        <HiMinus className="h-4 w-4" />
+                                                    </button>
+                                                    <div className="flex-1 text-center px-2">
+                                                        <input
+                                                            type="number"
+                                                            value={formData.quantity || quantity}
+                                                            onChange={(e) => {
+                                                                const value = parseInt(e.target.value) || 1;
+                                                                handleFieldChange('quantity', value);
+                                                                setQuantity(value);
+                                                            }}
+                                                            className="w-full border-0 bg-transparent focus:ring-0 focus:outline-none text-sm md:text-base font-medium text-gray-900 text-center"
+                                                            min="1"
+                                                            placeholder="1"
+                                                            title="كمية المنتج"
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const currentValue = formData.quantity || quantity;
+                                                            handleFieldChange('quantity', currentValue + 1);
+                                                            setQuantity(currentValue + 1);
+                                                        }}
+                                                        className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 focus:outline-none focus:bg-gray-100 rounded-l-lg transition-colors duration-150"
+                                                        title="زيادة الكمية"
+                                                    >
+                                                        <HiPlus className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Color Picker للون المخصص */}
+                                        {useCustomColor && (
+                                            <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                                <div className="space-y-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <label className="text-sm font-medium text-gray-700">
+                                                            اختر اللون المخصص
+                                                        </label>
+                                                        <span className="text-xs text-gray-500">
+                                                            {customColor}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="relative">
+                                                            <input
+                                                                type="color"
+                                                                value={customColor}
+                                                                onChange={(e) => handleCustomColorChange(e.target.value)}
+                                                                className="w-10 h-10 rounded-lg border-2 border-gray-300 cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-200"
+                                                                title="اختر اللون"
+                                                            />
+                                                            <div className="absolute inset-0 rounded-lg border-2 border-transparent pointer-events-none"></div>
+                                                        </div>
+                                                        <div className="text-xs text-gray-500">
+                                                            انقر لاختيار لون مخصص
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* اختيار اللون للفئات الأخرى */}
+                                {!isCurtainsOrCabinets && !isSofaOrWood && product.colors && product.colors.length > 0 && (
                                     <div className="space-y-3 md:space-y-4">
                                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
                                             اختر اللون <span className="text-red-500">*</span>
@@ -703,75 +1219,69 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 )}
 
-                                {/* الحقول الأساسية للستائر والخزائن (الكمية والأبعاد) */}
+                                {/* الحقول الأساسية للستائر والخزائن (الأبعاد فقط) */}
                                 {isCurtainsOrCabinets && Object.keys(mainFields).length > 0 && (
                                     <div className="space-y-4 md:space-y-6">
-                                        <h3 className="text-base md:text-lg font-semibold text-gray-900">
-                                            الخيارات الأساسية
-                                        </h3>
-                                                                                 <div className="space-y-6">
-                                             {/* الصف الأول: الكمية ووحدة القياس */}
-                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                                                 {Object.entries(mainFields).map(([fieldName, field]) => {
-                                                     const fieldType = (field as any)?.type;
-                                                     const isQuantity = fieldName === 'quantity' || (field as any)?.label?.includes('كمية');
-                                                     
-                                                     // حقل الكمية في العمود الأول
-                                                     if (isQuantity) {
-                                                         return (
-                                                             <div key={fieldName} className="lg:col-span-1">
-                                                                 {renderField(fieldName, field)}
-                                                             </div>
-                                                         );
-                                                     }
-                                                     
-                                                     return null;
-                                                 })}
-                                                 
-                                                 {/* حقل وحدة القياس في العمود الثاني */}
-                                                 {Object.entries(mainFields).some(([fieldName, field]) => {
-                                                     const fieldType = (field as any)?.type;
-                                                     return ['dimensions', 'dimensions_3d'].includes(fieldType) && (field as any)?.units;
-                                                 }) && (
-                                                     <div className="lg:col-span-1">
-                                                         <div className="space-y-2">
-                                                             <label className="block text-sm md:text-base font-medium text-gray-700">
-                                                                وحدة القياس <span className="text-red-500">*</span>
-                                                             </label>
-                                                             <select
-                                                                 value={formData['measurement_unit'] || 'سم'}
-                                                                 onChange={(e) => handleFieldChange('measurement_unit', e.target.value)}
-                                                                 className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
-                                                                 title="اختر وحدة القياس"
-                                                             >
-                                                                 <option value="سم">سم</option>
-                                                                 <option value="م">م</option>
-                                                             </select>
-                                                         </div>
-                                                     </div>
-                                                 )}
-                                             </div>
-                                             
-                                             {/* الصف الثاني: العرض والارتفاع */}
-                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                                                 {Object.entries(mainFields).map(([fieldName, field]) => {
-                                                     const fieldType = (field as any)?.type;
-                                                     const isDimensions = ['dimensions', 'dimensions_3d'].includes(fieldType);
-                                                     const isQuantity = fieldName === 'quantity' || (field as any)?.label?.includes('كمية');
-                                                     
-                                                     // حقل الأبعاد يأخذ العرض الكامل
-                                                     if (isDimensions && !isQuantity) {
-                                                         return (
-                                                             <div key={fieldName} className="lg:col-span-2">
-                                                                 {renderField(fieldName, field)}
-                                                             </div>
-                                                         );
-                                                     }
-                                                     
-                                                     return null;
-                                                 })}
-                                             </div>
-                                         </div>
+                                        <div className="space-y-6">
+                                            {/* الصف الأول: وحدة القياس */}
+                                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                                                {Object.entries(mainFields).map(([fieldName, field]) => {
+                                                    const fieldType = (field as any)?.type;
+                                                    const isQuantity = fieldName === 'quantity' || (field as any)?.label?.includes('كمية');
+                                                    
+                                                    // تخطي حقل الكمية لأنه موجود مع الألوان
+                                                    if (isQuantity) {
+                                                        return null;
+                                                    }
+                                                    
+                                                    return null;
+                                                })}
+                                                
+                                                {/* حقل وحدة القياس */}
+                                                {Object.entries(mainFields).some(([fieldName, field]) => {
+                                                    const fieldType = (field as any)?.type;
+                                                    return ['dimensions', 'dimensions_3d'].includes(fieldType) && (field as any)?.units;
+                                                }) && (
+                                                    <div className="lg:col-span-2">
+                                                        <div className="space-y-2">
+                                                            <label className="block text-sm md:text-base font-medium text-gray-700">
+                                                               وحدة القياس <span className="text-red-500">*</span>
+                                                            </label>
+                                                            <select
+                                                                value={formData['measurement_unit'] || 'سم'}
+                                                                onChange={(e) => handleUnitChange(e.target.value)}
+                                                                className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                                                title="اختر وحدة القياس"
+                                                            >
+                                                                <option value="سم">سم</option>
+                                                                <option value="م">م</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            {/* حاسبة الأبعاد والأسعار - تظهر فقط للستائر والخزائن */}
+                                            <div className="lg:col-span-2">
+                                                <DimensionPriceCalculator
+                                                    key={`${product.id}-${formData.measurement_unit}-${formData.quantity || quantity}`}
+                                                    productId={product.id}
+                                                    defaultWidth={dimensions.width}
+                                                    defaultHeight={dimensions.height}
+                                                    minWidth={formData.measurement_unit === 'م' ? 0.5 : 50}
+                                                    maxWidth={formData.measurement_unit === 'م' ? 5 : 500}
+                                                    minHeight={formData.measurement_unit === 'م' ? 0.5 : 50}
+                                                    maxHeight={formData.measurement_unit === 'م' ? 4 : 400}
+                                                    pricingMethod="area_based"
+                                                    basePrice={product.price}
+                                                    pricePerSqm={50}
+                                                    unit={formData.measurement_unit || 'سم'}
+                                                    quantity={formData.quantity || quantity || 1}
+                                                    onPriceChange={handlePriceChange}
+                                                    onDimensionsChange={handleDimensionsChange}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
 
@@ -833,42 +1343,53 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 )}
 
-                                {/* للكنب والخشبيات: عرض جميع الخيارات مباشرة */}
+                                {/* للكنب والخشبيات: عرض جميع الخيارات مباشرة (بدون حاسبة الأبعاد) */}
                                 {isSofaOrWood && Object.keys(customizationFields).length > 0 && (
                                     <div className="space-y-4 md:space-y-6">
                                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
                                             خيارات التخصيص
                                         </h3>
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                                            {Object.entries(customizationFields).map(([fieldName, field]) => {
-                                                const fieldType = (field as any)?.type;
+                                            {(() => {
+                                                const fieldsArray = Object.entries(customizationFields).filter(([fieldName, field]) => {
+                                                    const isQuantity = fieldName === 'quantity' || (field as any)?.label?.includes('كمية') || (field as any)?.label?.includes('Quantity');
+                                                    return !isQuantity; // تخطي حقل الكمية
+                                                });
 
-                                                // الحقول التي تأخذ العرض الكامل (عمود واحد)
-                                                const fullWidthFields = ['dimensions', 'dimensions_3d', 'file_upload'];
+                                                return fieldsArray.map(([fieldName, field], index) => {
+                                                    const fieldType = (field as any)?.type;
+                                                    const fieldLabel = (field as any)?.label;
 
-                                                // checkbox_multiple للخشبيات (product_options) يأخذ العرض الكامل
-                                                const isProductOptionsField = fieldName === 'product_options' && fieldType === 'checkbox_multiple';
+                                                    // الحقول التي تأخذ العرض الكامل (عمود واحد)
+                                                    const fullWidthFields = ['dimensions', 'dimensions_3d', 'file_upload'];
 
-                                                if (fullWidthFields.includes(fieldType) || isProductOptionsField) {
+                                                    // checkbox_multiple للخشبيات (product_options) يأخذ العرض الكامل
+                                                    const isProductOptionsField = fieldName === 'product_options' && fieldType === 'checkbox_multiple';
+
+                                                    // الحقل الأخير يأخذ العرض الكامل
+                                                    const isLastField = index === fieldsArray.length - 1;
+
+                                                    if (fullWidthFields.includes(fieldType) || isProductOptionsField || isLastField) {
+                                                        return (
+                                                            <div key={fieldName} className="lg:col-span-2">
+                                                                {renderField(fieldName, field)}
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    // باقي الحقول تظهر في عمودين
                                                     return (
-                                                        <div key={fieldName} className="lg:col-span-2">
+                                                        <div key={fieldName}>
                                                             {renderField(fieldName, field)}
                                                         </div>
                                                     );
-                                                }
-
-                                                // باقي الحقول تظهر في عمودين
-                                                return (
-                                                    <div key={fieldName}>
-                                                        {renderField(fieldName, field)}
-                                                    </div>
-                                                );
-                                            })}
+                                                });
+                                            })()}
                                         </div>
                                     </div>
                                 )}
 
-                                {/* للفئات الأخرى: عرض جميع الخيارات مباشرة */}
+                                {/* للفئات الأخرى: عرض جميع الخيارات مباشرة (بدون حاسبة الأبعاد) */}
                                 {!isCurtainsOrCabinets && !isSofaOrWood && Object.keys(customizationFields).length > 0 && (
                                     <div className="space-y-4 md:space-y-6">
                                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
@@ -925,13 +1446,13 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                 product={{
                     id: product.id,
                     name: product.name,
-                    price: product.finalPrice || product.price,
+                    price: isCurtainsOrCabinets || isSofaOrWood ? calculatedPrice : (product.finalPrice || product.price),
                     image: product.image
                 }}
                 selectedOptions={{
-                    ...(product.colors && product.colors[selectedColor] && {
-                        color: product.colors[selectedColor],
-                        colorName: product.colorNames?.[selectedColor]
+                    ...(getSelectedColorInfo() && {
+                        color: getSelectedColorInfo()!.color,
+                        colorName: getSelectedColorInfo()!.colorName
                     }),
                     // تجميع البيانات المخصصة للعرض
                     customizations: Object.entries(customizationFields).reduce((acc, [fieldName, field]) => {

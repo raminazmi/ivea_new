@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { Link } from '@inertiajs/react';
+import { HiChevronLeft, HiShoppingCart, HiCog } from 'react-icons/hi';
 import { addToCart } from '@/store/features/cartSlice';
 import Breadcrumb from '@/Components/Common/Breadcrumb';
 import FeatureList from '@/Components/Common/FeatureList';
-import ColorSelector from '@/Components/Common/ColorSelector';
 import ProductInfo from '@/Components/Common/ProductInfo';
 import PriceDisplay from '@/Components/Common/PriceDisplay';
 import ActionButtons from '@/Components/Common/ActionButtons';
@@ -65,7 +66,7 @@ interface ProductDetailProps {
     relatedProducts: any[];
 }
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts }) => {
+const ProductDetail: React.FC<ProductDetailProps> = React.memo(({ product, relatedProducts }) => {
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedColor, setSelectedColor] = useState(0);
     const [showQuickOrderModal, setShowQuickOrderModal] = useState(false);
@@ -76,7 +77,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts 
     });
     const dispatch = useDispatch();
 
-    const handleAddToCart = () => {
+    const handleAddToCart = useCallback(() => {
         dispatch(addToCart({
             id: product.id,
             name: product.name,
@@ -89,19 +90,23 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts 
             measurementUnit: 'cm',
             quantity: 1
         }));
-    };
+    }, [dispatch, product.id, product.name, product.image, product.colors, product.colorNames, selectedColor, currentPrice, selectedDimensions]);
 
-    const handleQuickOrder = () => {
+    const handleQuickOrder = useCallback(() => {
         setShowQuickOrderModal(true);
-    };
+    }, []);
 
-    const handlePriceChange = (price: number) => {
+    const handlePriceChange = useCallback((price: number) => {
         setCurrentPrice(price);
-    };
+    }, []);
 
-    const handleDimensionsChange = (width: number, height: number) => {
+    const handleDimensionsChange = useCallback((width: number, height: number) => {
         setSelectedDimensions({ width, height });
-    };
+    }, []);
+
+    const handleImageSelect = useCallback((index: number) => {
+        setSelectedImage(index);
+    }, []);
 
     return (
         <AppLayout>
@@ -127,7 +132,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts 
                                 images={product.images}
                                 productName={product.name}
                                 selectedImage={selectedImage}
-                                onImageSelect={setSelectedImage}
+                                onImageSelect={handleImageSelect}
                             />
                         </div>
 
@@ -162,12 +167,39 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts 
                             )}
                             
                             {product.colors && product.colors.length > 0 && (
-                                <ColorSelector
-                                    colors={product.colors}
-                                    colorNames={product.colorNames}
-                                    selectedColor={selectedColor}
-                                    onColorSelect={setSelectedColor}
-                                />
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between px-3">
+                                        <div className="">
+                                        <h3 className="mb-2 text-base md:text-lg font-semibold text-gray-900">
+                                            الألوان المتوفرة
+                                        </h3>
+                                    <div className="flex flex-wrap items-center gap-3">
+                                        {product.colors.map((color, index) => (
+                                            <div
+                                                key={index}
+                                                className="relative group"
+                                                title={product.colorNames?.[index] || `اللون ${index + 1}`}
+                                            >
+                                                <div
+                                                    className="w-8 h-8 rounded-full border-2 border-gray-300 shadow-md transition-all duration-200 hover:scale-105"
+                                                    style={{ backgroundColor: color }}
+                                                />
+                                                <span className="block text-xs text-gray-600 mt-1 text-center">
+                                                    {product.colorNames?.[index] || `اللون ${index + 1}`}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                        </div>
+                                    <Link
+                                        href={`/products/${product.id}/options`}
+                                        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
+                                    >
+                                        <HiCog className="w-4 h-4" />
+                                        <span>خيارات المنتج</span>
+                                        </Link>
+                                    </div>
+                                </div>
                             )}
 
                             {product.pricingMethod && product.pricingMethod !== 'fixed' && (
@@ -187,6 +219,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts 
                                 />
                             )}
 
+                            {/* الأزرار الأصلية */}
                             <ActionButtons
                                 onAddToCart={handleAddToCart}
                                 onQuickOrder={handleQuickOrder}
@@ -223,6 +256,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, relatedProducts 
             />
         </AppLayout>
     );
-};
+});
+
+ProductDetail.displayName = 'ProductDetail';
 
 export default ProductDetail;
