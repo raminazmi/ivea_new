@@ -12,6 +12,7 @@ interface DimensionPriceCalculatorProps {
     pricingMethod?: 'fixed' | 'area_based' | 'size_based' | 'custom';
     basePrice?: number;
     pricePerSqm?: number;
+    discount?: number; // نسبة الخصم (مثلاً 10 تعني 10%)
     unit?: 'سم' | 'م';
     quantity?: number;
     onPriceChange?: (price: number, area: number) => void;
@@ -22,21 +23,28 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
     productId,
     defaultWidth = 150,
     defaultHeight = 200,
-    minWidth = 50,
+    minWidth = 100,
     maxWidth = 500,
-    minHeight = 50,
+    minHeight = 100,
     maxHeight = 400,
     pricingMethod = 'area_based',
     basePrice = 0,
     pricePerSqm = 50,
     unit = 'سم',
     quantity = 1,
+    discount = 0,
     onPriceChange,
     onDimensionsChange
 }) => {
     const [width, setWidth] = useState<number>(defaultWidth);
     const [height, setHeight] = useState<number>(defaultHeight);
-    const [calculatedPrice, setCalculatedPrice] = useState<number>(basePrice);
+    // حساب السعر بعد الخصم
+    const getDiscountedPrice = (price: number) => {
+        if (!discount || discount <= 0) return price;
+        return price - (price * discount / 100);
+    };
+
+    const [calculatedPrice, setCalculatedPrice] = useState<number>(getDiscountedPrice(basePrice) * quantity);
     const [area, setArea] = useState<number>(0);
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<{ width?: string, height?: string }>({});
@@ -47,7 +55,7 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
             return w * h;
         } else {
             // إذا كانت الوحدة سم، تحويل إلى متر مربع
-        return (w * h) / 10000;
+            return (w * h) / 10000;
         }
     };
 
@@ -55,8 +63,12 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
         const newArea = calculateArea(w, h);
         setArea(newArea);
 
+        // السعر الأساسي بعد الخصم
+        const discountedBase = getDiscountedPrice(basePrice);
+        const discountedPerSqm = getDiscountedPrice(pricePerSqm);
+
         if (pricingMethod === 'fixed') {
-            const totalPrice = basePrice * quantity;
+            const totalPrice = discountedBase * quantity;
             setCalculatedPrice(totalPrice);
             onPriceChange && onPriceChange(totalPrice, newArea);
             return;
@@ -70,14 +82,25 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
                 area: newArea,
                 pricing_method: pricingMethod
             });
-
-            const unitPrice = response.data.price;
+            // نفترض أن الباكند يعيد السعر بعد الخصم، إذا لم يكن كذلك أضف الخصم هنا:
+            let unitPrice = response.data.price;
+            if (discount && discount > 0) {
+                unitPrice = getDiscountedPrice(unitPrice);
+            }
             const totalPrice = unitPrice * quantity;
             setCalculatedPrice(totalPrice);
             onPriceChange && onPriceChange(totalPrice, newArea);
         } catch (error) {
             console.error('خطأ في حساب السعر:', error);
-            const unitPrice = basePrice + (newArea * pricePerSqm);
+            // Fallback: حساب محلي مع خصم
+            let unitPrice = discountedBase;
+            if (pricingMethod === 'area_based') {
+                // سعر المتر المربع بعد الخصم
+                unitPrice = discountedPerSqm * newArea;
+            } else if (pricingMethod === 'size_based') {
+                // منطق إضافي إذا كان هناك طريقة أخرى
+                unitPrice = discountedBase; // عدل حسب الحاجة
+            }
             const totalPrice = unitPrice * quantity;
             setCalculatedPrice(totalPrice);
             onPriceChange && onPriceChange(totalPrice, newArea);
@@ -122,6 +145,7 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
     };
     useEffect(() => {
         calculatePrice(width, height);
+        // eslint-disable-next-line
     }, []);
 
     // تحديث القيم عند تغيير الوحدة
@@ -130,7 +154,7 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
         if (width === defaultWidth && height === defaultHeight) {
             return;
         }
-        
+
         if (unit === 'م' && width > 10) {
             // تحويل من سم إلى م (إذا كانت القيم كبيرة، فهي بالسم)
             const newWidth = width / 100;
@@ -171,6 +195,8 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
                                 value={width}
                                 onChange={(e) => handleWidthChange(Number(e.target.value))}
                                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-blue"
+                                aria-label="عرض المنتج"
+                                title="عرض المنتج"
                             />
                             <div className="flex justify-between text-xs text-gray-500">
                                 <span>{minWidth} {unit}</span>
@@ -183,6 +209,9 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
                                 value={width}
                                 onChange={(e) => handleWidthChange(Number(e.target.value))}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                aria-label="عرض المنتج بالسم"
+                                title="عرض المنتج بالسم"
+                                placeholder="أدخل العرض"
                             />
                             {errors.width && (
                                 <p className="text-sm text-red-600">{errors.width}</p>
@@ -203,6 +232,8 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
                                 value={height}
                                 onChange={(e) => handleHeightChange(Number(e.target.value))}
                                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-blue"
+                                aria-label="ارتفاع المنتج"
+                                title="ارتفاع المنتج"
                             />
                             <div className="flex justify-between text-xs text-gray-500">
                                 <span>{minHeight} {unit}</span>
@@ -215,6 +246,9 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
                                 value={height}
                                 onChange={(e) => handleHeightChange(Number(e.target.value))}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                aria-label="ارتفاع المنتج بالسم"
+                                title="ارتفاع المنتج بالسم"
+                                placeholder="أدخل الارتفاع"
                             />
                             {errors.height && (
                                 <p className="text-sm text-red-600">{errors.height}</p>
@@ -240,18 +274,18 @@ const DimensionPriceCalculator: React.FC<DimensionPriceCalculatorProps> = ({
                         </div>
 
                         <div className="text-center">
-                            <div className="text-sm text-gray-600 mb-1">السعر الإجمالي</div>
+                            <div className="text-sm text-gray-600 mb-1">السعر للأبعاد المحددة</div>
                             {loading ? (
                                 <div className="animate-pulse">
                                     <div className="h-6 bg-gray-300 rounded w-20 mx-auto"></div>
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center gap-1">
-                                <div className="flex items-center justify-center gap-2">
-                                    <span className="text-xl font-bold text-green-600">
-                                        {calculatedPrice.toFixed(2)}
-                                    </span>
-                                    <span className="text-sm text-gray-600">ر.س</span>
+                                    <div className="flex items-center justify-center gap-2">
+                                        <span className="text-xl font-bold text-green-600">
+                                            {calculatedPrice.toFixed(2)}
+                                        </span>
+                                        <span className="text-sm text-gray-600">ر.س</span>
                                     </div>
                                     <div className="text-xs text-gray-500">
                                         (الكمية: {quantity})

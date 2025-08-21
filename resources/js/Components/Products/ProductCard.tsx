@@ -6,6 +6,7 @@ import { addToCart, removeFromCart } from '@/store/features/cartSlice';
 import { HiShoppingCart, HiCheck } from 'react-icons/hi';
 import { RootState } from '@/store';
 import { calculateDynamicPrice, formatPriceFrom, getDefaultDimensions, Dimensions } from '@/Utils/priceCalculator';
+import PriceDisplay from '@/Components/Common/PriceDisplay';
 
 interface ProductCardProps {
     product: {
@@ -50,15 +51,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
     const [currentPrice, setCurrentPrice] = useState<number>(0);
     const [priceChanged, setPriceChanged] = useState<boolean>(false);
     const [currentDimensions, setCurrentDimensions] = useState<Dimensions>(
-        dimensions || getDefaultDimensions(product)
+        dimensions || { width: 100, height: 100 } // 1 متر × 1 متر
     );
 
     useEffect(() => {
-        if (currentPrice === 0) {
+        // لا نحسب السعر تلقائياً، نتركه 0 حتى يحرك المستخدم المؤشر
+        if (currentPrice === 0 && dimensions) {
+            // فقط إذا تم تمرير أبعاد من الخارج (من صفحة أخرى)
             const initialPrice = calculateDynamicPrice(product, currentDimensions);
             setCurrentPrice(initialPrice);
         }
-    }, [product, currentDimensions, currentPrice]);
+    }, [product, currentDimensions, currentPrice, dimensions]);
 
     useEffect(() => {
         const newPrice = calculateDynamicPrice(product, currentDimensions);
@@ -79,16 +82,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
             setCurrentDimensions(dimensions);
         }
     }, [dimensions]);
-    const originalPrice = Number(product.final_price || product.price || product.base_price || 0);
-    const displayPrice = currentPrice > originalPrice ? currentPrice : originalPrice;
-    const displayDiscount = product.discount || (product.has_discount ? Math.round(((product.price - (product.final_price || product.price)) / product.price) * 100) : null);
+    // السعر الأساسي (قبل الخصم) - من الداتابيز
+    const originalPrice = Number(product.price || product.base_price || 0);
+    
+    // السعر بعد الخصم (28% مثلاً) - من الداتابيز
+    const discountedPrice = Number(product.final_price || product.price || 0);
+    
+    // السعر النهائي - في البداية يكون السعر بعد الخصم، وعند تغيير الأبعاد يضاف للسعر
+    const finalPrice = currentPrice > 0 && currentPrice !== discountedPrice ? currentPrice : discountedPrice;
+    
+    // نسبة الخصم
+    const displayDiscount = product.discount || (product.has_discount ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : null);
 
     const getPriceDisplayText = () => {
-        if (currentPrice > originalPrice) {
+        if (currentPrice > 0 && currentPrice !== discountedPrice && dimensions) {
             return 'السعر للأبعاد المحددة';
         }
         if (product.pricing_method && product.pricing_method !== 'fixed') {
-            return 'تبدأ الأسعار من';
+            return 'سعر المتر المربع يبدأ من';
         }
         return 'السعر';
     };
@@ -102,7 +113,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
         dispatch(addToCart({
             id: product.id,
             name: product.name,
-            price: displayPrice,
+            price: finalPrice, // السعر النهائي بعد الخصم والأبعاد
             image: product.image,
             selectedDimensions: currentDimensions,
             selectedPrice: currentPrice,
@@ -178,23 +189,30 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                     <div className="mt-2 flex justify-between items-center">
                         <div className='flex flex-col'>
                             <span className="text-xs sm:text-sm text-[#64748B]">{getPriceDisplayText()}</span>
-                            <div className="flex justify-start items-center gap-1 sm:gap-2">
-                                <p className={`text-sm sm:text-base md:text-lg font-bold transition-all duration-300 ${currentPrice > originalPrice
-                                    ? 'text-green-600'
-                                    : 'text-[#0D1F40]'
-                                    } ${priceChanged ? 'scale-105' : ''}`}>
-                                    {displayPrice.toFixed(2)}
-                                    {currentPrice > originalPrice && (
-                                        <span className="text-xs text-gray-500 block font-normal">
-                                            (الأساسي: {originalPrice.toFixed(2)})
-                                        </span>
-                                    )}
-                                    {product.priceRange && product.priceRange.max > product.priceRange.min && (
-                                        <span className="text-xs text-[#64748B] ml-1">
-                                            - {Number(product.priceRange.max).toFixed(2)}
-                                        </span>
-                                    )}
-                                </p>
+                                                         <div className="flex justify-start items-center gap-1 sm:gap-2">
+                                 {currentPrice > 0 && currentPrice !== discountedPrice && dimensions ? (
+                                     // عند تطبيق الأبعاد - السعر المضاف
+                                     <div className="flex items-center gap-1">
+                                         <p className={`text-sm sm:text-base md:text-lg font-bold transition-all duration-300 text-green-600 ${priceChanged ? 'scale-105' : ''}`}>
+                                             {currentPrice.toFixed(2)}
+                                         </p>
+                                         <span className="text-xs text-gray-500 block font-normal">
+                                             (إضافة للأبعاد الإضافية)
+                                         </span>
+                                     </div>
+                                 ) : (
+                                     // في البداية - مثل ProductDetail
+                                     <div className="flex items-center gap-1">
+                                         <p className={`text-sm sm:text-base md:text-lg font-bold transition-all duration-300 text-green-600 ${priceChanged ? 'scale-105' : ''}`}>
+                                             {discountedPrice.toFixed(2)}
+                                         </p>
+                                         {product.has_discount && (
+                                             <span className="text-xs sm:text-sm text-gray-500 line-through">
+                                                 {originalPrice.toFixed(2)}
+                                             </span>
+                                         )}
+                                     </div>
+                                 )}
                                 <img
                                     src="/images/sar-currency(black).svg"
                                     alt={product.name}

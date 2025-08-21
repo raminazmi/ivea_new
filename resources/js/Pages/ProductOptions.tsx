@@ -792,43 +792,39 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     <div className="flex items-center gap-4">
                                         {isCurtainsOrCabinets ? (
                                             <div className="flex flex-col gap-2">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-2xl md:text-3xl font-bold text-green-600">
-                                                        {calculatedPrice.toFixed(2)} ر.س
-                                                    </span>
-                                                    <span className="text-sm text-gray-500">
-                                                        (السعر الإجمالي)
-                                                    </span>
-                                                </div>
+                                                <PriceDisplay
+                                                    price={product.price}
+                                                    finalPrice={product.finalPrice}
+                                                    hasDiscount={product.hasDiscount}
+                                                    discount={product.discount}
+                                                    showLabel={true}
+                                                    label="سعر المتر المربع يبدأ من"
+                                                    className=""
+                                                />
                                             </div>
                                         ) : isSofaOrWood ? (
                                             <div className="flex flex-col gap-2">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-2xl md:text-3xl font-bold text-green-600">
-                                                        {calculatedPrice.toFixed(2)} ر.س
-                                                    </span>
-                                                    <span className="text-sm text-gray-500">
-                                                        (السعر الإجمالي)
-                                                    </span>
-                                                </div>
-                                                <div className="text-sm text-gray-600">
-                                                    السعر الأساسي: {(product.finalPrice || product.price).toFixed(2)} ر.س × الكمية: {formData.quantity || quantity || 1} = {calculatedPrice.toFixed(2)} ر.س
-                                                </div>
+                                                <PriceDisplay
+                                                    price={product.price}
+                                                    finalPrice={product.finalPrice}
+                                                    hasDiscount={product.hasDiscount}
+                                                    discount={product.discount}
+                                                    showLabel={true}
+                                                    label="سعر المتر المربع يبدأ من"
+                                                    className=""
+                                                />
                                             </div>
                                         ) : (
                                             <div className="flex flex-col gap-2">
-                                                <div className="flex items-center gap-2">
-                                                    <PriceDisplay
-                                                        price={product.price}
-                                                        discount={product.discount}
-                                                    />
-                                                    {product.hasDiscount && (
-                                                        <DiscountBadge discount={product.discount!} />
-                                                    )}
-                                                </div>
-                                                <div className="text-sm text-gray-600">
-                                                    السعر الإجمالي: {(calculateFinalPrice()).toFixed(2)} ر.س
-                                                </div>
+                                                <PriceDisplay
+                                                    price={product.price}
+                                                    finalPrice={product.finalPrice}
+                                                    hasDiscount={product.hasDiscount}
+                                                    discount={product.discount}
+                                                    showLabel={true}
+                                                    label="سعر المتر المربع يبدأ من"
+                                                    className=""
+                                                />
                                             </div>
                                         )}
                                     </div>
@@ -1426,6 +1422,25 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
 
                                 {/* أزرار العمل */}
                                 <div className="pt-4">
+                                    {/* عرض السعر الإجمالي */}
+                                    <div className="mb-4 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-lg sm:text-xl md:text-2xl font-bold text-green-600">
+                                                    {isCurtainsOrCabinets || isSofaOrWood ? calculatedPrice.toFixed(2) : (calculateFinalPrice()).toFixed(2)} ر.س
+                                                </span>
+                                                <span className="text-xs sm:text-sm text-gray-500">
+                                                    (السعر الإجمالي)
+                                                </span>
+                                            </div>
+                                            {isSofaOrWood && (
+                                                <div className="text-xs sm:text-sm text-gray-600">
+                                                    السعر الأساسي: {(product.finalPrice || product.price).toFixed(2)} ر.س × الكمية: {formData.quantity || quantity || 1} = {calculatedPrice.toFixed(2)} ر.س
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
                                     <ActionButtons
                                         onAddToCart={handleAddToCart}
                                         onQuickOrder={handleQuickOrder}

@@ -110,16 +110,21 @@ class ProductController extends Controller
         $validated['colors'] = $validated['colors'] ?? [];
         $validated['specifications'] = $validated['specifications'] ?? [];
         $validated['features'] = $validated['features'] ?? [];
-        $validated['dimensions'] = $validated['dimensions'] ?? [];
-        $validated['pricing_method'] = $validated['pricing_method'] ?? 'area_based';
-        $validated['base_price'] = $validated['base_price'] ?? $validated['price'];
+        $validated['dimensions'] = [
+            'width' => '100',
+            'height' => '100',
+        ]; // دائماً متر مربع واحد
+        $validated['pricing_method'] = 'area_based';
+        $validated['base_price'] = $validated['price'];
         $validated['price_modifiers'] = $validated['price_modifiers'] ?? [];
-        $validated['default_width'] = $validated['default_width'] ?? 100;
-        $validated['default_height'] = $validated['default_height'] ?? 100;
-        $validated['min_width'] = $validated['min_width'] ?? 50;
-        $validated['max_width'] = $validated['max_width'] ?? 500;
-        $validated['min_height'] = $validated['min_height'] ?? 50;
-        $validated['max_height'] = $validated['max_height'] ?? 400;
+        $validated['default_width'] = 100;
+        $validated['default_height'] = 100;
+        $validated['min_width'] = 50;
+        $validated['max_width'] = 500;
+        $validated['min_height'] = 50;
+        $validated['max_height'] = 400;
+        $validated['min_price'] = $validated['price'];
+        $validated['max_price'] = 3000;
 
         if (empty($validated['image']) && !empty($validated['images'])) {
             $validated['image'] = $validated['images'][0];

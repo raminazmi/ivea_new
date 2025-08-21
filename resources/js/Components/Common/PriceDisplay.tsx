@@ -1,4 +1,5 @@
 import React from 'react';
+import DiscountBadge from './DiscountBadge';
 
 interface PriceDisplayProps {
     price: number | string;
@@ -47,7 +48,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
                 <div className="text-sm text-gray-600">{dynamicLabel}</div>
             )}
             <div className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-gray-900">
+                <span className="text-2xl font-bold text-green-600">
                     {displayPrice.toFixed(2)}
                     {priceRange && priceRange.max > priceRange.min && (
                         <span className="text-sm text-gray-500 ml-2">
@@ -60,6 +61,9 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
                     alt="SAR"
                     className="w-6 h-6"
                 />
+                {(discount || hasDiscount) && (
+                    <DiscountBadge discount={discount || 0} />
+                )}
             </div>
             {(discount || hasDiscount) && !pricesFrom && (
                 <div className="text-sm text-gray-500 line-through">

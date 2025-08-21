@@ -1,10 +1,15 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
+import PriceDisplay from '@/Components/Common/PriceDisplay';
+import DiscountBadge from '@/Components/Common/DiscountBadge';
 
 interface Product {
     id: number;
     name: string;
     price: number;
+    finalPrice?: number;
+    discount?: number;
+    hasDiscount?: boolean;
     image: string;
 }
 
@@ -21,11 +26,20 @@ const ProductCard: React.FC<Props> = ({ product }) => {
                 <h3 className="font-bold text-lg text-primary-black mb-1">
                     {product.name}
                 </h3>
-                <p className="text-primary-black mb-3">
-                    {typeof product.price === 'number'
-                        ? product.price.toFixed(2)
-                        : parseFloat(product.price).toFixed(2)} ر.س
-                </p>
+                
+                <div className="mb-3">
+                    <div className="flex items-center gap-2">
+                        <PriceDisplay
+                            price={product.price}
+                            finalPrice={product.finalPrice}
+                            hasDiscount={product.hasDiscount}
+                        />
+                        {product.hasDiscount && product.discount && (
+                            <DiscountBadge discount={product.discount} />
+                        )}
+                    </div>
+                </div>
+                
                 <Link
                     href={`/products/${product.id}`}
                     className="block w-full bg-primary-yellow text-primary-black text-center py-2 rounded-lg hover:bg-opacity-90 transition"

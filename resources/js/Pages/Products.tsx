@@ -116,8 +116,8 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
         if (products.data.length > 0) {
             const firstProduct = products.data[0];
             return {
-                width: firstProduct.default_width || 100,
-                height: firstProduct.default_height || 100
+                width:  100,
+                height:  100
             };
         }
         return { width: 100, height: 100 };

@@ -14,9 +14,9 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
     onDimensionChange,
     defaultWidth = 100,
     defaultHeight = 100,
-    minWidth = 50,
+    minWidth = 100,
     maxWidth = 500,
-    minHeight = 50,
+    minHeight = 100,
     maxHeight = 400
 }) => {
     const [width, setWidth] = useState<number>(defaultWidth);
@@ -265,7 +265,7 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
 
                             <div className="mt-3 pt-3 border-t border-blue-200">
                                 <div className="flex justify-between items-center text-xs text-blue-600">
-                                    <span>الحد الأدنى: {(minWidth * minHeight / 10000).toFixed(2)} م²</span>
+                                    <span>الحد الأدنى: 1.00 م² (100×100 سم)</span>
                                     <span>الحد الأقصى: {(maxWidth * maxHeight / 10000).toFixed(2)} م²</span>
                                 </div>
                             </div>

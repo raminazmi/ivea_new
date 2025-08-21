@@ -69,22 +69,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
         },
         features: product.features || [],
         weight: product.weight ? product.weight.toString() : '',
-        dimensions: {
-            width: product.dimensions?.width || '',
-            height: product.dimensions?.height || '',
-            depth: product.dimensions?.depth || ''
-        },
-        base_price: (product as any).base_price ? (product as any).base_price.toString() : product.price.toString(),
-        price_per_sqm: (product as any).price_per_sqm ? (product as any).price_per_sqm.toString() : '25',
-        pricing_method: (product as any).pricing_method || 'area_based',
-        min_price: (product as any).min_price ? (product as any).min_price.toString() : '',
-        max_price: (product as any).max_price ? (product as any).max_price.toString() : '',
-        default_width: (product as any).default_width ? (product as any).default_width.toString() : '100',
-        default_height: (product as any).default_height ? (product as any).default_height.toString() : '100',
-        min_width: (product as any).min_width ? (product as any).min_width.toString() : '50',
-        max_width: (product as any).max_width ? (product as any).max_width.toString() : '500',
-        min_height: (product as any).min_height ? (product as any).min_height.toString() : '50',
-        max_height: (product as any).max_height ? (product as any).max_height.toString() : '400'
+        // تم حذف جميع الحقول الخاصة بالتسعير الديناميكي والأبعاد من النموذج
     });
 
     const [newColor, setNewColor] = useState('');

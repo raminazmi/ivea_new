@@ -22,6 +22,7 @@ export interface Dimensions {
 
 /**
  * Calculate dynamic price based on dimensions
+ * Default is 1 square meter (100x100cm), additional area adds to the discounted price
  */
 export const calculateDynamicPrice = (product: Product, dimensions: Dimensions): number => {
     const { width, height } = dimensions;
@@ -31,7 +32,7 @@ export const calculateDynamicPrice = (product: Product, dimensions: Dimensions):
     const basePrice = Number(price || base_price || 0);
 
     // If no dimensions provided or dimensions are too small, return base price
-    if (!width || !height || width < 10 || height < 10) {
+    if (!width || !height || width < 100 || height < 100) {
         return basePrice;
     }
 
@@ -41,30 +42,25 @@ export const calculateDynamicPrice = (product: Product, dimensions: Dimensions):
         return fallbackPrice;
     }
 
-    // Convert cm to square meters
+    // Calculate area in square meters
     const areaInSquareMeters = (width * height) / 10000;
+    
+    // Default area is 1 square meter (100x100cm)
+    const defaultArea = 1.0; // 1 square meter
+    
+    // Calculate additional area beyond the default
+    const additionalArea = Math.max(0, areaInSquareMeters - defaultArea);
+    
+    // Price per square meter (use product's price_per_sqm or calculate from base price)
+    const pricePerSqm = Number(price_per_sqm) || basePrice;
+    
+    // Calculate additional cost for extra area
+    const additionalCost = additionalArea * pricePerSqm;
+    
+    // Final price = base price (which is already discounted) + additional cost
+    let calculatedPrice = basePrice + additionalCost;
 
-    // Calculate additional price based on area above the default area
-    const defaultWidth = (product as any).default_width || 100;
-    const defaultHeight = (product as any).default_height || 100;
-    const defaultArea = (defaultWidth * defaultHeight) / 10000; // Default area in square meters
-    const extraArea = Math.max(0, areaInSquareMeters - defaultArea);
-
-    // Price per square meter - use default if not specified
-    const pricePerSqm = Number(price_per_sqm) || 25;
-
-    console.log('[DEBUG] Area:', areaInSquareMeters, 'Default Area:', defaultArea, 'Extra Area:', extraArea, 'Price per sqm:', pricePerSqm);
-
-    let calculatedPrice = basePrice;
-
-    // Simple calculation: basePrice + (extraArea * pricePerSqm)
-    if (extraArea > 0) {
-        const additionalCost = extraArea * pricePerSqm;
-        calculatedPrice = basePrice + additionalCost;
-        console.log('[DEBUG] Additional cost:', additionalCost, 'Final calculated price:', calculatedPrice);
-    } else {
-        console.log('[DEBUG] No extra area, using base price:', calculatedPrice);
-    }
+    console.log('[DEBUG] Area:', areaInSquareMeters, 'Default Area:', defaultArea, 'Additional Area:', additionalArea, 'Price per sqm:', pricePerSqm, 'Additional Cost:', additionalCost);
 
     // Apply min/max constraints
     if (min_price && calculatedPrice < min_price) {
@@ -82,7 +78,7 @@ export const calculateDynamicPrice = (product: Product, dimensions: Dimensions):
     }
 
     const finalPrice = Math.round(calculatedPrice * 100) / 100;
-    console.log('[DEBUG] Final price after rounding:', finalPrice);
+    console.log('[DEBUG] Final price with additional area:', finalPrice);
     return finalPrice;
 };
 
