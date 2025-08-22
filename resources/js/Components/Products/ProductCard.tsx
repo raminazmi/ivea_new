@@ -115,7 +115,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
             id: product.id,
             name: product.name,
             price: finalPrice,
-            image: product.image[0],
+            image: product.image?.[0] || '/images/sofa3.png',
             selectedDimensions: currentDimensions,
             selectedPrice: currentPrice,
             quantity: 1
@@ -134,7 +134,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                 <Link href={`/products/${product.id}`} className="block">
                     <div className="relative h-32 sm:h-36 md:h-40 bg-white rounded-t-xl overflow-hidden">
                         <img
-                            src={product.image[0] || '/images/sofa3.png'}
+                            src={product.image?.[0] || '/images/sofa3.png'}
                             alt={product.name}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
