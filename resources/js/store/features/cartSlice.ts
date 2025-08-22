@@ -19,7 +19,6 @@ export interface CartItem {
         height: number;
     };
     selectedPrice?: number;
-    // الخيارات المخصصة الجديدة
     customizations?: Record<string, {
         type: string;
         label: string;
@@ -47,16 +46,12 @@ interface CartState {
     items: CartItem[];
 }
 
-// Helpers for localStorage
 const CART_KEY = 'cart_items';
 const CART_DATA_KEY = 'cart';
 
 function saveCartToLocalStorage(items: CartItem[]) {
     try {
-        // حفظ العناصر في cart_items
         localStorage.setItem(CART_KEY, JSON.stringify(items));
-
-        // حفظ بيانات السلة في cart
         const cartData = {
             items: items,
             total: items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
@@ -69,13 +64,11 @@ function saveCartToLocalStorage(items: CartItem[]) {
 
 function loadCartFromLocalStorage(): CartItem[] {
     try {
-        // محاولة تحميل من cart_items أولاً
         const cartItemsData = localStorage.getItem(CART_KEY);
         if (cartItemsData) {
             return JSON.parse(cartItemsData);
         }
 
-        // إذا لم تجد، حاول تحميل من cart
         const cartData = localStorage.getItem(CART_DATA_KEY);
         if (cartData) {
             const parsed = JSON.parse(cartData);
@@ -98,21 +91,14 @@ const cartSlice = createSlice({
     reducers: {
         addToCart: (state, action: PayloadAction<CartItem>) => {
             const product = action.payload;
-
-            // إذا كان للمنتج cartId فريد، أضفه مباشرة
             if (product.cartId) {
                 state.items.push(product);
             } else {
-                // البحث عن منتج مطابق (نفس ID والخيارات)
                 const existing = state.items.find(item => {
                     if (item.id !== product.id) return false;
-
-                    // مقارنة الخيارات الأساسية
                     if (item.color !== product.color) return false;
                     if (item.width !== product.width) return false;
                     if (item.height !== product.height) return false;
-
-                    // مقارنة الخيارات المخصصة
                     const itemCustomizations = JSON.stringify(item.customizations || {});
                     const productCustomizations = JSON.stringify(product.customizations || {});
 
@@ -132,10 +118,8 @@ const cartSlice = createSlice({
             const identifier = action.payload;
 
             if (typeof identifier === 'string') {
-                // إزالة بالـ cartId
                 state.items = state.items.filter(item => item.cartId !== identifier);
             } else {
-                // إزالة بالـ id التقليدي
                 state.items = state.items.filter(item => item.id !== identifier);
             }
 
@@ -143,24 +127,17 @@ const cartSlice = createSlice({
         },
         updateQuantity: (state, action: PayloadAction<{ id: string | number; quantity: number }>) => {
             const { id, quantity } = action.payload;
-
-            // التأكد من أن الكمية أكبر من 0
             if (quantity <= 0) return;
 
             let item;
             if (typeof id === 'string') {
-                // البحث بالـ cartId
                 item = state.items.find(item => item.cartId === id);
             } else {
-                // البحث بالـ id التقليدي
                 item = state.items.find(item => item.id === id);
             }
 
             if (item) {
-                // تحديث الكمية الأساسية
                 item.quantity = quantity;
-
-                // إذا كان هناك كمية مخصصة، حدثها أيضاً
                 if (item.customizations?.quantity) {
                     item.customizations.quantity.value = quantity;
                     item.customizations.quantity.displayValue = quantity.toString();
@@ -173,7 +150,6 @@ const cartSlice = createSlice({
             state.items = [];
             saveCartToLocalStorage(state.items);
         },
-        // دالة للحصول على بيانات السلة الكاملة من localStorage
         loadCartData: (state) => {
             state.items = loadCartFromLocalStorage();
         }
@@ -182,7 +158,6 @@ const cartSlice = createSlice({
 
 export const { addToCart, removeFromCart, updateQuantity, clearCart, loadCartData } = cartSlice.actions;
 
-// دالة مساعدة للحصول على بيانات السلة الكاملة
 export const getCartData = () => {
     try {
         const cartData = localStorage.getItem('cart');
@@ -192,7 +167,6 @@ export const getCartData = () => {
     }
 };
 
-// دالة لمزامنة البيانات بين cart_items و cart
 export const syncCartData = () => {
     try {
         const cartItems = localStorage.getItem('cart_items');
@@ -207,7 +181,6 @@ export const syncCartData = () => {
             localStorage.setItem('cart', JSON.stringify(cartData));
         }
     } catch {
-        // في حالة الخطأ، لا نفعل شيء
     }
 };
 

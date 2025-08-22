@@ -136,8 +136,6 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                     <div>
                         <h1 className="text-xl sm:text-2xl font-bold text-gray-900">إدارة الفئات</h1>
-
-                        {/* إحصائيات سريعة */}
                         <div className="flex flex-wrap gap-4 mt-3">
                             <div className="bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
                                 <span className="text-blue-800 text-sm">
@@ -266,7 +264,6 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
                                         .sort((a, b) => a.sort_order - b.sort_order)
                                         .map((mainCategory) => (
                                             <React.Fragment key={`main-${mainCategory.id}`}>
-                                                {/* Main Category Row */}
                                                 <tr className="hover:bg-gray-50 bg-blue-50 border-l-4 border-blue-500">
                                                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                                                         <div>
@@ -323,7 +320,6 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
                                                     </td>
                                                 </tr>
 
-                                                {/* Subcategories */}
                                                 {categories.data
                                                     .filter(subCategory => subCategory.parent_id === mainCategory.id)
                                                     .sort((a, b) => a.sort_order - b.sort_order)
@@ -470,7 +466,6 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
                                     </div>
                                     <div>
                                         <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px rtl:space-x-reverse" aria-label="Pagination">
-                                            {/* Previous button */}
                                             <button
                                                 onClick={() => router.get(route('admin.categories.index'), {
                                                     ...filters,
@@ -485,13 +480,11 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
                                                 </svg>
                                             </button>
 
-                                            {/* Page numbers */}
                                             {(() => {
                                                 const pages = [];
                                                 const totalPages = categories.last_page;
                                                 const currentPage = categories.current_page;
 
-                                                // Always show first page
                                                 if (currentPage > 3) {
                                                     pages.push(
                                                         <button
@@ -511,7 +504,6 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
                                                     }
                                                 }
 
-                                                // Show pages around current page
                                                 const start = Math.max(1, currentPage - 2);
                                                 const end = Math.min(totalPages, currentPage + 2);
 
@@ -530,7 +522,6 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
                                                     );
                                                 }
 
-                                                // Always show last page
                                                 if (currentPage < totalPages - 2) {
                                                     if (currentPage < totalPages - 3) {
                                                         pages.push(
@@ -553,7 +544,6 @@ const CategoriesIndex: React.FC<CategoriesIndexProps> = ({ categories, filters, 
                                                 return pages;
                                             })()}
 
-                                            {/* Next button */}
                                             <button
                                                 onClick={() => router.get(route('admin.categories.index'), {
                                                     ...filters,

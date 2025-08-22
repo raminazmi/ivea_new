@@ -30,16 +30,10 @@ interface EditProductProps {
         featured: boolean;
         specifications: {
             material: string;
-            dimensions: string;
             installation: string;
         };
         features: string[];
         weight: number;
-        dimensions: {
-            width: string;
-            height: string;
-            depth: string;
-        };
     };
     categories: any[];
 }
@@ -64,12 +58,10 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
         featured: product.featured,
         specifications: {
             material: product.specifications?.material || '',
-            dimensions: product.specifications?.dimensions || '',
             installation: product.specifications?.installation || ''
         },
         features: product.features || [],
         weight: product.weight ? product.weight.toString() : '',
-        // تم حذف جميع الحقول الخاصة بالتسعير الديناميكي والأبعاد من النموذج
     });
 
     const [newColor, setNewColor] = useState('');
@@ -102,8 +94,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
         setData('features', data.features.filter((_, i) => i !== index));
     };
 
-
-
     return (
         <AdminLayout>
             <Head title="تعديل المنتج" />
@@ -112,9 +102,16 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
-                            <h2 className="text-2xl font-bold mb-6">تعديل المنتج: {product.name}</h2>
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-bold text-gray-800">تعديل المنتج</h2>
+                                <SecondaryButton onClick={() => window.history.back()}>
+                                    رجوع
+                                </SecondaryButton>
+                            </div>
 
-                            <form onSubmit={handleSubmit} className="space-y-6">
+                            <form onSubmit={handleSubmit} className="space-y-8">
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">المعلومات الأساسية</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <InputLabel htmlFor="name" value="اسم المنتج" />
@@ -127,6 +124,26 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                             required
                                         />
                                         <InputError message={errors.name} className="mt-2" />
+                                    </div>
+
+                                        <div>
+                                            <InputLabel htmlFor="category_id" value="الفئة" />
+                                            <select
+                                                id="category_id"
+                                                className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                                value={data.category_id}
+                                                onChange={(e) => setData('category_id', e.target.value)}
+                                                required
+                                                title="اختر فئة المنتج"
+                                            >
+                                                <option value="">اختر الفئة</option>
+                                                {categories.map((category) => (
+                                                    <option key={category.id} value={category.id}>
+                                                        {category.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <InputError message={errors.category_id} className="mt-2" />
                                     </div>
 
                                     <div>
@@ -142,7 +159,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="collection" value="التشكيلة" />
+                                            <InputLabel htmlFor="collection" value="المجموعة" />
                                         <TextInput
                                             id="collection"
                                             type="text"
@@ -154,37 +171,11 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="sku" value="رمز المنتج (SKU)" />
-                                        <TextInput
-                                            id="sku"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={data.sku}
-                                            onChange={(e) => setData('sku', e.target.value)}
-                                        />
-                                        <InputError message={errors.sku} className="mt-2" />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <InputLabel htmlFor="description" value="وصف المنتج" />
-                                    <textarea
-                                        title="المنتج"
-                                        id="description"
-                                        className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                        rows={4}
-                                        value={data.description}
-                                        onChange={(e) => setData('description', e.target.value)}
-                                    />
-                                    <InputError message={errors.description} className="mt-2" />
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                                    <div>
-                                        <InputLabel htmlFor="price" value="السعر" />
+                                            <InputLabel htmlFor="price" value="السعر (ريال)" />
                                         <TextInput
                                             id="price"
                                             type="number"
+                                                min="0"
                                             step="0.01"
                                             className="mt-1 block w-full"
                                             value={data.price}
@@ -195,7 +186,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="discount" value="نسبة الخصم (%)" />
+                                            <InputLabel htmlFor="discount" value="الخصم (%)" />
                                         <TextInput
                                             id="discount"
                                             type="number"
@@ -222,6 +213,18 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                         <InputError message={errors.stock} className="mt-2" />
                                     </div>
 
+                                        <div>
+                                            <InputLabel htmlFor="sku" value="رمز المنتج (SKU)" />
+                                            <TextInput
+                                                id="sku"
+                                                type="text"
+                                                className="mt-1 block w-full"
+                                                value={data.sku}
+                                                onChange={(e) => setData('sku', e.target.value)}
+                                            />
+                                            <InputError message={errors.sku} className="mt-2" />
+                                    </div>
+
                                     <div>
                                         <InputLabel htmlFor="rating" value="التقييم" />
                                         <TextInput
@@ -235,35 +238,19 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                             onChange={(e) => setData('rating', e.target.value)}
                                         />
                                         <InputError message={errors.rating} className="mt-2" />
-                                    </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div>
-                                        <InputLabel htmlFor="category_id" value="الفئة الفرعية" />
-                                        <select
-                                            id="category_id"
-                                            className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                            value={data.category_id}
-                                            onChange={(e) => setData('category_id', e.target.value)}
-                                            required
-                                            title="اختر الفئة الفرعية للمنتج"
-                                        >
-                                            <option value="">اختر الفئة الفرعية</option>
-                                            {categories.filter(cat => !cat.parent_id).map((mainCategory) => (
-                                                <optgroup key={`group-${mainCategory.id}`} label={mainCategory.name}>
-                                                    {categories
-                                                        .filter(sub => sub.parent_id === mainCategory.id)
-                                                        .map((subCategory) => (
-                                                            <option key={`sub-${subCategory.id}`} value={subCategory.id}>
-                                                                {subCategory.name}
-                                                            </option>
-                                                        ))}
-                                                </optgroup>
-                                            ))}
-                                        </select>
-                                        <InputError message={errors.category_id} className="mt-2" />
-                                        <p className="mt-1 text-sm text-gray-500">يمكن ربط المنتجات بالفئات الفرعية فقط</p>
+                                            <InputLabel htmlFor="weight" value="الوزن (كجم)" />
+                                            <TextInput
+                                                id="weight"
+                                                type="number"
+                                                step="0.1"
+                                                className="mt-1 block w-full"
+                                                value={data.weight}
+                                                onChange={(e) => setData('weight', e.target.value)}
+                                            />
+                                            <InputError message={errors.weight} className="mt-2" />
                                     </div>
 
                                     <div>
@@ -273,6 +260,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                             value={data.tab}
                                             onChange={(e) => setData('tab', e.target.value)}
+                                                required
                                             title="اختر تبويب المنتج"
                                         >
                                             <option value="all">الكل</option>
@@ -291,6 +279,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                             value={data.status}
                                             onChange={(e) => setData('status', e.target.value)}
+                                                required
                                             title="اختر حالة المنتج"
                                         >
                                             <option value="active">نشط</option>
@@ -300,96 +289,80 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                     </div>
                                 </div>
 
+                                    <div className="mt-4">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                                checked={data.featured}
+                                                onChange={(e) => setData('featured', e.target.checked)}
+                                            />
+                                            <span className="ml-2 text-sm text-gray-600">منتج مميز</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <InputLabel htmlFor="description" value="الوصف" />
+                                    <textarea
+                                        id="description"
+                                        rows={4}
+                                        className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        value={data.description}
+                                        onChange={(e) => setData('description', e.target.value)}
+                                        title="أدخل وصف المنتج"
+                                        aria-label="وصف المنتج"
+                                        placeholder="أدخل وصف مفصل للمنتج..."
+                                    />
+                                    <InputError message={errors.description} className="mt-2" />
+                                </div>
+
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">الصور</h3>
                                 <ImageUpload
                                     images={data.images}
                                     onImagesChange={(images) => setData('images', images)}
+                                        mainImage={data.image}
                                     onMainImageChange={(image) => setData('image', image)}
-                                    mainImage={data.image}
-                                    error={errors.images}
                                 />
+                                </div>
 
                                 <div>
-                                    <InputLabel value="الألوان المتوفرة" />
-                                    <div className="mt-2 space-y-2">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">الألوان</h3>
+                                    <div className="space-y-4">
                                         <div className="flex gap-2">
                                             <TextInput
                                                 type="text"
-                                                placeholder="كود اللون (مثال: #FF0000)"
-                                                className="flex-1"
+                                                placeholder="أضف لون جديد"
                                                 value={newColor}
                                                 onChange={(e) => setNewColor(e.target.value)}
-                                                title="أدخل كود اللون"
+                                                className="flex-1"
                                             />
-                                            <SecondaryButton type="button" onClick={addColor}>
+                                            <PrimaryButton type="button" onClick={addColor}>
                                                 إضافة
-                                            </SecondaryButton>
+                                            </PrimaryButton>
                                         </div>
-                                        {data.colors.length > 0 && (
-                                            <div className="flex gap-2 flex-wrap">
+                                        <div className="flex flex-wrap gap-2">
                                                 {data.colors.map((color, index) => (
-                                                    <div key={index} className="flex items-center gap-1">
-                                                        <ColorSwatch color={color} size="md" />
+                                                <div key={index} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+                                                    <ColorSwatch color={color} size="sm" />
+                                                    <span className="text-sm">{color}</span>
                                                         <button
                                                             type="button"
                                                             onClick={() => removeColor(index)}
-                                                            className="text-red-500 text-sm"
-                                                            title={`حذف اللون ${index + 1}`}
+                                                        className="text-red-500 hover:text-red-700"
                                                         >
                                                             ×
                                                         </button>
                                                     </div>
                                                 ))}
                                             </div>
-                                        )}
                                     </div>
-                                    <InputError message={errors.colors} className="mt-2" />
                                 </div>
 
                                 <div>
-                                    <InputLabel value="المميزات (اختياري)" />
-                                    <p className="text-sm text-gray-600 mt-1 mb-3">
-                                        يمكنك إضافة مميزات للمنتج أو تركه فارغاً. إذا لم تقم بإضافة مميزات، سيتم عرض المميزات الافتراضية.
-                                    </p>
-                                    <div className="mt-2 space-y-2">
-                                        <div className="flex gap-2">
-                                            <TextInput
-                                                type="text"
-                                                placeholder="أضف ميزة جديدة (مثال: مقاومة للحريق، عازلة للحرارة)"
-                                                className="flex-1"
-                                                value={newFeature}
-                                                onChange={(e) => setNewFeature(e.target.value)}
-                                                title="أدخل ميزة جديدة"
-                                            />
-                                            <SecondaryButton type="button" onClick={addFeature}>
-                                                إضافة
-                                            </SecondaryButton>
-                                        </div>
-                                        {data.features.length > 0 && (
-                                            <ul className="list-disc list-inside space-y-1">
-                                                {data.features.map((feature: string, index: number) => (
-                                                    <li key={index} className="flex items-center gap-2">
-                                                        <span>{feature}</span>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => removeFeature(index)}
-                                                            className="text-red-500 text-sm"
-                                                            title={`حذف الميزة ${index + 1}`}
-                                                        >
-                                                            ×
-                                                        </button>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                        {data.features.length === 0 && (
-                                            <p className="text-sm text-gray-500 italic">
-                                                لم يتم إضافة مميزات بعد. سيتم عرض المميزات الافتراضية للمنتج.
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">المواصفات</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <InputLabel htmlFor="material" value="المادة" />
                                         <TextInput
@@ -400,20 +373,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                             onChange={(e) => setData('specifications', {
                                                 ...data.specifications,
                                                 material: e.target.value
-                                            })}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="dimensions" value="الأبعاد" />
-                                        <TextInput
-                                            id="dimensions"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={data.specifications.dimensions}
-                                            onChange={(e) => setData('specifications', {
-                                                ...data.specifications,
-                                                dimensions: e.target.value
                                             })}
                                         />
                                     </div>
@@ -431,281 +390,73 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                             })}
                                         />
                                     </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                                    <div>
-                                        <InputLabel htmlFor="weight" value="الوزن (كجم)" />
-                                        <TextInput
-                                            id="weight"
-                                            type="number"
-                                            step="0.1"
-                                            className="mt-1 block w-full"
-                                            value={data.weight}
-                                            onChange={(e) => setData('weight', e.target.value)}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="width" value="العرض" />
-                                        <TextInput
-                                            id="width"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={data.dimensions.width}
-                                            onChange={(e) => setData('dimensions', {
-                                                ...data.dimensions,
-                                                width: e.target.value
-                                            })}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="height" value="الارتفاع" />
-                                        <TextInput
-                                            id="height"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={data.dimensions.height}
-                                            onChange={(e) => setData('dimensions', {
-                                                ...data.dimensions,
-                                                height: e.target.value
-                                            })}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="depth" value="العمق" />
-                                        <TextInput
-                                            id="depth"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={data.dimensions.depth}
-                                            onChange={(e) => setData('dimensions', {
-                                                ...data.dimensions,
-                                                depth: e.target.value
-                                            })}
-                                        />
                                     </div>
                                 </div>
 
-                                {/* قسم التسعير الديناميكي */}
+                                        <div>
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">المميزات</h3>
+                                    <div className="space-y-4">
+                                        <div className="flex gap-2">
+                                            <TextInput
+                                                type="text"
+                                                placeholder="أضف ميزة جديدة"
+                                                value={newFeature}
+                                                onChange={(e) => setNewFeature(e.target.value)}
+                                                className="flex-1"
+                                            />
+                                            <PrimaryButton type="button" onClick={addFeature}>
+                                                إضافة
+                                            </PrimaryButton>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {data.features.map((feature, index) => (
+                                                <div key={index} className="flex items-center gap-2 bg-blue-100 px-3 py-1 rounded-full">
+                                                    <span className="text-sm">{feature}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeFeature(index)}
+                                                        className="text-red-500 hover:text-red-700"
+                                                    >
+                                                        ×
+                                                    </button>
+                                        </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="border-t pt-6">
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">إعدادات التسعير الديناميكي</h3>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <InputLabel htmlFor="base_price" value="السعر الأساسي (ريال)" />
-                                            <TextInput
-                                                id="base_price"
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                className="mt-1 block w-full"
-                                                value={data.base_price}
-                                                onChange={(e) => setData('base_price', e.target.value)}
-                                                required
-                                            />
-                                            <p className="text-sm text-gray-500 mt-1">السعر للأبعاد الافتراضية</p>
-                                            <InputError message={errors.base_price} className="mt-2" />
-                                        </div>
-
-                                        <div>
-                                            <InputLabel htmlFor="price_per_sqm" value="السعر لكل متر مربع (ريال)" />
-                                            <TextInput
-                                                id="price_per_sqm"
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                className="mt-1 block w-full"
-                                                value={data.price_per_sqm}
-                                                onChange={(e) => setData('price_per_sqm', e.target.value)}
-                                            />
-                                            <p className="text-sm text-gray-500 mt-1">سعر إضافي لكل متر مربع إضافي</p>
-                                            <InputError message={errors.price_per_sqm} className="mt-2" />
-                                        </div>
-
-                                        <div>
-                                            <InputLabel htmlFor="min_price" value="أقل سعر (ريال)" />
-                                            <TextInput
-                                                id="min_price"
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                className="mt-1 block w-full"
-                                                value={data.min_price}
-                                                onChange={(e) => setData('min_price', e.target.value)}
-                                            />
-                                            <p className="text-sm text-gray-500 mt-1">الحد الأدنى للسعر</p>
-                                            <InputError message={errors.min_price} className="mt-2" />
-                                        </div>
-
-                                        <div>
-                                            <InputLabel htmlFor="max_price" value="أقصى سعر (ريال)" />
-                                            <TextInput
-                                                id="max_price"
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                className="mt-1 block w-full"
-                                                value={data.max_price}
-                                                onChange={(e) => setData('max_price', e.target.value)}
-                                            />
-                                            <p className="text-sm text-gray-500 mt-1">الحد الأقصى للسعر</p>
-                                            <InputError message={errors.max_price} className="mt-2" />
-                                        </div>
-
-                                        <div>
-                                            <InputLabel htmlFor="pricing_method" value="طريقة التسعير" />
-                                            <select
-                                                id="pricing_method"
-                                                className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                                value={data.pricing_method}
-                                                onChange={(e) => setData('pricing_method', e.target.value)}
-                                                title="اختر طريقة التسعير للمنتج"
-                                            >
-                                                <option value="fixed">ثابت</option>
-                                                <option value="area_based">حسب المساحة</option>
-                                                <option value="size_based">حسب الحجم</option>
-                                                <option value="custom">مخصص</option>
-                                            </select>
-                                            <InputError message={errors.pricing_method} className="mt-2" />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* قسم الأبعاد الافتراضية والحدود */}
-                                <div className="border-t pt-6">
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">إعدادات الأبعاد</h3>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        {/* الأبعاد الافتراضية */}
-                                        <div className="space-y-4">
-                                            <h4 className="text-md font-medium text-gray-700">الأبعاد الافتراضية</h4>
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">معاينة المنتج</h3>
+                                    <div className="bg-gray-50 p-4 rounded-lg">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                             <div>
-                                                <InputLabel htmlFor="default_width" value="العرض الافتراضي (سم)" />
-                                                <TextInput
-                                                    id="default_width"
-                                                    type="number"
-                                                    min="50"
-                                                    max="500"
-                                                    className="mt-1 block w-full"
-                                                    value={data.default_width}
-                                                    onChange={(e) => setData('default_width', e.target.value)}
-                                                />
-                                                <p className="text-sm text-gray-500 mt-1">العرض الذي يظهر في البداية للعملاء</p>
-                                                <InputError message={errors.default_width} className="mt-2" />
+                                                <strong>الاسم:</strong> {data.name}
                                             </div>
-
                                             <div>
-                                                <InputLabel htmlFor="default_height" value="الارتفاع الافتراضي (سم)" />
-                                                <TextInput
-                                                    id="default_height"
-                                                    type="number"
-                                                    min="50"
-                                                    max="400"
-                                                    className="mt-1 block w-full"
-                                                    value={data.default_height}
-                                                    onChange={(e) => setData('default_height', e.target.value)}
-                                                />
-                                                <p className="text-sm text-gray-500 mt-1">الارتفاع الذي يظهر في البداية للعملاء</p>
-                                                <InputError message={errors.default_height} className="mt-2" />
+                                                <strong>الفئة:</strong> {categories.find(c => c.id.toString() === data.category_id)?.name}
                                             </div>
-                                        </div>
-
-                                        {/* الحدود المسموحة */}
-                                        <div className="space-y-4">
-                                            <h4 className="text-md font-medium text-gray-700">الحدود المسموحة</h4>
-                                            <div className="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <InputLabel htmlFor="min_width" value="أقل عرض (سم)" />
-                                                    <TextInput
-                                                        id="min_width"
-                                                        type="number"
-                                                        min="10"
-                                                        className="mt-1 block w-full"
-                                                        value={data.min_width}
-                                                        onChange={(e) => setData('min_width', e.target.value)}
-                                                    />
-                                                    <InputError message={errors.min_width} className="mt-2" />
+                                                <strong>السعر:</strong> {data.price} ريال
                                                 </div>
-
                                                 <div>
-                                                    <InputLabel htmlFor="max_width" value="أقصى عرض (سم)" />
-                                                    <TextInput
-                                                        id="max_width"
-                                                        type="number"
-                                                        min="50"
-                                                        className="mt-1 block w-full"
-                                                        value={data.max_width}
-                                                        onChange={(e) => setData('max_width', e.target.value)}
-                                                    />
-                                                    <InputError message={errors.max_width} className="mt-2" />
+                                                <strong>الخصم:</strong> {data.discount ? `${data.discount}%` : 'لا يوجد'}
                                                 </div>
-
                                                 <div>
-                                                    <InputLabel htmlFor="min_height" value="أقل ارتفاع (سم)" />
-                                                    <TextInput
-                                                        id="min_height"
-                                                        type="number"
-                                                        min="10"
-                                                        className="mt-1 block w-full"
-                                                        value={data.min_height}
-                                                        onChange={(e) => setData('min_height', e.target.value)}
-                                                    />
-                                                    <InputError message={errors.min_height} className="mt-2" />
+                                                <strong>الكمية:</strong> {data.stock}
                                                 </div>
-
                                                 <div>
-                                                    <InputLabel htmlFor="max_height" value="أقصى ارتفاع (سم)" />
-                                                    <TextInput
-                                                        id="max_height"
-                                                        type="number"
-                                                        min="50"
-                                                        className="mt-1 block w-full"
-                                                        value={data.max_height}
-                                                        onChange={(e) => setData('max_height', e.target.value)}
-                                                    />
-                                                    <InputError message={errors.max_height} className="mt-2" />
-                                                </div>
+                                                <strong>الحالة:</strong> {data.status === 'active' ? 'نشط' : 'غير نشط'}
                                             </div>
-                                        </div>
-                                    </div>
-
-                                    {/* معاينة السعر */}
-                                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                        <h4 className="font-medium text-blue-800 mb-2">معاينة التسعير</h4>
-                                        <div className="text-sm text-blue-700">
-                                            <p>السعر الأساسي للأبعاد ({data.default_width}×{data.default_height} سم): <span className="font-bold">{data.base_price || '0'} ريال</span></p>
-                                            <p>المساحة الأساسية: <span className="font-bold">{((parseInt(data.default_width) || 100) * (parseInt(data.default_height) || 100) / 10000).toFixed(2)} م²</span></p>
-                                            {data.price_per_sqm && (
-                                                <p>السعر الإضافي: <span className="font-bold">{data.price_per_sqm} ريال/م²</span></p>
-                                            )}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center">
-                                    <input
-                                        id="featured"
-                                        type="checkbox"
-                                        className="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
-                                        checked={data.featured}
-                                        onChange={(e) => setData('featured', e.target.checked)}
-                                        title="تحديد المنتج كمميز"
-                                    />
-                                    <InputLabel htmlFor="featured" value="منتج مميز" className="ml-2" />
-                                </div>
-
-                                <div className="flex items-center justify-end mt-6 gap-4">
-                                    <SecondaryButton
-                                        type="button"
-                                        onClick={() => window.history.back()}
-                                    >
+                                <div className="flex justify-end gap-4">
+                                    <SecondaryButton type="button" onClick={() => window.history.back()}>
                                         إلغاء
                                     </SecondaryButton>
-                                    <PrimaryButton disabled={processing}>
-                                        {processing ? 'جاري التحديث...' : 'تحديث المنتج'}
+                                    <PrimaryButton type="submit" disabled={processing}>
+                                        {processing ? 'جاري الحفظ...' : 'حفظ التغييرات'}
                                     </PrimaryButton>
                                 </div>
                             </form>

@@ -30,7 +30,6 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({ filters, onRemoveFilter, 
         return null;
     }
 
-    // Color names mapping
     const colorNames: { [key: string]: string } = {
         '#FFFFFF': 'أبيض',
         '#000000': 'أسود',

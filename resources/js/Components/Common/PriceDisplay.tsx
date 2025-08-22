@@ -66,8 +66,13 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
                 )}
             </div>
             {(discount || hasDiscount) && !pricesFrom && (
-                <div className="text-sm text-gray-500 line-through">
-                    {numericPrice.toFixed(2)} ر.س
+                <div className="flex items-center gap-1 text-sm text-gray-500 line-through">
+                    <span>{numericPrice.toFixed(2)}</span>
+                    <img
+                        src="/images/sar-currency(black).svg"
+                        alt="ريال"
+                        className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
+                    />
                 </div>
             )}
         </div>

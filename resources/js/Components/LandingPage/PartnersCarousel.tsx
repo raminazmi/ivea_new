@@ -6,7 +6,7 @@ import { Pagination, Autoplay } from 'swiper/modules';
 
 interface Partner {
     name: string;
-    logo: string; // URL to logo image
+    logo: string;
 }
 
 const partners: Partner[] = [

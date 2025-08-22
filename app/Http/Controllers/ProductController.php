@@ -32,24 +32,19 @@ class ProductController extends Controller
             }
         }
 
-        // Handle main category filtering - show products from all subcategories or main category itself
         if ($request->has('main_category') && $request->main_category !== 'all') {
             $mainCategorySlug = $request->main_category;
             $mainCategory = Category::where('slug', $mainCategorySlug)->whereNull('parent_id')->first();
             if ($mainCategory) {
-                // Get all subcategory IDs for this main category
                 $subcategoryIds = Category::where('parent_id', $mainCategory->id)->pluck('id')->toArray();
                 if (!empty($subcategoryIds)) {
-                    // If subcategories exist, search in subcategories
                     $query->whereIn('category_id', $subcategoryIds);
                 } else {
-                    // If no subcategories exist, search in main category itself
                     $query->where('category_id', $mainCategory->id);
                 }
             }
         }
 
-        // Alternative: Handle subcategory_ids directly
         if ($request->has('subcategory_ids') && !empty($request->subcategory_ids)) {
             $subcategoryIds = is_array($request->subcategory_ids) ? $request->subcategory_ids : [$request->subcategory_ids];
             $query->whereIn('category_id', $subcategoryIds);
@@ -221,7 +216,6 @@ class ProductController extends Controller
 
         $products = $query->paginate(12);
 
-        // Add features to each product
         $products->getCollection()->transform(function ($product) {
             $product->features = $product->features;
             return $product;
@@ -302,22 +296,11 @@ class ProductController extends Controller
             'features' => $product->features,
             'rating' => $product->rating,
             'weight' => $product->weight,
-            'dimensions' => $product->dimensions,
             'inStock' => $product->in_stock,
             'hasDiscount' => $product->has_discount,
             'finalPrice' => (float) $product->final_price,
             'discountAmount' => (float) $product->discount_amount,
-            'pricesFrom' => (float) $product->pricesFrom,
-            'priceRange' => $product->priceRange,
-            'pricingMethod' => $product->pricing_method,
-            'basePrice' => (float) $product->base_price,
-            'pricePerSqm' => (float) ($product->price_per_sqm ?? 0),
-            'defaultWidth' => (float) ($product->default_width ?? 150),
-            'defaultHeight' => (float) ($product->default_height ?? 200),
-            'minWidth' => (float) ($product->min_width ?? 50),
-            'maxWidth' => (float) ($product->max_width ?? 500),
-            'minHeight' => (float) ($product->min_height ?? 50),
-            'maxHeight' => (float) ($product->max_height ?? 400),
+
         ];
 
         $seoData = $this->seoService->getProductSeo($product);
@@ -356,18 +339,9 @@ class ProductController extends Controller
             'image' => $product->main_image,
             'images' => $product->product_images,
             'features' => $product->features,
-            'defaultWidth' => (float) ($product->default_width ?? 150),
-            'defaultHeight' => (float) ($product->default_height ?? 200),
-            'fabricReduction' => (float) ($product->fabric_reduction ?? 0),
-            'coverageIncrease' => (float) ($product->coverage_increase ?? 0),
             'inStock' => $product->in_stock,
             'hasDiscount' => $product->has_discount,
             'finalPrice' => (float) $product->final_price,
-            'pricesFrom' => (float) $product->pricesFrom,
-            'priceRange' => $product->priceRange,
-            'pricingMethod' => $product->pricing_method,
-            'basePrice' => (float) ($product->base_price ?? $product->price),
-            'pricePerSqm' => (float) ($product->price_per_sqm ?? 0),
         ];
 
         return Inertia::render('ProductOptions', [
@@ -426,16 +400,13 @@ class ProductController extends Controller
             return response()->json(['data' => []], 404);
         }
 
-        // Get all subcategory IDs for this main category
         $subcategoryIds = Category::where('parent_id', $category->id)->pluck('id')->toArray();
 
         $query = Product::with('category')->active();
 
         if (!empty($subcategoryIds)) {
-            // If subcategories exist, search in subcategories
             $query->whereIn('category_id', $subcategoryIds);
         } else {
-            // If no subcategories exist, search in main category itself
             $query->where('category_id', $category->id);
         }
 

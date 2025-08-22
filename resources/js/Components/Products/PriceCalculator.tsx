@@ -87,6 +87,9 @@ const PriceCalculator: React.FC<PriceCalculatorProps> = ({
                             value={area}
                             onChange={(e) => setArea(parseFloat(e.target.value) || 1)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            title="أدخل المساحة بالمتر المربع"
+                            placeholder="أدخل المساحة"
+                            aria-label="المساحة بالمتر المربع"
                         />
                     </div>
                 )}
@@ -100,6 +103,8 @@ const PriceCalculator: React.FC<PriceCalculatorProps> = ({
                             value={selectedSize}
                             onChange={(e) => setSelectedSize(e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            title="اختر حجم المنتج"
+                            aria-label="حجم المنتج"
                         >
                             <option value="small">صغير</option>
                             <option value="medium">متوسط</option>
@@ -118,6 +123,8 @@ const PriceCalculator: React.FC<PriceCalculatorProps> = ({
                             value={customModifier}
                             onChange={(e) => setCustomModifier(e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            title="اختر نوع المنتج"
+                            aria-label="نوع المنتج"
                         >
                             <option value="basic">أساسي</option>
                             <option value="standard">عادي</option>
@@ -146,8 +153,15 @@ const PriceCalculator: React.FC<PriceCalculatorProps> = ({
                     </div>
 
                     {priceRange && (
-                        <div className="mt-2 text-sm text-gray-600">
-                            النطاق السعري: {priceRange.min.toFixed(2)} - {priceRange.max.toFixed(2)} ر.س
+                        <div className="flex items-center justify-center gap-1 mt-2 text-sm text-gray-600">
+                                <span className="text-xl font-bold text-green-600">
+                                    النطاق السعري: {priceRange.min.toFixed(2)} - {priceRange.max.toFixed(2)}
+                                </span>
+                                <img
+                                    src="/images/sar-currency(black).svg"
+                                    alt="ريال"
+                                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
+                                />
                         </div>
                     )}
                 </div>

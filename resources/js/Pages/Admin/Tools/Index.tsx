@@ -131,7 +131,6 @@ const ToolsIndex: React.FC<ToolsIndexProps> = ({ tools }) => {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-4 sm:p-6 bg-white border-b border-gray-200">
-                            {/* Header */}
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                                 <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">إدارة أدوات وإرشادات</h2>
                                 <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -152,7 +151,6 @@ const ToolsIndex: React.FC<ToolsIndexProps> = ({ tools }) => {
                                 </div>
                             </div>
 
-                            {/* Filters */}
                             {showFilters && (
                                 <div className="bg-gray-50 p-4 rounded-lg mb-6">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -328,7 +326,6 @@ const ToolsIndex: React.FC<ToolsIndexProps> = ({ tools }) => {
                 </div>
             </div>
 
-            {/* Delete Confirmation Modal */}
             <ConfirmModal
                 isOpen={showDeleteModal}
                 onClose={() => {

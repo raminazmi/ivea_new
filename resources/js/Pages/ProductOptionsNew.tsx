@@ -51,7 +51,7 @@ interface UploadedFile {
     path?: string;
     url?: string;
     type?: string;
-    file?: File; // للاحتفاظ بملف الـ File الأصلي
+    file?: File;
 }
 
 const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
@@ -104,7 +104,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
             const newFiles = Array.from(files).map(file => ({
                 name: file.name,
                 size: file.size,
-                uuid: Math.random().toString(36).substr(2, 9), // توليد uuid مؤقت
+                uuid: Math.random().toString(36).substr(2, 9),
                 type: file.type,
                 path: '',
                 url: '',
@@ -125,12 +125,10 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
             price: product.finalPrice || product.price,
             image: product.image,
             quantity: formData.quantity || quantity || 1,
-            // إضافة اللون المختار إذا كان متوفراً
             ...(product.colors && product.colors[selectedColor] && {
                 color: product.colors[selectedColor],
                 colorName: product.colorNames?.[selectedColor]
             }),
-            // إضافة باقي البيانات المخصصة
             ...formData,
             uploadedFiles: uploadedFiles.map(file => file.name)
         };
@@ -138,10 +136,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
         dispatch(addToCart(cartItem));
         setInCart(true);
         setAdded(true);
-
-        // مزامنة بيانات السلة
         syncCartData();
-
         setTimeout(() => {
             setAdded(false);
         }, 2000);
@@ -169,6 +164,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                             onChange={(e) => handleFieldChange(fieldName, e.target.value)}
                             className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
                             required={required}
+                            title={`اختر ${label}`}
+                            aria-label={label}
                         >
                             <option value="">اختر {label}</option>
                             {Object.entries(options).map(([key, value]) => (
@@ -190,7 +187,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                             <p className="text-xs md:text-sm text-gray-500">{description}</p>
                         )}
                         {fieldName === 'quantity' ? (
-                            // تصميم خاص للكمية مع أزرار + و -
                             <div className="flex items-center border border-gray-300 rounded-md w-32">
                                 <button
                                     type="button"
@@ -203,6 +199,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     }}
                                     className="p-2.5 md:p-3 text-gray-600 hover:text-gray-800 focus:outline-none"
                                     title="تقليل الكمية"
+                                    aria-label="تقليل الكمية"
                                 >
                                     <HiMinus className="h-4 w-4 md:h-5 md:w-5" />
                                 </button>
@@ -219,6 +216,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     max={max}
                                     placeholder="الكمية"
                                     title="كمية المنتج"
+                                    aria-label="كمية المنتج"
                                     required={required}
                                 />
                                 <button
@@ -232,12 +230,12 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     }}
                                     className="p-2.5 md:p-3 text-gray-600 hover:text-gray-800 focus:outline-none"
                                     title="زيادة الكمية"
+                                    aria-label="زيادة الكمية"
                                 >
                                     <HiPlus className="h-4 w-4 md:h-5 md:w-5" />
                                 </button>
                             </div>
                         ) : (
-                            // تصميم عادي للحقول الرقمية الأخرى
                             <div className="flex items-center border border-gray-300 rounded-md">
                                 <button
                                     type="button"
@@ -248,6 +246,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         }
                                     }}
                                     className="p-2.5 md:p-3 text-gray-600 hover:text-gray-800 focus:outline-none"
+                                    title="تقليل القيمة"
+                                    aria-label="تقليل القيمة"
                                 >
                                     <HiMinus className="h-4 w-4" />
                                 </button>
@@ -259,6 +259,9 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     min={min}
                                     max={max}
                                     required={required}
+                                    title={`أدخل ${label}`}
+                                    aria-label={label}
+                                    placeholder={`أدخل ${label}`}
                                 />
                                 <button
                                     type="button"
@@ -269,6 +272,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         }
                                     }}
                                     className="p-2.5 md:p-3 text-gray-600 hover:text-gray-800 focus:outline-none"
+                                    title="زيادة القيمة"
+                                    aria-label="زيادة القيمة"
                                 >
                                     <HiPlus className="h-4 w-4" />
                                 </button>
@@ -284,7 +289,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                             {label} {required && <span className="text-red-500">*</span>}
                         </label>
                         <div className="space-y-3">
-                            {/* ألوان محددة مسبقاً */}
                             <div className="grid grid-cols-8 gap-2">
                                 {[
                                     '#FFFFFF', '#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF',
@@ -310,6 +314,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                             name={`${fieldName}_type`}
                                             onChange={() => handleFieldChange(`${fieldName}_is_custom`, true)}
                                             className="text-primary-yellow focus:ring-primary-yellow"
+                                            title="اختيار لون مخصص"
+                                            aria-label="اختيار لون مخصص"
                                         />
                                         <span className="text-sm">لون آخر</span>
                                     </label>
@@ -322,6 +328,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                 handleFieldChange(fieldName, e.target.value);
                                             }}
                                             className="w-full h-10 rounded border border-gray-300"
+                                            title="اختر اللون المخصص"
+                                            aria-label="اختر اللون المخصص"
                                         />
                                     )}
                                 </div>
@@ -347,6 +355,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         checked={(formData[fieldName] || []).includes(key)}
                                         onChange={(e) => handleMultipleCheckboxChange(fieldName, key, e.target.checked)}
                                         className="text-primary-yellow focus:ring-primary-yellow rounded"
+                                        title={`اختر ${value as string}`}
+                                        aria-label={`اختر ${value as string}`}
                                     />
                                     <span className="text-sm md:text-base">{value as string}</span>
                                 </label>
@@ -377,6 +387,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     accept={accept}
                                     onChange={(e) => handleFileUpload(e.target.files)}
                                     className="hidden"
+                                    title="اختر الملفات"
+                                    aria-label="اختر الملفات"
                                 />
                             </label>
                             <p className="text-xs md:text-sm text-gray-500 mt-2">
@@ -385,7 +397,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                             </p>
                         </div>
 
-                        {/* عرض الملفات المرفوعة */}
                         {uploadedFiles.length > 0 && (
                             <div className="space-y-2">
                                 <h4 className="font-medium text-sm">الملفات المرفوعة:</h4>
@@ -397,6 +408,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                 type="button"
                                                 onClick={() => removeFile(index)}
                                                 className="text-red-500 hover:text-red-700 text-sm"
+                                                title="حذف الملف"
+                                                aria-label="حذف الملف"
                                             >
                                                 حذف
                                             </button>
@@ -424,6 +437,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     value={formData[`${fieldName}_unit`] || units[0]}
                                     onChange={(e) => handleFieldChange(`${fieldName}_unit`, e.target.value)}
                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                    title="اختر وحدة القياس"
+                                    aria-label="وحدة القياس"
                                 >
                                     {units.map((unit: string) => (
                                         <option key={unit} value={unit}>
@@ -446,6 +461,9 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
                                     step="0.001"
                                     required={required}
+                                    title="أدخل العرض"
+                                    aria-label="العرض"
+                                    placeholder="أدخل العرض"
                                 />
                             </div>
                             <div>
@@ -459,6 +477,9 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
                                     step="0.001"
                                     required={required}
+                                    title="أدخل الارتفاع"
+                                    aria-label="الارتفاع"
+                                    placeholder="أدخل الارتفاع"
                                 />
                             </div>
                         </div>
@@ -481,6 +502,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     value={formData[`${fieldName}_unit`] || units[0]}
                                     onChange={(e) => handleFieldChange(`${fieldName}_unit`, e.target.value)}
                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                    title="اختر وحدة القياس"
+                                    aria-label="وحدة القياس"
                                 >
                                     {units.map((unit: string) => (
                                         <option key={unit} value={unit}>
@@ -503,6 +526,9 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
                                     step="0.001"
                                     required={required}
+                                    title="أدخل الطول"
+                                    aria-label="الطول"
+                                    placeholder="أدخل الطول"
                                 />
                             </div>
                             <div>
@@ -516,6 +542,9 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
                                     step="0.001"
                                     required={required}
+                                    title="أدخل العرض"
+                                    aria-label="العرض"
+                                    placeholder="أدخل العرض"
                                 />
                             </div>
                             <div>
@@ -529,6 +558,9 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
                                     step="0.001"
                                     required={required}
+                                    title="أدخل الارتفاع"
+                                    aria-label="الارتفاع"
+                                    placeholder="أدخل الارتفاع"
                                 />
                             </div>
                         </div>
@@ -593,7 +625,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 </div>
 
-                                {/* اختيار اللون من ألوان المنتج */}
                                 {product.colors && product.colors.length > 0 && (
                                     <div className="space-y-3 md:space-y-4">
                                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
@@ -608,14 +639,12 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 )}
 
-                                {/* خيارات التخصيص الديناميكية */}
                                 <div className="space-y-6">
                                     {Object.entries(customizationFields).map(([fieldName, field]) => {
                                         return renderField(fieldName, field);
                                     })}
                                 </div>
 
-                                {/* أزرار العمل */}
                                 <div className="pt-4">
                                     <ActionButtons
                                         onAddToCart={handleAddToCart}
@@ -630,7 +659,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                 </div>
             </div>
 
-            {/* مودال الطلب السريع */}
             <QuickOrderModal
                 isOpen={showQuickOrderModal}
                 onClose={() => setShowQuickOrderModal(false)}

@@ -5,8 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, removeFromCart } from '@/store/features/cartSlice';
 import { HiShoppingCart, HiCheck } from 'react-icons/hi';
 import { RootState } from '@/store';
-import { calculateDynamicPrice, formatPriceFrom, getDefaultDimensions, Dimensions } from '@/Utils/priceCalculator';
-import PriceDisplay from '@/Components/Common/PriceDisplay';
 
 interface ProductCardProps {
     product: {
@@ -14,15 +12,8 @@ interface ProductCardProps {
         name: string;
         brand: string;
         price: number;
-        base_price: number;
-        price_per_sqm?: number;
-        pricing_method?: 'fixed' | 'per_sqm' | 'tiered';
-        min_price?: number;
-        max_price?: number;
-        default_width?: number;
-        default_height?: number;
         discount?: number;
-        image: string;
+        image: string[];
         rating: number;
         category?: {
             id: number;
@@ -35,14 +26,8 @@ interface ProductCardProps {
         has_discount?: boolean;
         colors?: string[];
         color_names?: string[];
-        pricesFrom?: number;
-        priceRange?: {
-            min: number;
-            max: number;
         };
-        pricingMethod?: 'fixed' | 'area_based' | 'size_based' | 'custom';
-    };
-    dimensions?: Dimensions;
+    dimensions?: { width: number; height: number };
     onDimensionChange?: (productId: number, price: number) => void;
 }
 
@@ -50,21 +35,43 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
     const colors = product.colors || ['#F0F7FF', '#FFEDED', '#FFF7ED'];
     const [currentPrice, setCurrentPrice] = useState<number>(0);
     const [priceChanged, setPriceChanged] = useState<boolean>(false);
-    const [currentDimensions, setCurrentDimensions] = useState<Dimensions>(
-        dimensions || { width: 100, height: 100 } // 1 متر × 1 متر
+    const [currentDimensions, setCurrentDimensions] = useState<{ width: number; height: number }>(
+        dimensions || { width: 1, height: 1 } // ثابت 1×1 متر
     );
 
+    const getDiscountedPrice = (price: number, discount?: number) => {
+        if (!discount || discount <= 0) return price;
+        return price - (price * discount / 100);
+    };
+
+    const calculatePrice = (width: number, height: number) => {
+        const discountedBasePrice = getDiscountedPrice(product.price, product.discount);
+                const categoryName = product.category?.name?.toLowerCase();
+        const isCurtainsOrCabinets = categoryName?.includes('ستا') || categoryName?.includes('خزا');
+                if (!isCurtainsOrCabinets) {
+            return discountedBasePrice;
+        }
+        const baseArea = 1;
+                if (width === 1 && height === 1) {
+            return discountedBasePrice;
+        }
+
+        const newArea = width * height;
+        const additionalArea = newArea - baseArea;
+        
+        const additionalCost = additionalArea * discountedBasePrice;
+        return discountedBasePrice + additionalCost;
+    };
+
     useEffect(() => {
-        // لا نحسب السعر تلقائياً، نتركه 0 حتى يحرك المستخدم المؤشر
         if (currentPrice === 0 && dimensions) {
-            // فقط إذا تم تمرير أبعاد من الخارج (من صفحة أخرى)
-            const initialPrice = calculateDynamicPrice(product, currentDimensions);
+            const initialPrice = calculatePrice(currentDimensions.width, currentDimensions.height);
             setCurrentPrice(initialPrice);
         }
     }, [product, currentDimensions, currentPrice, dimensions]);
 
     useEffect(() => {
-        const newPrice = calculateDynamicPrice(product, currentDimensions);
+        const newPrice = calculatePrice(currentDimensions.width, currentDimensions.height);
 
         if (currentPrice !== newPrice && currentPrice > 0) {
             setPriceChanged(true);
@@ -82,24 +89,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
             setCurrentDimensions(dimensions);
         }
     }, [dimensions]);
-    // السعر الأساسي (قبل الخصم) - من الداتابيز
-    const originalPrice = Number(product.price || product.base_price || 0);
-    
-    // السعر بعد الخصم (28% مثلاً) - من الداتابيز
-    const discountedPrice = Number(product.final_price || product.price || 0);
-    
-    // السعر النهائي - في البداية يكون السعر بعد الخصم، وعند تغيير الأبعاد يضاف للسعر
-    const finalPrice = currentPrice > 0 && currentPrice !== discountedPrice ? currentPrice : discountedPrice;
-    
-    // نسبة الخصم
-    const displayDiscount = product.discount || (product.has_discount ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : null);
+
+    const originalPrice = Number(product.price || 0);
+        const discountedPrice = Number(product.final_price || getDiscountedPrice(product.price, product.discount));
+        const finalPrice = currentPrice > 0 && currentPrice !== discountedPrice ? currentPrice : discountedPrice;
+        const displayDiscount = product.discount || (product.has_discount ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : null);
 
     const getPriceDisplayText = () => {
-        if (currentPrice > 0 && currentPrice !== discountedPrice && dimensions) {
+        const categoryName = product.category?.name?.toLowerCase();
+        const isCurtainsOrCabinets = categoryName?.includes('ستا') || categoryName?.includes('خزا');
+        
+        if (currentPrice > 0 && currentPrice !== discountedPrice && dimensions && isCurtainsOrCabinets) {
             return 'السعر للأبعاد المحددة';
-        }
-        if (product.pricing_method && product.pricing_method !== 'fixed') {
-            return 'سعر المتر المربع يبدأ من';
         }
         return 'السعر';
     };
@@ -113,8 +114,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
         dispatch(addToCart({
             id: product.id,
             name: product.name,
-            price: finalPrice, // السعر النهائي بعد الخصم والأبعاد
-            image: product.image,
+            price: finalPrice,
+            image: product.image[0],
             selectedDimensions: currentDimensions,
             selectedPrice: currentPrice,
             quantity: 1
@@ -133,7 +134,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                 <Link href={`/products/${product.id}`} className="block">
                     <div className="relative h-32 sm:h-36 md:h-40 bg-white rounded-t-xl overflow-hidden">
                         <img
-                            src={product.image || '/images/sofa3.png'}
+                            src={product.image[0] || '/images/sofa3.png'}
                             alt={product.name}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
@@ -189,44 +190,65 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                     <div className="mt-2 flex justify-between items-center">
                         <div className='flex flex-col'>
                             <span className="text-xs sm:text-sm text-[#64748B]">{getPriceDisplayText()}</span>
-                                                         <div className="flex justify-start items-center gap-1 sm:gap-2">
-                                 {currentPrice > 0 && currentPrice !== discountedPrice && dimensions ? (
-                                     // عند تطبيق الأبعاد - السعر المضاف
-                                     <div className="flex items-center gap-1">
-                                         <p className={`text-sm sm:text-base md:text-lg font-bold transition-all duration-300 text-green-600 ${priceChanged ? 'scale-105' : ''}`}>
-                                             {currentPrice.toFixed(2)}
-                                         </p>
-                                         <span className="text-xs text-gray-500 block font-normal">
-                                             (إضافة للأبعاد الإضافية)
-                                         </span>
-                                     </div>
-                                 ) : (
-                                     // في البداية - مثل ProductDetail
-                                     <div className="flex items-center gap-1">
-                                         <p className={`text-sm sm:text-base md:text-lg font-bold transition-all duration-300 text-green-600 ${priceChanged ? 'scale-105' : ''}`}>
-                                             {discountedPrice.toFixed(2)}
-                                         </p>
-                                         {product.has_discount && (
-                                             <span className="text-xs sm:text-sm text-gray-500 line-through">
-                                                 {originalPrice.toFixed(2)}
-                                             </span>
-                                         )}
-                                     </div>
-                                 )}
+                            <div className="flex justify-start items-center gap-1 sm:gap-2">
+                                {(() => {
+                                    const categoryName = product.category?.name?.toLowerCase();
+                                    const isCurtainsOrCabinets = categoryName?.includes('ستا') || categoryName?.includes('خزا');
+                                    
+                                    if (currentPrice > 0 && currentPrice !== discountedPrice && dimensions && isCurtainsOrCabinets) {
+                                        return (
+                                            <div className="flex flex-col items-start gap-1">
+                                                <div className="flex items-center gap-1">
+                                                    <p className={`text-sm sm:text-base md:text-lg font-bold transition-all duration-300 text-green-600 ${priceChanged ? 'scale-105' : ''}`}>
+                                                        {currentPrice.toFixed(2)}
+                                                    </p>
+                                                    <img
+                                                        src="/images/sar-currency(black).svg"
+                                                        alt="ريال"
+                                                        className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
+                                                    />
+                                                </div>
+                                        <span className="text-xs text-gray-500 block font-normal">
+                                                    (إضافة للأبعاد الإضافية)
+                                        </span>
+                                            </div>
+                                        );
+                                    } else {
+                                        return (
+                                            <div className="flex flex-col items-start gap-1">
+                                                <div className="flex items-center gap-1">
+                                                    <p className={`text-sm sm:text-base md:text-lg font-bold transition-all duration-300 ${priceChanged ? 'scale-105' : ''}`}>
+                                                        {discountedPrice.toFixed(2)}
+                                </p>
                                 <img
                                     src="/images/sar-currency(black).svg"
-                                    alt={product.name}
+                                                        alt="ريال"
                                     className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
                                 />
+                                                </div>
+                                                
+                                                <div className="flex items-center gap-1">
+                                                    <span className="text-xs sm:text-sm text-gray-500 line-through">
+                                                        {originalPrice.toFixed(2)}
+                                                    </span>
+                                                    <img
+                                                        src="/images/sar-currency(black).svg"
+                                                        alt="ريال"
+                                                        className="w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 opacity-50"
+                                                    />
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+                                })()}
                             </div>
                         </div>
                         <button
-                            className={`relative bg-primary-yellow rounded-full p-1 sm:p-1.5 md:p-2 shadow-sm flex items-center justify-center transition-all duration-300 overflow-hidden
+                            className={`relative bg-primary-yellow rounded-full p-1 sm:p-1.5 md:p-2 shadow-sm flex items-center justify-center transition-all duration-300 overflow-hidden min-w-[40px] min-h-[40px]
                                 ${added ? 'bg-green-500 scale-110 ring-2 ring-green-300' : inCart ? 'bg-red-100 hover:bg-red-200' : 'hover:bg-yellow-500'}
                             `}
                             title={inCart ? 'حذف من السلة' : 'إضافة المنتج للسلة'}
                             onClick={inCart ? handleRemoveFromCart : handleAddToCart}
-                            style={{ minWidth: 40, minHeight: 40 }}
                         >
                             <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                 {inCart ? (

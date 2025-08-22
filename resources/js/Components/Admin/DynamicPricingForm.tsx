@@ -44,6 +44,8 @@ const DynamicPricingForm: React.FC<DynamicPricingFormProps> = ({
                         value={pricingMethod || 'fixed'}
                         onChange={(e) => setPricingMethod(e.target.value as any)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        title="اختر طريقة التسعير"
+                        aria-label="طريقة التسعير"
                     >
                         <option value="fixed">تسعير ثابت</option>
                         <option value="area_based">تسعير حسب المساحة</option>

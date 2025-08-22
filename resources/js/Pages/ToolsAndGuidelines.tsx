@@ -189,7 +189,6 @@ const ToolsAndGuidelines: React.FC<ToolsAndGuidelinesProps> = ({
                                     </div>
                                 </div>
 
-                                {/* قائمة المقالات الأخرى */}
                                 {tools && tools.length > 0 && (
                                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 md:p-8 mt-6 md:mt-8">
                                         <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">مقالات أخرى</h2>

@@ -86,22 +86,6 @@ class ProductController extends Controller
             'features' => 'nullable|array',
             'features.*' => 'string',
             'weight' => 'nullable|numeric|min:0',
-            'dimensions' => 'nullable|array',
-            'dimensions.width' => 'nullable|string',
-            'dimensions.height' => 'nullable|string',
-            'dimensions.depth' => 'nullable|string',
-            'base_price' => 'nullable|numeric|min:0',
-            'price_per_sqm' => 'nullable|numeric|min:0',
-            'min_price' => 'nullable|numeric|min:0',
-            'max_price' => 'nullable|numeric|min:0',
-            'pricing_method' => 'nullable|in:fixed,area_based,size_based,custom',
-            'price_modifiers' => 'nullable|array',
-            'default_width' => 'nullable|numeric|min:10|max:1000',
-            'default_height' => 'nullable|numeric|min:10|max:1000',
-            'min_width' => 'nullable|numeric|min:1|max:1000',
-            'max_width' => 'nullable|numeric|min:1|max:1000',
-            'min_height' => 'nullable|numeric|min:1|max:1000',
-            'max_height' => 'nullable|numeric|min:1|max:1000',
             'published_at' => 'nullable|date',
         ]);
 
@@ -110,21 +94,7 @@ class ProductController extends Controller
         $validated['colors'] = $validated['colors'] ?? [];
         $validated['specifications'] = $validated['specifications'] ?? [];
         $validated['features'] = $validated['features'] ?? [];
-        $validated['dimensions'] = [
-            'width' => '100',
-            'height' => '100',
-        ]; // دائماً متر مربع واحد
-        $validated['pricing_method'] = 'area_based';
-        $validated['base_price'] = $validated['price'];
-        $validated['price_modifiers'] = $validated['price_modifiers'] ?? [];
-        $validated['default_width'] = 100;
-        $validated['default_height'] = 100;
-        $validated['min_width'] = 50;
-        $validated['max_width'] = 500;
-        $validated['min_height'] = 50;
-        $validated['max_height'] = 400;
-        $validated['min_price'] = $validated['price'];
-        $validated['max_price'] = 3000;
+
 
         if (empty($validated['image']) && !empty($validated['images'])) {
             $validated['image'] = $validated['images'][0];
@@ -183,24 +153,6 @@ class ProductController extends Controller
             'features' => 'nullable|array',
             'features.*' => 'string',
             'weight' => 'nullable|numeric|min:0',
-            'dimensions' => 'nullable|array',
-            'dimensions.width' => 'nullable|string',
-            'dimensions.height' => 'nullable|string',
-            'dimensions.depth' => 'nullable|string',
-            // Dynamic pricing fields
-            'base_price' => 'nullable|numeric|min:0',
-            'price_per_sqm' => 'nullable|numeric|min:0',
-            'min_price' => 'nullable|numeric|min:0',
-            'max_price' => 'nullable|numeric|min:0',
-            'pricing_method' => 'nullable|in:fixed,area_based,size_based,custom',
-            'price_modifiers' => 'nullable|array',
-            // Dimension fields
-            'default_width' => 'nullable|numeric|min:10|max:1000',
-            'default_height' => 'nullable|numeric|min:10|max:1000',
-            'min_width' => 'nullable|numeric|min:1|max:1000',
-            'max_width' => 'nullable|numeric|min:1|max:1000',
-            'min_height' => 'nullable|numeric|min:1|max:1000',
-            'max_height' => 'nullable|numeric|min:1|max:1000',
             'published_at' => 'nullable|date',
         ]);
 
@@ -245,9 +197,6 @@ class ProductController extends Controller
         return response()->json($stats);
     }
 
-    /**
-     * Update product tab settings
-     */
     public function updateTabSettings(Request $request, $id)
     {
         $product = Product::findOrFail($id);
@@ -271,9 +220,6 @@ class ProductController extends Controller
         return redirect()->back()->with('success', 'تم تحديث إعدادات التبويب بنجاح');
     }
 
-    /**
-     * Bulk update tab settings
-     */
     public function bulkUpdateTabSettings(Request $request)
     {
         $request->validate([
@@ -306,9 +252,6 @@ class ProductController extends Controller
         return redirect()->back()->with('success', 'تم تحديث إعدادات التبويب للمنتجات المحددة');
     }
 
-    /**
-     * Get tab statistics
-     */
     public function getTabStatistics()
     {
         $stats = [

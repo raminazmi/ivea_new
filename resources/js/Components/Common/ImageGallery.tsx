@@ -15,12 +15,10 @@ const ImageGallery: React.FC<ImageGalleryProps> = React.memo(({
     productName,
     className = ""
 }) => {
-    // استخدام useMemo لتجنب إعادة حساب validImages في كل render
     const validImages = useMemo(() => {
         return images.filter(image => image && image.trim() !== '');
     }, [images]);
 
-    // استخدام useMemo لحفظ الصورة المحددة
     const currentImage = useMemo(() => {
         return validImages[selectedImage] || validImages[0];
     }, [validImages, selectedImage]);
@@ -40,7 +38,6 @@ const ImageGallery: React.FC<ImageGalleryProps> = React.memo(({
         );
     }
 
-    // استخدام useMemo لحفظ thumbnail images
     const thumbnailImages = useMemo(() => {
         return validImages.map((image, index) => (
             <button

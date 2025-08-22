@@ -32,7 +32,6 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
-    // Parent-child relationships for hierarchical categories
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
@@ -48,13 +47,11 @@ class Category extends Model
         return $this->children()->with('allChildren');
     }
 
-    // Scope for main (parent) categories only
     public function scopeMainCategories($query)
     {
         return $query->whereNull('parent_id');
     }
 
-    // Scope for subcategories only
     public function scopeSubCategories($query)
     {
         return $query->whereNotNull('parent_id');
@@ -80,28 +77,19 @@ class Category extends Model
         return $this->products()->active()->count();
     }
 
-    /**
-     * Get customization fields based on category name or stored fields
-     */
     public function getCustomizationFieldsAttribute()
     {
-        // إذا كانت الحقول مخزنة مسبقاً، استخدمها
         if (!empty($this->attributes['customization_fields'])) {
             return json_decode($this->attributes['customization_fields'], true);
         }
 
-        // خلاف ذلك، استخدم الحقول الافتراضية حسب اسم الفئة
         return $this->getDefaultCustomizationFields();
     }
 
-    /**
-     * Get default customization fields based on category name
-     */
     public function getDefaultCustomizationFields()
     {
         $categoryName = strtolower($this->name);
 
-        // الستائر
         if (str_contains($categoryName, 'ستائر') || str_contains($categoryName, 'curtain')) {
             return [
                 'color' => [
@@ -143,9 +131,7 @@ class Category extends Model
                     'required' => true
                 ]
             ];
-        }
-        // الكنب
-        elseif (str_contains($categoryName, 'كنب') || str_contains($categoryName, 'sofa')) {
+        } elseif (str_contains($categoryName, 'كنب') || str_contains($categoryName, 'sofa')) {
             return [
                 'sofa_type' => [
                     'label' => 'نوع الكنب',
@@ -180,9 +166,7 @@ class Category extends Model
                     'units' => ['سم', 'متر']
                 ]
             ];
-        }
-        // الخزائن
-        elseif (str_contains($categoryName, 'خزان') || str_contains($categoryName, 'closet') || str_contains($categoryName, 'wardrobe')) {
+        } elseif (str_contains($categoryName, 'خزان') || str_contains($categoryName, 'closet') || str_contains($categoryName, 'wardrobe')) {
             return [
                 'closet_type' => [
                     'label' => 'نوع الخزانة',
@@ -238,9 +222,7 @@ class Category extends Model
                     'required' => false
                 ]
             ];
-        }
-        // الخشبيات
-        elseif (str_contains($categoryName, 'خشب') || str_contains($categoryName, 'wood')) {
+        } elseif (str_contains($categoryName, 'خشب') || str_contains($categoryName, 'wood')) {
             return [
                 'product_type' => [
                     'label' => 'المنتج',
@@ -284,9 +266,7 @@ class Category extends Model
                     'units' => ['سم', 'متر']
                 ]
             ];
-        }
-        // افتراضي للفئات الأخرى
-        else {
+        } else {
             return [
                 'color' => [
                     'label' => 'اللون',
@@ -320,7 +300,6 @@ class Category extends Model
         });
     }
 
-    // Get all products count for this category
     public function getAllProductsCount()
     {
         return $this->products()->count();

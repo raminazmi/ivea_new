@@ -116,7 +116,6 @@ const OrderShow: React.FC<OrderShowProps> = ({ order }) => {
                     type: 'success',
                     isVisible: true
                 });
-                // Redirect to orders index after successful deletion
                 setTimeout(() => {
                     router.visit(route('admin.orders.index'));
                 }, 1500);
@@ -228,13 +227,11 @@ const OrderShow: React.FC<OrderShowProps> = ({ order }) => {
                                             </div>
                                         </div>
 
-                                        {/* عرض الخيارات المخصصة */}
                                         {(item.color || item.customizations || item.uploadedFiles) && (
                                             <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                                                 <h4 className="font-medium text-gray-900 mb-3">تفاصيل التخصيص:</h4>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
 
-                                                    {/* اللون التقليدي */}
                                                     {item.color && (
                                                         <div className="flex items-center gap-2">
                                                             <span className="font-medium text-gray-700">اللون:</span>
@@ -248,7 +245,6 @@ const OrderShow: React.FC<OrderShowProps> = ({ order }) => {
                                                         </div>
                                                     )}
 
-                                                    {/* الخيارات المخصصة الجديدة */}
                                                     {item.customizations && Object.entries(item.customizations).map(([fieldName, customization]) => {
                                                         const custom = customization as any;
                                                         if (!custom || !custom.label) return null;
@@ -275,7 +271,6 @@ const OrderShow: React.FC<OrderShowProps> = ({ order }) => {
                                                         );
                                                     })}
 
-                                                    {/* الملفات المرفوعة */}
                                                     {item.uploadedFiles && item.uploadedFiles.length > 0 && (
                                                         <div className="md:col-span-2">
                                                             <span className="font-medium text-gray-700">الملفات المرفوعة:</span>
@@ -327,6 +322,8 @@ const OrderShow: React.FC<OrderShowProps> = ({ order }) => {
                                         value={newStatus}
                                         onChange={(e) => setNewStatus(e.target.value as any)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        title="اختر حالة الطلب"
+                                        aria-label="حالة الطلب"
                                     >
                                         <option value="pending">قيد الانتظار</option>
                                         <option value="confirmed">مؤكد</option>

@@ -9,8 +9,6 @@ import { FaTrash, FaWhatsapp } from 'react-icons/fa';
 const CartIndex: React.FC = () => {
     const items = useSelector((state: RootState) => state.cart.items);
     const dispatch = useDispatch();
-
-    // دالة للحصول على الكمية الصحيحة (من customizations أو من item.quantity)
     const getActualQuantity = (item: CartItem): number => {
         if (item.customizations?.quantity?.value) {
             return Number(item.customizations.quantity.value) || item.quantity;
@@ -35,21 +33,15 @@ const CartIndex: React.FC = () => {
         cart_items: items as any
     });
 
-    // مزامنة بيانات السلة عند تغيير العناصر
     useEffect(() => {
         syncCartData();
-
         const newTotalItems = items.reduce((sum: number, item: CartItem) => sum + getActualQuantity(item), 0);
-
-        // تحديث بيانات النموذج عند تغيير العناصر أو المجموع
         setData(prevData => ({
             ...prevData,
             total_amount: total,
             total_items: newTotalItems,
             cart_items: items as any
         }));
-
-        console.log('Cart updated:', { total, totalItems: newTotalItems, itemsCount: items.length });
     }, [items, total]);
 
     const handleSendWhatsapp = () => {
@@ -57,15 +49,11 @@ const CartIndex: React.FC = () => {
             const actualQuantity = getActualQuantity(i);
             let details = `${i.name} - ${actualQuantity} قطعة - ${i.price} ريال`;
             let options = [];
-
-            // الخيارات التقليدية
             if (i.colorName) options.push(`اللون: ${i.colorName}`);
             if (i.width && i.height && i.measurementUnit) options.push(`المقاس: ${i.width} × ${i.height} ${i.measurementUnit}`);
             if (i.openingMethod) options.push(`طريقة الفتح: ${i.openingMethod}`);
             if (i.trackType) options.push(`نوع المسار: ${i.trackType}`);
             if (i.liningOption) options.push(`البطانة: ${i.liningOption}`);
-
-            // الخيارات المخصصة الجديدة (تخطي الكمية)
             if (i.customizations) {
                 Object.entries(i.customizations).forEach(([fieldName, customization]) => {
                     const custom = customization as any;
@@ -80,8 +68,6 @@ const CartIndex: React.FC = () => {
                     }
                 });
             }
-
-            // الملفات المرفوعة
             if (i.uploadedFiles && i.uploadedFiles.length > 0) {
                 const fileNames = i.uploadedFiles.map((file: any) => file.name || file).join(', ');
                 options.push(`ملفات مرفقة: ${fileNames}`);
@@ -95,9 +81,6 @@ const CartIndex: React.FC = () => {
 
     const handleSubmitOrder = (e: React.FormEvent) => {
         e.preventDefault();
-
-        console.log('Submitting order with data:', data);
-
         post('/orders', {
             onSuccess: () => {
                 dispatch(clearCart());
@@ -126,17 +109,12 @@ const CartIndex: React.FC = () => {
                                         <div className="text-yellow-600 font-bold mt-1">{item.price} ريال</div>
                                         {(item.color || item.width || item.height || item.openingMethod || item.trackType || item.liningOption || item.customizations) ? (
                                             <div className="mt-3 bg-white rounded-lg shadow-sm p-3 border border-yellow-100 text-sm text-gray-700 space-y-1">
-                                                {/* اللون التقليدي */}
                                                 {item.color && (
                                                     <div><span className="font-bold text-gray-900">اللون:</span> <span style={{ background: item.color }} className="inline-block w-4 h-4 rounded-full border mr-1 align-middle"></span> {item.colorName}</div>
                                                 )}
-
-                                                {/* الأبعاد التقليدية */}
                                                 {item.width && item.height && (
                                                     <div><span className="font-bold text-gray-900">المقاس:</span> {item.width} × {item.height} {item.measurementUnit}</div>
                                                 )}
-
-                                                {/* الخيارات التقليدية */}
                                                 {item.openingMethod && (
                                                     <div><span className="font-bold text-gray-900">طريقة الفتح:</span> {item.openingMethod}</div>
                                                 )}
@@ -146,16 +124,10 @@ const CartIndex: React.FC = () => {
                                                 {item.liningOption && (
                                                     <div><span className="font-bold text-gray-900">البطانة:</span> {item.liningOption}</div>
                                                 )}
-
-                                                {/* الخيارات المخصصة الجديدة */}
                                                 {item.customizations && Object.entries(item.customizations).map(([fieldName, customization]) => {
                                                     const custom = customization as any;
-
                                                     if (!custom || !custom.label) return null;
-
-                                                    // تخطي عرض الكمية المخصصة هنا لأننا نعرضها في العداد
                                                     if (fieldName === 'quantity') return null;
-
                                                     return (
                                                         <div key={fieldName}>
                                                             <span className="font-bold text-gray-900">{custom.label}:</span>
@@ -179,7 +151,6 @@ const CartIndex: React.FC = () => {
                                                     );
                                                 })}
 
-                                                {/* الملفات المرفوعة */}
                                                 {item.uploadedFiles && item.uploadedFiles.length > 0 && (
                                                     <div>
                                                         <span className="font-bold text-gray-900">الملفات المرفوعة:</span>
@@ -235,6 +206,8 @@ const CartIndex: React.FC = () => {
                                     <button
                                         onClick={() => dispatch(removeFromCart(item.cartId || item.id))}
                                         className="text-red-500 ml-0 sm:ml-6 mt-4 sm:mt-0 font-bold hover:underline flex items-center justify-center"
+                                        title="حذف المنتج من السلة"
+                                        aria-label="حذف المنتج من السلة"
                                     >
                                         <FaTrash className="w-5 h-5" />
                                     </button>
@@ -293,6 +266,9 @@ const CartIndex: React.FC = () => {
                                             onChange={(e) => setData('first_name', e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             required
+                                            title="أدخل الاسم الأول"
+                                            aria-label="الاسم الأول"
+                                            placeholder="أدخل الاسم الأول"
                                         />
                                         {errors.first_name && <p className="text-red-500 text-sm mt-1">{errors.first_name}</p>}
                                     </div>
@@ -308,6 +284,9 @@ const CartIndex: React.FC = () => {
                                             onChange={(e) => setData('last_name', e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             required
+                                            title="أدخل الاسم الأخير"
+                                            aria-label="الاسم الأخير"
+                                            placeholder="أدخل الاسم الأخير"
                                         />
                                         {errors.last_name && <p className="text-red-500 text-sm mt-1">{errors.last_name}</p>}
                                     </div>
@@ -323,6 +302,9 @@ const CartIndex: React.FC = () => {
                                             onChange={(e) => setData('email', e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             required
+                                            title="أدخل البريد الإلكتروني"
+                                            aria-label="البريد الإلكتروني"
+                                            placeholder="أدخل البريد الإلكتروني"
                                         />
                                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                                     </div>
@@ -338,6 +320,9 @@ const CartIndex: React.FC = () => {
                                             onChange={(e) => setData('phone', e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             required
+                                            title="أدخل رقم الهاتف"
+                                            aria-label="رقم الهاتف"
+                                            placeholder="أدخل رقم الهاتف"
                                         />
                                         {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
                                     </div>
@@ -353,6 +338,9 @@ const CartIndex: React.FC = () => {
                                             onChange={(e) => setData('city', e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             required
+                                            title="أدخل المدينة"
+                                            aria-label="المدينة"
+                                            placeholder="أدخل المدينة"
                                         />
                                         {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
                                     </div>
@@ -368,6 +356,9 @@ const CartIndex: React.FC = () => {
                                             rows={3}
                                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             required
+                                            title="أدخل العنوان التفصيلي"
+                                            aria-label="العنوان التفصيلي"
+                                            placeholder="أدخل العنوان التفصيلي"
                                         ></textarea>
                                         {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
                                     </div>
@@ -382,7 +373,9 @@ const CartIndex: React.FC = () => {
                                             onChange={(e) => setData('notes', e.target.value)}
                                             rows={2}
                                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            placeholder="أي ملاحظات خاصة بالطلب..."
+                                            title="أدخل ملاحظات إضافية"
+                                            aria-label="ملاحظات إضافية"
+                                            placeholder="أدخل ملاحظات إضافية (اختياري)"
                                         ></textarea>
                                         {errors.notes && <p className="text-red-500 text-sm mt-1">{errors.notes}</p>}
                                     </div>

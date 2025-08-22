@@ -183,7 +183,6 @@ const SubmissionShow: React.FC<SubmissionShowProps> = ({ submission }) => {
                     </a>
                 </div>
 
-                {/* Image Modal */}
                 {selectedImage && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-75">
                         <div className="relative max-w-4xl max-h-full">

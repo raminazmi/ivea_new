@@ -52,7 +52,6 @@ const ApplyJob: React.FC = () => {
                         </h2>
                     </div>
                     
-                    {/* تفاصيل الوظيفة */}
                     <div className="bg-gray-50 rounded-lg p-4 mb-6">
                         <h3 className="text-lg font-semibold text-gray-900 mb-3">تفاصيل الوظيفة</h3>
                         <div className="space-y-2 text-sm text-gray-700">
@@ -68,7 +67,6 @@ const ApplyJob: React.FC = () => {
                     </div>
 
                     <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4 md:space-y-6">
-                        {/* الاسم الأول واسم العائلة */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                             <div>
                                 <label htmlFor="first_name" className="block text-right text-primary-black mb-2 text-sm md:text-base">
@@ -107,7 +105,6 @@ const ApplyJob: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* البريد الإلكتروني ورقم الجوال */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                             <div>
                                 <label htmlFor="email" className="block text-right text-primary-black mb-2 text-sm md:text-base">
@@ -146,7 +143,6 @@ const ApplyJob: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* رسالة تعريفية */}
                         <div>
                             <label htmlFor="cover_letter" className="block text-right text-primary-black mb-2 text-sm md:text-base">
                                 رسالة تعريفية (اختياري)
@@ -164,7 +160,6 @@ const ApplyJob: React.FC = () => {
                             )}
                         </div>
 
-                        {/* السيرة الذاتية */}
                         <div>
                             <label htmlFor="cv_file" className="block text-right text-primary-black mb-2 text-sm md:text-base">
                                 السيرة الذاتية

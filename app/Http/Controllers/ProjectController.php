@@ -32,7 +32,6 @@ class ProjectController extends Controller
 
     public function submitQuiz(Request $request): RedirectResponse
     {
-        \Log::info('submitQuiz request data', $request->all());
         try {
             $validated = $request->validate([
                 'name' => 'nullable|string|max:255',
@@ -51,9 +50,7 @@ class ProjectController extends Controller
                 'images' => 'nullable|array|max:5',
                 'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120'
             ]);
-            \Log::info('submitQuiz validated data', $validated);
 
-            // معالجة الصور
             $imagePaths = [];
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
@@ -63,19 +60,16 @@ class ProjectController extends Controller
             }
 
             $validated['images'] = $imagePaths;
-            \Log::info('submitQuiz image paths', $imagePaths);
 
             $quiz = ProjectQuiz::create($validated);
             return redirect()->back()->with('success', 'تم إرسال بياناتك بنجاح. سيتواصل معك فريقنا قريباً!');
         } catch (\Exception $e) {
-            \Log::error('submitQuiz error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return redirect()->back()->with('error', 'حدث خطأ أثناء إرسال البيانات. يرجى المحاولة مرة أخرى.');
         }
     }
 
     public function submitProject(Request $request): RedirectResponse
     {
-        \Log::info('submitProject request data', $request->all());
         try {
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
@@ -87,7 +81,6 @@ class ProjectController extends Controller
                 'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
                 'space_details' => 'nullable|array'
             ]);
-            \Log::info('submitProject validated data', $validated);
 
             $imagePaths = [];
             if ($request->hasFile('images')) {
@@ -100,11 +93,9 @@ class ProjectController extends Controller
             $validated['images'] = $imagePaths;
 
             $submission = ProjectSubmission::create($validated);
-            \Log::info('submitProject created submission', ['id' => $submission->id]);
 
             return redirect()->back()->with('success', 'تم إرسال مشروعك بنجاح! سنتواصل معك خلال 24 ساعة.');
         } catch (\Exception $e) {
-            \Log::error('submitProject error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return redirect()->back()->with('error', 'حدث خطأ أثناء إرسال المشروع. يرجى المحاولة مرة أخرى.');
         }
     }
@@ -127,7 +118,7 @@ class ProjectController extends Controller
             'finishes' => ['economy' => 600, 'premium' => 1200],
         ];
 
-        $serviceMultiplier = $validated['service_type'] === 'custom' ? 1.0 : 0.6; // خصم للتركيب فقط
+        $serviceMultiplier = $validated['service_type'] === 'custom' ? 1.0 : 0.6;
         $totalEstimate = 0;
 
         foreach ($validated['project_type'] as $type) {

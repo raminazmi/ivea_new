@@ -16,25 +16,21 @@ interface Category {
 
 interface CreateCategoryProps {
     user: any;
-    categories: Category[]; // Main categories for parent selection
+    categories: Category[];
 }
 
 const CreateCategory: React.FC<CreateCategoryProps> = ({ user, categories = [] }) => {
-    // Debug: Log categories
-    console.log('Categories received:', categories);
-
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         description: '',
-        image: '/images/curtain.png', // Fixed default image
+        image: '/images/curtain.png',
         status: 'active',
-        color: '#3B82F6', // Default blue color
-        parent_id: '' // For selecting parent category
+        color: '#3B82F6',
+        parent_id: ''
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Submitting data:', data);
         post('/admin/categories');
     };
 
@@ -55,7 +51,6 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ user, categories = [] }
 
                 <div className="bg-white rounded-lg shadow-md p-6">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Category Type Selection */}
                         <div className="bg-gray-50 p-4 rounded-lg">
                             <h3 className="text-lg font-semibold text-gray-900 mb-3">نوع الفئة</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -73,6 +68,8 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ user, categories = [] }
                                             checked={!data.parent_id}
                                             onChange={() => setData('parent_id', '')}
                                             className="w-4 h-4 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
+                                            title="اختر فئة رئيسية"
+                                            aria-label="فئة رئيسية"
                                         />
                                         <div className="mr-3">
                                             <h4 className="font-semibold">فئة رئيسية</h4>
@@ -103,6 +100,8 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ user, categories = [] }
                                                 }
                                             }}
                                             className="w-4 h-4 text-primary-yellow border-gray-300 focus:ring-primary-yellow"
+                                            title="اختر فئة فرعية"
+                                            aria-label="فئة فرعية"
                                         />
                                         <div className="mr-3">
                                             <h4 className="font-semibold">فئة فرعية</h4>
@@ -130,6 +129,8 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ user, categories = [] }
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-yellow focus:border-transparent"
                                     placeholder={data.parent_id ? "مثال: ستائر الويفي" : "مثال: ستائر"}
                                     required
+                                    title="أدخل اسم الفئة"
+                                    aria-label="اسم الفئة"
                                 />
                                 {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                             </div>
@@ -144,6 +145,8 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ user, categories = [] }
                                         onChange={(e) => setData('parent_id', e.target.value)}
                                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-yellow focus:border-transparent"
                                         required
+                                        title="اختر الفئة الرئيسية"
+                                        aria-label="الفئة الرئيسية"
                                     >
                                         <option value="">اختر الفئة الرئيسية</option>
                                         {categories.map((category) => (
@@ -183,6 +186,8 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ user, categories = [] }
                                 rows={4}
                                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-yellow focus:border-transparent"
                                 placeholder="وصف الفئة..."
+                                title="أدخل وصف الفئة"
+                                aria-label="وصف الفئة"
                             />
                             {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
                         </div>

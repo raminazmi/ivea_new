@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import Breadcrumb from '@/Components/Common/Breadcrumb';
 import ColorSelector from '@/Components/Common/ColorSelector';
 import PriceDisplay from '@/Components/Common/PriceDisplay';
-import DiscountBadge from '@/Components/Common/DiscountBadge';
 import StockStatus from '@/Components/Common/StockStatus';
 import ImageGallery from '@/Components/Common/ImageGallery';
 import ActionButtons from '@/Components/Common/ActionButtons';
@@ -68,11 +67,12 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     const [calculatedArea, setCalculatedArea] = useState<number>(0);
     const [basePrice, setBasePrice] = useState<number>(product.finalPrice || product.price);
     const [dimensions, setDimensions] = useState<{ width: number, height: number }>({
-        width: product.defaultWidth || 150,
-        height: product.defaultHeight || 200
+        width: 1,
+        height: 1
     });
     const [formData, setFormData] = useState<Record<string, any>>({
-        quantity: 1
+        quantity: 1,
+        measurement_unit: 'م'
     });
     const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
     const [inCart, setInCart] = useState(false);
@@ -82,14 +82,10 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     const dispatch = useDispatch();
 
     const customizationFields = product.category?.customization_fields || {};
-    
-    // تحديد نوع الفئة لتخصيص عرض الخيارات
     const categoryName = product.category?.name?.toLowerCase();
     const isCurtainsOrCabinets = categoryName?.includes('ستا') || categoryName?.includes('خزا');
     const isSofaOrWood = categoryName?.includes('كنب') || categoryName?.includes('خشب');
-    
-    // فصل الحقول حسب الأولوية
-    const priorityFields = ['quantity', 'dimensions', 'dimensions_3d']; // الحقول ذات الأولوية للستائر والخزائن
+        const priorityFields = ['quantity', 'dimensions', 'dimensions_3d']; // الحقول ذات الأولوية للستائر والخزائن
     const mainFields: Record<string, any> = {};
     const extraFields: Record<string, any> = {};
     
@@ -118,7 +114,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     const handleCustomColorChange = (color: string) => {
         setCustomColor(color);
         setUseCustomColor(true);
-        setSelectedColor(-1); // إلغاء اختيار الألوان المحددة مسبقاً
+        setSelectedColor(-1);
     };
 
     const getSelectedColorInfo = () => {
@@ -137,76 +133,63 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     };
 
     const handlePriceChange = (price: number, area: number) => {
-        // السعر الذي يأتي من الحاسبة هو السعر الإجمالي مع الكمية
         setCalculatedPrice(price);
         setCalculatedArea(area);
-        // حساب السعر الأساسي للقطعة الواحدة
         const unitPrice = price / (formData.quantity || quantity || 1);
         setBasePrice(unitPrice);
     };
 
     const handleDimensionsChange = (width: number, height: number) => {
         setDimensions({ width, height });
-        // تحديث البيانات في formData للأبعاد
         setFormData(prev => ({
             ...prev,
             dimensions_width: width,
             dimensions_height: height,
-            dimensions_unit: formData.measurement_unit || 'سم'
+            dimensions_unit: formData.measurement_unit || 'م'
         }));
     };
 
     const calculateFinalPrice = () => {
         if (isCurtainsOrCabinets) {
-            // للستائر والخزائن: السعر الأساسي × الكمية
             return basePrice * (formData.quantity || quantity || 1);
         } else if (isSofaOrWood) {
-            // للكنب والخشبيات: السعر العادي × الكمية
             return (product.finalPrice || product.price) * (formData.quantity || quantity || 1);
         } else {
-            // للفئات الأخرى: السعر العادي × الكمية
             return (product.finalPrice || product.price) * (formData.quantity || quantity || 1);
         }
     };
 
     const handleUnitChange = (unit: string) => {
-        const currentUnit = formData.measurement_unit || 'سم';
+        const currentUnit = formData.measurement_unit || 'م';
         
         setFormData(prev => ({
             ...prev,
             measurement_unit: unit
         }));
         
-        // تحويل الأبعاد عند تغيير الوحدة
         if (unit === 'م' && currentUnit === 'سم') {
-            // تحويل من سم إلى م
             const newWidth = dimensions.width / 100;
             const newHeight = dimensions.height / 100;
             setDimensions({ width: newWidth, height: newHeight });
             handleDimensionsChange(newWidth, newHeight);
         } else if (unit === 'سم' && currentUnit === 'م') {
-            // تحويل من م إلى سم
             const newWidth = dimensions.width * 100;
             const newHeight = dimensions.height * 100;
             setDimensions({ width: newWidth, height: newHeight });
             handleDimensionsChange(newWidth, newHeight);
         }
         
-        // إعادة حساب السعر بعد تغيير الوحدة
         setTimeout(() => {
             const finalPrice = calculateFinalPrice();
             setCalculatedPrice(finalPrice);
         }, 100);
     };
 
-    // تحديث الحاسبة عند تغيير وحدة القياس أو الكمية
     useEffect(() => {
         if (isCurtainsOrCabinets) {
-            // إعادة حساب السعر عند تغيير الوحدة أو الكمية
             const finalPrice = calculateFinalPrice();
             setCalculatedPrice(finalPrice);
         } else if (isSofaOrWood) {
-            // إعادة حساب السعر عند تغيير الكمية للكنب والخشبيات
             const finalPrice = calculateFinalPrice();
             setCalculatedPrice(finalPrice);
         }
@@ -218,7 +201,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
             [fieldName]: value
         }));
         
-        // إذا كان التغيير في الكمية، حدث السعر النهائي
         if (fieldName === 'quantity') {
             const finalPrice = calculateFinalPrice();
             setCalculatedPrice(finalPrice);
@@ -265,7 +247,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                     }
                 }
             } catch (error) {
-                console.error('Error uploading files:', error);
             }
         }
     };
@@ -275,10 +256,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     };
 
     const handleAddToCart = () => {
-        // تجميع جميع البيانات المخصصة
         const customizationData: Record<string, any> = {};
-
-        // إضافة جميع قيم الحقول المخصصة مع التسميات
         Object.entries(customizationFields).forEach(([fieldName, field]) => {
             const fieldValue = formData[fieldName];
             const fieldType = (field as any)?.type;
@@ -286,7 +264,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
 
             if (fieldValue !== undefined && fieldValue !== null && fieldValue !== '') {
                 if (fieldType === 'checkbox_multiple' && Array.isArray(fieldValue) && fieldValue.length > 0) {
-                    // للحقول متعددة الاختيار، احفظ القيم والتسميات
                     const options = (field as any)?.options || {};
                     customizationData[fieldName] = {
                         type: fieldType,
@@ -295,7 +272,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                         displayValues: fieldValue.map(val => options[val]).filter(Boolean)
                     };
                 } else if (fieldType === 'select') {
-                    // للحقول المنسدلة، احفظ القيمة والنص المعروض
                     const options = (field as any)?.options || {};
                     customizationData[fieldName] = {
                         type: fieldType,
@@ -304,7 +280,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                         displayValue: options[fieldValue] || fieldValue
                     };
                 } else if (fieldType === 'dimensions') {
-                    // للأبعاد ثنائية
                     const width = formData[`${fieldName}_width`];
                     const height = formData[`${fieldName}_height`];
                     const unit = formData[`${fieldName}_unit`] || ((field as any)?.units?.[0]);
@@ -320,7 +295,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                         };
                     }
                 } else if (fieldType === 'dimensions_3d') {
-                    // للأبعاد ثلاثية
                     const length = formData[`${fieldName}_length`];
                     const width = formData[`${fieldName}_width`];
                     const height = formData[`${fieldName}_height`];
@@ -338,7 +312,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                         };
                     }
                 } else if (fieldType === 'number') {
-                    // للحقول الرقمية
                     const units = (field as any)?.units;
                     customizationData[fieldName] = {
                         type: fieldType,
@@ -347,7 +320,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                         displayValue: `${fieldValue}${units ? ` ${units.join('/')}` : ''}`
                     };
                 } else {
-                    // للحقول الأخرى
                     customizationData[fieldName] = {
                         type: fieldType,
                         label: fieldLabel,
@@ -364,17 +336,14 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
             id: product.id,
             name: product.name,
             price: isCurtainsOrCabinets ? basePrice : (product.finalPrice || product.price), // السعر الأساسي للقطعة الواحدة
-            finalPrice: calculateFinalPrice(), // السعر النهائي مع الكمية
+            finalPrice: calculateFinalPrice(),
             image: product.image,
             quantity: formData.quantity || quantity || 1,
-            // إضافة اللون المختار أو اللون المخصص
             ...(selectedColorInfo && {
                 color: selectedColorInfo.color,
                 colorName: selectedColorInfo.colorName
             }),
-            // إضافة البيانات المخصصة المنظمة
             customizations: customizationData,
-            // إضافة الملفات المرفوعة
             uploadedFiles: uploadedFiles.map(file => ({
                 name: file.name,
                 path: file.path || '',
@@ -383,7 +352,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                 type: file.type || '',
                 uuid: file.uuid
             })),
-            // معرف فريد للعنصر في السلة (للتمييز بين المنتجات المتشابهة بخيارات مختلفة)
             cartId: `${product.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
         };
 
@@ -391,7 +359,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
         setInCart(true);
         setAdded(true);
 
-        // مزامنة بيانات السلة
         syncCartData();
 
         setTimeout(() => {
@@ -443,7 +410,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                             <p className="text-xs md:text-sm text-gray-500">{description}</p>
                         )}
                         {fieldName === 'quantity' ? (
-                            // تصميم خاص للكمية مع أزرار + و -
                             <div className="relative w-full inline-flex items-center bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus-within:border-primary-yellow focus-within:ring-2 focus-within:ring-primary-yellow focus-within:ring-opacity-20 transition-all duration-200">
                                 <button
                                     type="button"
@@ -492,7 +458,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                 </button>
                             </div>
                         ) : (
-                            // تصميم محسن للحقول الرقمية الأخرى
                             <div className="relative inline-flex items-center bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus-within:border-primary-yellow focus-within:ring-2 focus-within:ring-primary-yellow focus-within:ring-opacity-20 transition-all duration-200 max-w-xs">
                                 <button
                                     type="button"
@@ -535,7 +500,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                 </button>
                             </div>
                         )}
-                        {/* عرض وحدة القياس إذا كانت متوفرة */}
                         {units && (
                             <p className="text-xs text-gray-500 mt-1">
                                 الوحدة: {units.join(' أو ')}
@@ -598,7 +562,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                             </p>
                         </div>
 
-                        {/* عرض الملفات المرفوعة */}
                         {uploadedFiles.length > 0 && (
                             <div className="space-y-2">
                                 <h4 className="font-medium text-sm">الملفات المرفوعة:</h4>
@@ -833,7 +796,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         {product.description}
                                     </div>
 
-                                    {/* عرض مميزات المنتج */}
                                     {product.features && product.features.length > 0 && (
                                         <div className="mt-4">
                                             <FeatureList features={product.features} />
@@ -841,7 +803,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     )}
                                 </div>
 
-                                {/* اختيار اللون والكمية للستائر والخزائن */}
                                 {isCurtainsOrCabinets && product.colors && product.colors.length > 0 && (
                                     <div className="space-y-4 md:space-y-6">
                                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
@@ -849,15 +810,12 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         </h3>
                                         
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                                            {/* اختيار اللون */}
                                             <div className="space-y-3">
                                                 <label className="block text-sm md:text-base font-medium text-gray-700">
                                                     اللون
                                                 </label>
                                                 
-                                                {/* الألوان الرئيسية للمنتج */}
                                                 <div className="space-y-4">
-                                                    {/* الألوان من قاعدة البيانات في سطر واحد */}
                                                     <div className="flex flex-wrap items-center gap-3">
                                                         {product.colors.map((color, index) => (
                                                             <label
@@ -891,7 +849,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                             </label>
                                                         ))}
                                                         
-                                                        {/* خيار اللون المخصص */}
                                                         <label
                                                             className="relative cursor-pointer group"
                                                             title="لون مخصص"
@@ -921,7 +878,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                         </label>
                                                     </div>
                                                     
-                                                    {/* عرض أسماء الألوان المختارة */}
                                                     <div className="text-sm text-gray-600">
                                                         {useCustomColor ? (
                                                             <span>اللون المختار: <span className="font-medium">لون مخصص</span></span>
@@ -932,11 +888,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                         )}
                                                     </div>
                                                 </div>
-                                                
-
                                             </div>
                                             
-                                            {/* اختيار الكمية */}
                                             <div className="space-y-3">
                                                 <label className="block text-sm md:text-base font-medium text-gray-700">
                                                     الكمية
@@ -988,7 +941,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        {/* Color Picker للون المخصص */}
                                         {useCustomColor && (
                                             <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
                                                 <div className="space-y-2">
@@ -1021,7 +973,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 )}
 
-                                {/* اختيار اللون والكمية للكنب والخشبيات */}
                                 {isSofaOrWood && product.colors && product.colors.length > 0 && (
                                     <div className="space-y-4 md:space-y-6">
                                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
@@ -1035,9 +986,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                     اللون
                                                 </label>
                                                 
-                                                {/* الألوان الرئيسية للمنتج */}
                                                 <div className="space-y-4">
-                                                    {/* الألوان من قاعدة البيانات في سطر واحد */}
                                                     <div className="flex flex-wrap items-center gap-3">
                                                         {product.colors.map((color, index) => (
                                                             <label
@@ -1071,7 +1020,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                             </label>
                                                         ))}
                                                         
-                                                        {/* خيار اللون المخصص */}
                                                         <label
                                                             className="relative cursor-pointer group"
                                                             title="لون مخصص"
@@ -1101,7 +1049,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                         </label>
                                                     </div>
                                                     
-                                                    {/* عرض أسماء الألوان المختارة */}
                                                     <div className="text-sm text-gray-600">
                                                         {useCustomColor ? (
                                                             <span>اللون المختار: <span className="font-medium">لون مخصص</span></span>
@@ -1114,7 +1061,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                 </div>
                                             </div>
                                             
-                                            {/* اختيار الكمية */}
                                             <div className="space-y-3">
                                                 <label className="block text-sm md:text-base font-medium text-gray-700">
                                                     الكمية
@@ -1167,7 +1113,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                             </div>
                                         </div>
                                         
-                                        {/* Color Picker للون المخصص */}
                                         {useCustomColor && (
                                             <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
                                                 <div className="space-y-2">
@@ -1200,7 +1145,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 )}
 
-                                {/* اختيار اللون للفئات الأخرى */}
                                 {!isCurtainsOrCabinets && !isSofaOrWood && product.colors && product.colors.length > 0 && (
                                     <div className="space-y-3 md:space-y-4">
                                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
@@ -1215,17 +1159,14 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 )}
 
-                                {/* الحقول الأساسية للستائر والخزائن (الأبعاد فقط) */}
                                 {isCurtainsOrCabinets && Object.keys(mainFields).length > 0 && (
                                     <div className="space-y-4 md:space-y-6">
                                         <div className="space-y-6">
-                                            {/* الصف الأول: وحدة القياس */}
                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                                                 {Object.entries(mainFields).map(([fieldName, field]) => {
                                                     const fieldType = (field as any)?.type;
                                                     const isQuantity = fieldName === 'quantity' || (field as any)?.label?.includes('كمية');
                                                     
-                                                    // تخطي حقل الكمية لأنه موجود مع الألوان
                                                     if (isQuantity) {
                                                         return null;
                                                     }
@@ -1233,7 +1174,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                     return null;
                                                 })}
                                                 
-                                                {/* حقل وحدة القياس */}
                                                 {Object.entries(mainFields).some(([fieldName, field]) => {
                                                     const fieldType = (field as any)?.type;
                                                     return ['dimensions', 'dimensions_3d'].includes(fieldType) && (field as any)?.units;
@@ -1244,34 +1184,32 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                                وحدة القياس <span className="text-red-500">*</span>
                                                             </label>
                                                             <select
-                                                                value={formData['measurement_unit'] || 'سم'}
+                                                                value={formData['measurement_unit'] || 'م'}
                                                                 onChange={(e) => handleUnitChange(e.target.value)}
                                                                 className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
                                                                 title="اختر وحدة القياس"
                                                             >
-                                                                <option value="سم">سم</option>
                                                                 <option value="م">م</option>
+                                                                <option value="سم">سم</option>
                                                             </select>
                                                         </div>
                                                     </div>
                                                 )}
                                             </div>
                                             
-                                            {/* حاسبة الأبعاد والأسعار - تظهر فقط للستائر والخزائن */}
                                             <div className="lg:col-span-2">
                                                 <DimensionPriceCalculator
                                                     key={`${product.id}-${formData.measurement_unit}-${formData.quantity || quantity}`}
                                                     productId={product.id}
                                                     defaultWidth={dimensions.width}
                                                     defaultHeight={dimensions.height}
-                                                    minWidth={formData.measurement_unit === 'م' ? 0.5 : 50}
-                                                    maxWidth={formData.measurement_unit === 'م' ? 5 : 500}
-                                                    minHeight={formData.measurement_unit === 'م' ? 0.5 : 50}
-                                                    maxHeight={formData.measurement_unit === 'م' ? 4 : 400}
-                                                    pricingMethod="area_based"
+                                                    minWidth={formData.measurement_unit === 'م' ? 1 : 100}
+                                                    maxWidth={formData.measurement_unit === 'م' ? 20 : 2000}
+                                                    minHeight={formData.measurement_unit === 'م' ? 1 : 100}
+                                                    maxHeight={formData.measurement_unit === 'م' ? 20 : 2000}
                                                     basePrice={product.price}
-                                                    pricePerSqm={50}
-                                                    unit={formData.measurement_unit || 'سم'}
+                                                    discount={product.discount}
+                                                    unit={formData.measurement_unit || 'م'}
                                                     quantity={formData.quantity || quantity || 1}
                                                     onPriceChange={handlePriceChange}
                                                     onDimensionsChange={handleDimensionsChange}
@@ -1281,7 +1219,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 )}
 
-                                {/* زر عرض المزيد مع تحسينات UI/UX وأيقونة متحركة - فقط للستائر والخزائن */}
                                 {isCurtainsOrCabinets && Object.keys(extraFields).length > 0 && (
                                     <div className="mb-4 flex justify-start">
                                         <button
@@ -1308,17 +1245,13 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     .animate-spin-slow { animation: spin-slow 2.5s linear infinite; }
                                 `}</style>
 
-                                {/* خيارات التخصيص الديناميكية */}
-                                {/* للستائر والخزائن: عرض الخيارات الإضافية عند الضغط على الزر */}
                                 {isCurtainsOrCabinets && showMoreOptions && Object.keys(extraFields).length > 0 && (
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                                         {Object.entries(extraFields).map(([fieldName, field]) => {
                                             const fieldType = (field as any)?.type;
 
-                                            // الحقول التي تأخذ العرض الكامل (عمود واحد)
                                             const fullWidthFields = ['dimensions', 'dimensions_3d', 'file_upload'];
 
-                                            // checkbox_multiple للخشبيات (product_options) يأخذ العرض الكامل
                                             const isProductOptionsField = fieldName === 'product_options' && fieldType === 'checkbox_multiple';
 
                                             if (fullWidthFields.includes(fieldType) || isProductOptionsField) {
@@ -1329,7 +1262,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                 );
                                             }
 
-                                            // باقي الحقول تظهر في عمودين
                                             return (
                                                 <div key={fieldName}>
                                                     {renderField(fieldName, field)}
@@ -1339,7 +1271,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 )}
 
-                                {/* للكنب والخشبيات: عرض جميع الخيارات مباشرة (بدون حاسبة الأبعاد) */}
                                 {isSofaOrWood && Object.keys(customizationFields).length > 0 && (
                                     <div className="space-y-4 md:space-y-6">
                                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
@@ -1356,13 +1287,10 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                     const fieldType = (field as any)?.type;
                                                     const fieldLabel = (field as any)?.label;
 
-                                                    // الحقول التي تأخذ العرض الكامل (عمود واحد)
                                                     const fullWidthFields = ['dimensions', 'dimensions_3d', 'file_upload'];
 
-                                                    // checkbox_multiple للخشبيات (product_options) يأخذ العرض الكامل
                                                     const isProductOptionsField = fieldName === 'product_options' && fieldType === 'checkbox_multiple';
 
-                                                    // الحقل الأخير يأخذ العرض الكامل
                                                     const isLastField = index === fieldsArray.length - 1;
 
                                                     if (fullWidthFields.includes(fieldType) || isProductOptionsField || isLastField) {
@@ -1373,7 +1301,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                         );
                                                     }
 
-                                                    // باقي الحقول تظهر في عمودين
                                                     return (
                                                         <div key={fieldName}>
                                                             {renderField(fieldName, field)}
@@ -1385,7 +1312,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 )}
 
-                                {/* للفئات الأخرى: عرض جميع الخيارات مباشرة (بدون حاسبة الأبعاد) */}
                                 {!isCurtainsOrCabinets && !isSofaOrWood && Object.keys(customizationFields).length > 0 && (
                                     <div className="space-y-4 md:space-y-6">
                                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
@@ -1395,10 +1321,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                             {Object.entries(customizationFields).map(([fieldName, field]) => {
                                                 const fieldType = (field as any)?.type;
 
-                                                // الحقول التي تأخذ العرض الكامل (عمود واحد)
                                                 const fullWidthFields = ['dimensions', 'dimensions_3d', 'file_upload'];
 
-                                                // checkbox_multiple للخشبيات (product_options) يأخذ العرض الكامل
                                                 const isProductOptionsField = fieldName === 'product_options' && fieldType === 'checkbox_multiple';
 
                                                 if (fullWidthFields.includes(fieldType) || isProductOptionsField) {
@@ -1409,7 +1333,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                     );
                                                 }
 
-                                                // باقي الحقول تظهر في عمودين
                                                 return (
                                                     <div key={fieldName}>
                                                         {renderField(fieldName, field)}
@@ -1420,14 +1343,19 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     </div>
                                 )}
 
-                                {/* أزرار العمل */}
                                 <div className="pt-4">
-                                    {/* عرض السعر الإجمالي */}
                                     <div className="mb-4 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
                                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-lg sm:text-xl md:text-2xl font-bold text-green-600">
-                                                    {isCurtainsOrCabinets || isSofaOrWood ? calculatedPrice.toFixed(2) : (calculateFinalPrice()).toFixed(2)} ر.س
+                                                <span className="flex items-center justify-center gap-1 text-lg sm:text-xl md:text-2xl font-bold text-green-600">
+                                    <span className="text-xl font-bold text-green-600">
+                                                            {isCurtainsOrCabinets || isSofaOrWood ? calculatedPrice.toFixed(2) : (calculateFinalPrice()).toFixed(2)}
+                                    </span>
+                                    <img
+                                        src="/images/sar-currency(black).svg"
+                                        alt="ريال"
+                                        className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
+                                    />
                                                 </span>
                                                 <span className="text-xs sm:text-sm text-gray-500">
                                                     (السعر الإجمالي)
@@ -1454,7 +1382,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                 </div>
             </div>
 
-            {/* مودال الطلب السريع */}
             <QuickOrderModal
                 isOpen={showQuickOrderModal}
                 onClose={() => setShowQuickOrderModal(false)}
@@ -1469,7 +1396,6 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                         color: getSelectedColorInfo()!.color,
                         colorName: getSelectedColorInfo()!.colorName
                     }),
-                    // تجميع البيانات المخصصة للعرض
                     customizations: Object.entries(customizationFields).reduce((acc, [fieldName, field]) => {
                         const fieldValue = formData[fieldName];
                         const fieldType = (field as any)?.type;

@@ -19,7 +19,6 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({
         lg: 'w-8 h-8'
     };
 
-    // تحديد ما إذا كان اللون فاتح أم غامق لتحديد لون الحدود
     const isLightColor = (hexColor: string) => {
         const hex = hexColor.replace('#', '');
         const r = parseInt(hex.substr(0, 2), 16);

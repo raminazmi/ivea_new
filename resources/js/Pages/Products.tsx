@@ -9,7 +9,10 @@ import ProductPagination from '@/Components/Products/ProductPagination';
 import ActiveFilters from '@/Components/Products/ActiveFilters';
 import DimensionFilter from '@/Components/Products/DimensionFilter';
 import ContactUs from '@/Components/LandingPage/ContactUs';
-import { Dimensions } from '@/Utils/priceCalculator';
+interface Dimensions {
+    width: number;
+    height: number;
+}
 
 interface Product {
     id: number;
@@ -76,7 +79,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
     const [currentPage, setCurrentPage] = useState(products.current_page);
     const [currentFilters, setCurrentFilters] = useState(filters);
     const [activeTab, setActiveTab] = useState(() => {
-        // Set initial active tab based on filters
         if (filters.tab) {
             return filters.tab;
         } else if (filters.main_category) {
@@ -85,7 +87,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
         return 'all';
     });
     const [activeSubTab, setActiveSubTab] = useState(() => {
-        // Set initial active sub tab based on filters
         if (filters.category) {
             return filters.category;
         }
@@ -102,7 +103,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
             setActiveSubTab(filters.category);
         }
 
-        // Update active tab based on filters
         if (filters.tab) {
             setActiveTab(filters.tab);
         } else if (filters.main_category) {
@@ -116,11 +116,11 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
         if (products.data.length > 0) {
             const firstProduct = products.data[0];
             return {
-                width:  100,
-                height:  100
+                width:  1,
+                height:  1
             };
         }
-        return { width: 100, height: 100 };
+        return { width: 1, height: 1 };
     };
     const getDimensionLimits = () => {
         if (products.data.length > 0) {
@@ -144,8 +144,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
     const [dynamicPrices, setDynamicPrices] = useState<Record<number, number>>({});
 
     const dimensionLimits = getDimensionLimits();
-
-    // Create tabs from main categories
     const mainCategories = categories.filter(cat => !cat.parent_id);
     const tabs = [
         { id: 'all', label: 'الكل' },
@@ -200,7 +198,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
 
     const handleClearAllFilters = () => {
         setLoading(true);
-        // Clear all filters and return to main products page
         setCurrentFilters({});
         setCurrentPage(1);
         setActiveTab('all');
@@ -213,17 +210,13 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
     const handleTabChange = (tab: string) => {
         setLoading(true);
         setActiveTab(tab);
-        setActiveSubTab(''); // Reset sub tab when main tab changes
-
-        // If it's a main category tab, filter by that main category and its subcategories
+        setActiveSubTab(''); 
         let newFilters;
         if (tab === 'all') {
             newFilters = { page: 1 };
         } else {
-            // Check if tab is a main category slug
             const mainCategory = categories.find(cat => cat.slug === tab && !cat.parent_id);
             if (mainCategory) {
-                // Get all subcategory IDs for this main category
                 const subcategoryIds = categories
                     .filter(cat => cat.parent_id === mainCategory.id)
                     .map(cat => cat.id);
@@ -234,7 +227,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                     page: 1
                 };
             } else {
-                // Fallback to old tab system
                 newFilters = { ...currentFilters, tab, page: 1 };
             }
         }
@@ -253,7 +245,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
 
         let newFilters;
         if (subTab === '') {
-            // Show all subcategories of the active main category
             const mainCategory = categories.find(cat => cat.slug === activeTab && !cat.parent_id);
             if (mainCategory) {
                 const subcategoryIds = categories
@@ -269,7 +260,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                 newFilters = { ...currentFilters, page: 1 };
             }
         } else {
-            // Filter by specific subcategory
             newFilters = {
                 ...currentFilters,
                 category: subTab,
@@ -332,10 +322,10 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                                     onDimensionChange={handleDimensionChange}
                                     defaultWidth={globalDimensions.width}
                                     defaultHeight={globalDimensions.height}
-                                    minWidth={dimensionLimits.minWidth}
-                                    maxWidth={dimensionLimits.maxWidth}
-                                    minHeight={dimensionLimits.minHeight}
-                                    maxHeight={dimensionLimits.maxHeight}
+                                    minWidth={1}
+                                    maxWidth={20}
+                                    minHeight={1}
+                                    maxHeight={20}
                                 />
                                 {/* <ProductFilters
                                     onFilterChange={handleFilterChange}
@@ -382,7 +372,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                                 </div>
 
                                 <div className="space-y-4 mb-10 relative px-2">
-                                    {/* Main Category Tabs */}
                                     <div className="relative">
                                         <div className="flex justify-center">
                                             <div className="bg-primary-gray py-1.5 px-2 rounded-xl md:rounded-full flex flex-wrap justify-center gap-1 shadow-sm border border-gray-100 max-w-full overflow-x-auto">
@@ -406,7 +395,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                                         </div>
                                     </div>
 
-                                    {/* Sub Category Tabs - Only show when a main category is selected */}
                                     {activeTab !== 'all' && (() => {
                                         const mainCategory = categories.find(cat => cat.slug === activeTab && !cat.parent_id);
                                         if (!mainCategory) return null;
@@ -446,7 +434,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
                                                     </div>
                                                 </div>
                                                 
-                                                {/* Decorative line */}
                                                 <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-16 h-[3px] bg-gradient-to-r from-transparent via-primary-yellow to-transparent"></div>
                                             </div>
                                         );

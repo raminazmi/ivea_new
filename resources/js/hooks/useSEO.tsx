@@ -34,11 +34,7 @@ export const useSEO = () => {
 
     useEffect(() => {
         if (!seo) return;
-
-        // Update document title
         document.title = seo.title;
-
-        // Update meta tags
         const updateMetaTag = (name: string, content: string, property?: string) => {
             const selector = property ? `meta[property="${property}"]` : `meta[name="${name}"]`;
             let meta = document.querySelector(selector) as HTMLMetaElement;
@@ -56,12 +52,9 @@ export const useSEO = () => {
             meta.setAttribute('content', content);
         };
 
-        // Basic meta tags
         updateMetaTag('description', seo.description);
         updateMetaTag('keywords', seo.keywords);
         updateMetaTag('author', seo.author || 'ايڤيا');
-
-        // Open Graph tags
         updateMetaTag('og:title', seo.title, 'og:title');
         updateMetaTag('og:description', seo.description, 'og:description');
         updateMetaTag('og:image', seo.image, 'og:image');
@@ -69,14 +62,11 @@ export const useSEO = () => {
         updateMetaTag('og:type', seo.type, 'og:type');
         updateMetaTag('og:site_name', seo.site_name, 'og:site_name');
         updateMetaTag('og:locale', seo.locale, 'og:locale');
-
-        // Twitter Card tags
         updateMetaTag('twitter:card', 'summary_large_image', 'twitter:card');
         updateMetaTag('twitter:title', seo.title, 'twitter:title');
         updateMetaTag('twitter:description', seo.description, 'twitter:description');
         updateMetaTag('twitter:image', seo.image, 'twitter:image');
 
-        // Article specific tags
         if (seo.published_time) {
             updateMetaTag('article:published_time', seo.published_time, 'article:published_time');
         }
@@ -87,7 +77,6 @@ export const useSEO = () => {
             updateMetaTag('article:author', seo.author, 'article:author');
         }
 
-        // Product specific tags
         if (seo.price) {
             updateMetaTag('product:price:amount', seo.price.toString(), 'product:price:amount');
             updateMetaTag('product:price:currency', seo.currency || 'SAR', 'product:price:currency');
@@ -96,7 +85,6 @@ export const useSEO = () => {
             updateMetaTag('product:availability', seo.availability, 'product:availability');
         }
 
-        // Canonical URL
         let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
         if (!canonical) {
             canonical = document.createElement('link');
@@ -105,7 +93,6 @@ export const useSEO = () => {
         }
         canonical.setAttribute('href', seo.url);
 
-        // hreflang tags for Arabic
         let hreflang = document.querySelector('link[hreflang="ar"]') as HTMLLinkElement;
         if (!hreflang) {
             hreflang = document.createElement('link');
@@ -115,7 +102,6 @@ export const useSEO = () => {
         }
         hreflang.setAttribute('href', seo.url);
 
-        // Update HTML lang attribute
         document.documentElement.setAttribute('lang', 'ar');
         document.documentElement.setAttribute('dir', 'rtl');
 
@@ -123,8 +109,6 @@ export const useSEO = () => {
 
     useEffect(() => {
         if (!structuredData) return;
-
-        // Add structured data (JSON-LD)
         const existingScript = document.querySelector('script[type="application/ld+json"]');
         if (existingScript) {
             existingScript.remove();
@@ -146,7 +130,6 @@ export const useSEO = () => {
     return { seo, structuredData };
 };
 
-// Component wrapper for automatic SEO
 export const SEOWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     useSEO();
     return <>{children}</>;

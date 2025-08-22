@@ -20,8 +20,6 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({
     onCategoryChange
 }) => {
     const mainCategories = categories.filter(cat => !cat.parent_id);
-
-    // Calculate total products count from subcategories only
     const getCategoryProductsCount = (mainCategory: Category) => {
         const subcategories = categories.filter(cat => cat.parent_id === mainCategory.id);
         return subcategories.reduce((total, sub) => total + (sub.products_count || 0), 0);

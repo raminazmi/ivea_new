@@ -61,7 +61,7 @@ const EditJob: React.FC = () => {
                 <h2 className="text-xl font-bold mb-6">تعديل الوظيفة</h2>
                 <input name="title" value={form.title} onChange={handleChange} placeholder="عنوان الوظيفة" className="mb-4 w-full p-2 border rounded" required />
                 <textarea name="description" value={form.description} onChange={handleChange} placeholder="وصف الوظيفة" className="mb-4 w-full p-2 border rounded" required />
-                <select name="type" value={form.type} onChange={handleChange} className="mb-4 w-full p-2 border rounded">
+                <select name="type" value={form.type} onChange={handleChange} className="mb-4 w-full p-2 border rounded" title="اختر نوع الوظيفة" aria-label="نوع الوظيفة">
                     <option value="full-time">دوام كامل</option>
                     <option value="part-time">دوام جزئي</option>
                     <option value="contract">عقد مؤقت</option>
@@ -69,7 +69,7 @@ const EditJob: React.FC = () => {
                 <input name="category" value={form.category} onChange={handleChange} placeholder="الفئة" className="mb-4 w-full p-2 border rounded" required />
                 <input name="location" value={form.location} onChange={handleChange} placeholder="الموقع" className="mb-4 w-full p-2 border rounded" />
                 <input name="salary_range" value={form.salary_range} onChange={handleChange} placeholder="الراتب" className="mb-4 w-full p-2 border rounded" />
-                <select name="status" value={form.status} onChange={handleChange} className="mb-4 w-full p-2 border rounded">
+                <select name="status" value={form.status} onChange={handleChange} className="mb-4 w-full p-2 border rounded" title="اختر حالة الوظيفة" aria-label="حالة الوظيفة">
                     <option value="active">نشط</option>
                     <option value="inactive">غير نشط</option>
                     <option value="closed">مغلق</option>

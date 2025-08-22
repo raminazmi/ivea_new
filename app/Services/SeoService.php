@@ -49,8 +49,6 @@ class SeoService
         $pageConfig = $this->pageConfigs[$page] ?? [];
 
         $seoData = array_merge($this->defaultSeo, $pageConfig, $customData);
-
-        // Set the URL if not provided
         if (!$seoData['url']) {
             $seoData['url'] = $page === 'home' ? $baseUrl : $baseUrl . '/' . $page;
         }

@@ -83,8 +83,6 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
     const handleQuizSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const formData = new FormData();
-
-        // إضافة البيانات النصية
         Object.keys(quizForm.data).forEach(key => {
             if (key === 'images') {
                 quizForm.data.images.forEach((file, index) => {

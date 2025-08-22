@@ -33,7 +33,6 @@ class OrderController extends Controller
             'notes' => 'nullable|string|max:1000'
         ]);
 
-        // معالجة عناصر السلة لضمان حفظ الخيارات المخصصة بشكل صحيح
         $processedCartItems = collect($validated['cart_items'])->map(function ($item) {
             $processedItem = [
                 'id' => $item['id'],
@@ -43,23 +42,19 @@ class OrderController extends Controller
                 'image' => $item['image'] ?? null,
             ];
 
-            // إضافة الألوان إذا كانت موجودة
             if (!empty($item['color'])) {
                 $processedItem['color'] = $item['color'];
                 $processedItem['colorName'] = $item['colorName'] ?? '';
             }
 
-            // إضافة الخيارات المخصصة إذا كانت موجودة
             if (!empty($item['customizations'])) {
                 $processedItem['customizations'] = $item['customizations'];
             }
 
-            // إضافة الملفات المرفوعة إذا كانت موجودة
             if (!empty($item['uploadedFiles'])) {
                 $processedItem['uploadedFiles'] = $item['uploadedFiles'];
             }
 
-            // إضافة معرف السلة الفريد
             if (!empty($item['cartId'])) {
                 $processedItem['cartId'] = $item['cartId'];
             }
@@ -108,7 +103,6 @@ class OrderController extends Controller
             'quantity' => 'required|integer|min:1'
         ]);
 
-        // تحويل المنتج الواحد لصيغة cart_items مع دعم الخيارات المخصصة
         $cartItem = [
             'id' => $validated['product_id'],
             'name' => $validated['product_name'],
@@ -117,27 +111,22 @@ class OrderController extends Controller
             'image' => $validated['product_image'],
         ];
 
-        // إضافة الخيارات المختارة إذا كانت موجودة
         if (!empty($validated['selected_options'])) {
             $options = $validated['selected_options'];
 
-            // إضافة الألوان
             if (!empty($options['color'])) {
                 $cartItem['color'] = $options['color'];
                 $cartItem['colorName'] = $options['colorName'] ?? '';
             }
 
-            // إضافة الخيارات المخصصة
             if (!empty($options['customizations'])) {
                 $cartItem['customizations'] = $options['customizations'];
             }
 
-            // إضافة الملفات المرفوعة
             if (!empty($options['uploadedFiles'])) {
                 $cartItem['uploadedFiles'] = $options['uploadedFiles'];
             }
 
-            // إضافة أي خيارات أخرى (للتوافق مع النظام القديم)
             foreach ($options as $key => $value) {
                 if (!in_array($key, ['color', 'colorName', 'customizations', 'uploadedFiles']) && !empty($value)) {
                     $cartItem[$key] = $value;

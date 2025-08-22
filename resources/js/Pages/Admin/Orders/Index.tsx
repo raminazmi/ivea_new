@@ -139,11 +139,9 @@ const OrdersIndex: React.FC<OrdersIndexProps> = ({ orders, statistics, filters }
     };
 
     const handleDeleteConfirm = () => {
-        console.log('Attempting to delete orders:', selectedOrders);
         router.delete(route('admin.orders.bulk-delete'), {
             data: { order_ids: selectedOrders },
             onSuccess: () => {
-                console.log('Delete successful');
                 setShowDeleteModal(false);
                 setSelectedOrders([]);
                 setToast({
@@ -153,7 +151,6 @@ const OrdersIndex: React.FC<OrdersIndexProps> = ({ orders, statistics, filters }
                 });
             },
             onError: (errors) => {
-                console.error('Delete failed:', errors);
                 setShowDeleteModal(false);
                 setToast({
                     message: 'حدث خطأ أثناء حذف الطلبات',
@@ -241,6 +238,8 @@ const OrdersIndex: React.FC<OrdersIndexProps> = ({ orders, statistics, filters }
                                 value={status}
                                 onChange={(e) => setStatus(e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                title="اختر حالة الطلب"
+                                aria-label="حالة الطلب"
                             >
                                 <option value="">جميع الحالات</option>
                                 <option value="pending">قيد الانتظار</option>
@@ -258,6 +257,8 @@ const OrdersIndex: React.FC<OrdersIndexProps> = ({ orders, statistics, filters }
                                 value={dateFrom}
                                 onChange={(e) => setDateFrom(e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                title="اختر تاريخ البداية"
+                                aria-label="تاريخ البداية"
                             />
                         </div>
                         <div>
@@ -267,6 +268,8 @@ const OrdersIndex: React.FC<OrdersIndexProps> = ({ orders, statistics, filters }
                                 value={dateTo}
                                 onChange={(e) => setDateTo(e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                title="اختر تاريخ النهاية"
+                                aria-label="تاريخ النهاية"
                             />
                         </div>
                         <div className="flex items-end gap-2">
@@ -315,6 +318,8 @@ const OrdersIndex: React.FC<OrdersIndexProps> = ({ orders, statistics, filters }
                                             checked={selectedOrders.length === safeOrders.data.length && safeOrders.data.length > 0}
                                             onChange={(e) => handleSelectAll(e.target.checked)}
                                             className="rounded border-gray-300"
+                                            title="تحديد جميع الطلبات"
+                                            aria-label="تحديد جميع الطلبات"
                                         />
                                     </th>
                                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">رقم الطلب</th>
@@ -335,6 +340,8 @@ const OrdersIndex: React.FC<OrdersIndexProps> = ({ orders, statistics, filters }
                                                 checked={selectedOrders.includes(order.id)}
                                                 onChange={(e) => handleSelectOrder(order.id, e.target.checked)}
                                                 className="rounded border-gray-300"
+                                                title="تحديد الطلب"
+                                                aria-label="تحديد الطلب"
                                             />
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">

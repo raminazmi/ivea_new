@@ -59,8 +59,6 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
 
     const handleRemoveFromCartClick = () => {
         setAdded(false);
-        // يمكن هنا استدعاء دالة حذف من السلة إذا كانت متوفرة
-        // مثال: if (onRemoveFromCart) onRemoveFromCart();
     };
 
     return (

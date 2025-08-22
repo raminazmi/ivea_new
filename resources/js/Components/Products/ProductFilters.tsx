@@ -15,7 +15,7 @@ interface ProductFiltersProps {
     categories?: Category[];
     filterOptions?: any;
     currentFilters?: any;
-    activeCategory?: string; // Currently selected main category
+    activeCategory?: string;
 }
 
 const ProductFilters: React.FC<ProductFiltersProps> = ({

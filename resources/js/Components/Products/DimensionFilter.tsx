@@ -12,22 +12,21 @@ interface DimensionFilterProps {
 
 const DimensionFilter: React.FC<DimensionFilterProps> = ({
     onDimensionChange,
-    defaultWidth = 100,
-    defaultHeight = 100,
-    minWidth = 100,
-    maxWidth = 500,
-    minHeight = 100,
-    maxHeight = 400
+    defaultWidth = 1,
+    defaultHeight = 1,
+    minWidth = 0.5,
+    maxWidth = 20,
+    minHeight = 0.5,
+    maxHeight = 20
 }) => {
     const [width, setWidth] = useState<number>(defaultWidth);
     const [height, setHeight] = useState<number>(defaultHeight);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
-    // Check if device is mobile on mount and resize
     useEffect(() => {
         const checkIsMobile = () => {
-            setIsMobile(window.innerWidth < 768); // md breakpoint
+            setIsMobile(window.innerWidth < 768);
         };
         
         checkIsMobile();
@@ -36,7 +35,6 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
         return () => window.removeEventListener('resize', checkIsMobile);
     }, []);
 
-    // Set initial expanded state based on device type
     useEffect(() => {
         setIsExpanded(!isMobile);
     }, [isMobile]);
@@ -136,19 +134,16 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
                     <div className="mt-4 space-y-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-3">
-                                العرض: {width} سم
+                                العرض: {width} م
                             </label>
 
                             <div className="space-y-2">
                                 <div className="relative">
-                                    {/* Simple ruler like the image */}
                                     <div className="relative top-4 w-full h-4  border-b-4 border-primary-yellow mb-4">
-                                        {/* Ruler markings - vertical lines */}
-                                        {Array.from({ length: Math.floor((maxWidth - minWidth) / 20) }, (_, i) => {
-                                            const value = minWidth + (i * 20);
+                                        {Array.from({ length: Math.floor((maxWidth - minWidth) / 0.5) }, (_, i) => {
+                                            const value = minWidth + (i * 1);
                                             if (value <= maxWidth) {
                                                 const position = ((value - minWidth) / (maxWidth - minWidth)) * 100;
-                                                const isMainMark = value % 50 === 0;
                                                 return (
                                                     <div key={value} className="absolute bottom-0" style={{ right: `${position}%` }}>
                                                         <div className={`bg-gray-600 transform -translate-x-1/2 w-[2px] h-4`}></div>
@@ -159,12 +154,11 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
                                         })}
                                     </div>
 
-                                    {/* Range input */}
                                     <input
                                         type="range"
                                         min={minWidth}
                                         max={maxWidth}
-                                        step="5"
+                                        step="0.1"
                                         value={width}
                                         onChange={(e) => handleWidthChange(Number(e.target.value))}
                                         className="w-full h-10 bg-primary-yellow rounded-lg appearance-none cursor-pointer relative -mt-8 z-10"
@@ -172,7 +166,6 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
                                         title="عرض المنتج"
                                     />
 
-                                    {/* Orange circular indicator like in the image */}
                                     <div
                                         className="absolute bg-primary-yellow -top-2 transform -translate-x-1/2 z-20 pointer-events-none"
                                         style={{ right: `${((width - minWidth) / (maxWidth - minWidth)) * 100}%` }}
@@ -186,8 +179,8 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
                                     value={width}
                                     onChange={(e) => handleWidthChange(Number(e.target.value))}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    aria-label="عرض المنتج بالسم"
-                                    title="عرض المنتج بالسم"
+                                    aria-label="عرض المنتج بالمتر"
+                                    title="عرض المنتج بالمتر"
                                     placeholder="أدخل العرض"
                                 />
                             </div>
@@ -195,19 +188,16 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-3">
-                                الارتفاع: {height} سم
+                                الارتفاع: {height} م
                             </label>
 
                             <div className="space-y-2">
                                 <div className="relative">
-                                    {/* Simple ruler like the image */}
                                     <div className="relative top-4 w-full h-4 border-b-4 border-primary-yellow mb-4">
-                                        {/* Ruler markings - vertical lines */}
-                                        {Array.from({ length: Math.floor((maxHeight - minHeight) / 20) }, (_, i) => {
-                                            const value = minHeight + (i * 20);
+                                        {Array.from({ length: Math.floor((maxHeight - minHeight) / 0.5) }, (_, i) => {
+                                            const value = minHeight + (i * 1);
                                             if (value <= maxHeight) {
                                                 const position = ((value - minHeight) / (maxHeight - minHeight)) * 100;
-                                                const isMainMark = value % 50 === 0;
                                                 return (
                                                     <div key={value} className="absolute bottom-0" style={{ right: `${position}%` }}>
                                                         <div className={`bg-gray-600 transform -translate-x-1/2 w-[2px] h-4`}></div>
@@ -218,12 +208,11 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
                                         })}
                                     </div>
 
-                                    {/* Range input */}
                                     <input
                                         type="range"
                                         min={minHeight}
                                         max={maxHeight}
-                                        step="5"
+                                        step="0.1"
                                         value={height}
                                         onChange={(e) => handleHeightChange(Number(e.target.value))}
                                         className="w-full h-10 bg-primary-yellow rounded-lg cursor-pointer relative -mt-8 z-10"
@@ -231,7 +220,6 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
                                         title="ارتفاع المنتج"
                                     />
 
-                                    {/* Orange circular indicator like in the image */}
                                     <div
                                         className="absolute bg-primary-yellow -top-2 transform -translate-x-1/2 z-20 pointer-events-none"
                                         style={{ right: `${((height - minHeight) / (maxHeight - minHeight)) * 100}%` }}
@@ -245,8 +233,8 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
                                     value={height}
                                     onChange={(e) => handleHeightChange(Number(e.target.value))}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    aria-label="ارتفاع المنتج بالسم"
-                                    title="ارتفاع المنتج بالسم"
+                                    aria-label="ارتفاع المنتج بالمتر"
+                                    title="ارتفاع المنتج بالمتر"
                                     placeholder="أدخل الارتفاع"
                                 />
                             </div>
@@ -256,17 +244,17 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
                             <div className="text-center">
                                 <div className="text-sm text-gray-600 mb-2">المساحة المحسوبة</div>
                                 <div className="text-2xl font-bold text-blue-700 mb-1">
-                                    {((width * height) / 10000).toFixed(2)} م²
+                                    {(width * height).toFixed(2)} م²
                                 </div>
                                 <div className="text-xs text-gray-500">
-                                    {width} سم × {height} سم
+                                    {width} م × {height} م
                                 </div>
                             </div>
 
                             <div className="mt-3 pt-3 border-t border-blue-200">
                                 <div className="flex justify-between items-center text-xs text-blue-600">
-                                    <span>الحد الأدنى: 1.00 م² (100×100 سم)</span>
-                                    <span>الحد الأقصى: {(maxWidth * maxHeight / 10000).toFixed(2)} م²</span>
+                                    <span>الحد الأدنى: 0.25 م² (0.5×0.5 م)</span>
+                                    <span>الحد الأقصى: {(maxWidth * maxHeight).toFixed(2)} م²</span>
                                 </div>
                             </div>
                         </div>

@@ -26,7 +26,6 @@ use App\Http\Controllers\Admin\ToolController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// SEO Routes
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 
@@ -42,33 +41,32 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Contact routes
+// Contact
 Route::get('/contact', [ContactController::class, 'create'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
-// About page
+// About
 Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
 
-// Projects page
+// Projects
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects');
 Route::post('/projects/quiz', [ProjectController::class, 'submitQuiz'])->name('projects.quiz');
 Route::post('/projects/calculate-cost', [ProjectController::class, 'calculateCost'])->name('projects.calculate-cost');
 Route::post('/projects/submit', [ProjectController::class, 'submitProject'])->name('projects.submit');
 Route::get('/api/projects', [ProjectController::class, 'getAll'])->name('api.projects.all');
 
-// Products routes
+// Products
 Route::get('/products', [ProductController::class, 'index'])->name('products');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/products/{id}/options', [ProductController::class, 'options'])->name('products.options');
 Route::post('/products/{id}/calculate-price', [ProductController::class, 'calculatePrice'])->name('products.calculate-price');
 
-// Tools and Guidelines Routes
+// Tools and Guidelines
 Route::get('/tools-and-guidelines', [ToolsAndGuidelinesController::class, 'index'])->name('tools.index');
 Route::get('/tools-and-guidelines/{slug}', [ToolsAndGuidelinesController::class, 'show'])->name('tools.show');
 
-// API Routes for products
 Route::get('/api/products', [ProductController::class, 'getAll'])->name('api.products.all');
 Route::get('/api/products/tab/{tab}', [ProductController::class, 'getByTab'])->name('api.products.by-tab');
 Route::get('/api/products/new', [ProductController::class, 'getNew'])->name('api.products.new');
@@ -77,18 +75,17 @@ Route::get('/api/products/bestsellers', [ProductController::class, 'getBestselle
 Route::get('/api/products/category/{categorySlug}', [ProductController::class, 'getByCategorySlug'])->name('api.products.by-category');
 Route::get('/api/products/filter-options', [ProductController::class, 'getFilterOptionsApi'])->name('api.products.filter-options');
 
-// Jobs routes
+// Jobs
 Route::get('/jobs', [JobController::class, 'index'])->name('jobs');
 Route::get('/jobs/{id}', [JobController::class, 'show'])->name('jobs.show');
 Route::post('/jobs/apply', [JobController::class, 'apply'])->name('jobs.apply');
 Route::get('/jobs/category/{category}', [JobController::class, 'getByCategory'])->name('jobs.by-category');
-Route::get('/jobs/{id}/apply', [JobApplicationController::class, 'showApplyForm'])->name('jobs.apply');
+Route::get('/jobs/{id}/apply', [JobApplicationController::class, 'showApplyForm'])->name('jobs.apply.form');
 Route::post('/jobs/{id}/apply', [JobApplicationController::class, 'store'])->name('jobs.apply.submit');
 
-// Admin routes
+// Admin
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-
     // Products
     Route::resource('products', AdminProductController::class);
     Route::post('products/{id}/tab-settings', [AdminProductController::class, 'updateTabSettings'])->name('products.tab-settings');
@@ -106,7 +103,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Articles
     Route::resource('articles', ArticleController::class);
-    Route::post('/admin/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
 
     // Tools
     Route::resource('tools', ToolController::class);
@@ -146,17 +142,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('orders/{id}', [AdminOrderController::class, 'destroy'])->name('orders.destroy');
 });
 
-// Cart routes
+// Cart
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
 Route::post('/cart/whatsapp', [CartController::class, 'sendToWhatsApp'])->name('cart.whatsapp');
 Route::get('/cart/items', [CartController::class, 'getCartItems'])->name('cart.items');
 
-// File Upload Routes
+// File Upload
 Route::post('/upload-files', [FileUploadController::class, 'upload'])->name('files.upload');
 Route::get('/download-file/{uuid}', [FileUploadController::class, 'download'])->name('files.download');
 
-// Order routes
+// Order
 Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 Route::post('/quick-order', [OrderController::class, 'quickOrder'])->name('orders.quick');
 Route::get('/orders/success', function () {

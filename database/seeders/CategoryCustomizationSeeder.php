@@ -8,14 +8,10 @@ use App\Models\Category;
 
 class CategoryCustomizationSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $categories = Category::all();
         foreach ($categories as $category) {
-            // فئة الستائر (الفئة الرئيسية والفرعية)
             if (
                 stripos($category->name, 'ستائر') !== false ||
                 stripos($category->name, 'ويفي') !== false ||
@@ -81,9 +77,7 @@ class CategoryCustomizationSeeder extends Seeder
                         ]
                     ]
                 ]);
-            }
-            // فئة الكنب (الفئة الرئيسية والفرعية)
-            elseif (
+            } elseif (
                 stripos($category->name, 'كنب') !== false ||
                 stripos($category->name, 'مودرن') !== false ||
                 stripos($category->name, 'كلاسيك') !== false ||
@@ -148,9 +142,7 @@ class CategoryCustomizationSeeder extends Seeder
                         ]
                     ]
                 ]);
-            }
-            // فئة الخزائن (الفئة الرئيسية والفرعية)
-            elseif (
+            } elseif (
                 stripos($category->name, 'خزان') !== false ||
                 stripos($category->name, 'خزائن') !== false ||
                 stripos($category->name, 'ملابس') !== false ||
@@ -246,9 +238,7 @@ class CategoryCustomizationSeeder extends Seeder
                         ]
                     ]
                 ]);
-            }
-            // فئة الخشبيات (الفئة الرئيسية فقط لأنها لا تحتوي على فئات فرعية)
-            elseif (stripos($category->name, 'خشب') !== false) {
+            } elseif (stripos($category->name, 'خشب') !== false) {
                 $category->update([
                     'customization_fields' => [
                         'quantity' => [

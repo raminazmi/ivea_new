@@ -48,7 +48,7 @@ interface QuickOrderModalProps {
             type: string;
             uuid: string;
         }>;
-        [key: string]: any; // للسماح بخصائص إضافية
+        [key: string]: any;
     };
 }
 
@@ -76,7 +76,6 @@ const QuickOrderModal: React.FC<QuickOrderModalProps> = ({
         quantity: selectedOptions.quantity || 1
     });
 
-    // تحديث بيانات النموذج عند تغيير الخيارات المحددة
     useEffect(() => {
         setData(prev => ({
             ...prev,
@@ -113,7 +112,6 @@ const QuickOrderModal: React.FC<QuickOrderModalProps> = ({
                         </button>
                     </div>
 
-                    {/* عرض المنتج */}
                     <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-4">
                             {product.image && (
@@ -125,13 +123,19 @@ const QuickOrderModal: React.FC<QuickOrderModalProps> = ({
                             )}
                             <div className="flex-1">
                                 <h4 className="font-semibold text-gray-800">{product.name}</h4>
-                                <p className="text-yellow-600 font-bold">{product.price} ر.س</p>
+                                <p className="flex items-center gap-1 text-yellow-600 font-bold">
+                                    <span>{product.price}</span>
+                                    <img
+                                        src="/images/sar-currency(black).svg"
+                                        alt="ريال"
+                                        className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
+                                    />
+                                </p>
                             </div>
                         </div>
 
                         {(selectedOptions.color || Object.keys(selectedOptions.customizations || {}).length > 0 || selectedOptions.uploadedFiles?.length) && (
                             <div className="mt-3 bg-white rounded-lg shadow-sm p-3 border border-yellow-100 text-sm text-gray-700 space-y-2">
-                                {/* عرض اللون المختار */}
                                 {selectedOptions.color && (
                                     <div>
                                         <span className="font-bold text-gray-900">اللون:</span>
@@ -143,7 +147,6 @@ const QuickOrderModal: React.FC<QuickOrderModalProps> = ({
                                     </div>
                                 )}
 
-                                {/* عرض التخصيصات */}
                                 {Object.entries(selectedOptions.customizations || {}).map(([key, customization]) => (
                                     <div key={key}>
                                         <span className="font-bold text-gray-900">{customization.label}:</span>
@@ -194,7 +197,6 @@ const QuickOrderModal: React.FC<QuickOrderModalProps> = ({
                                     </div>
                                 ))}
 
-                                {/* عرض الملفات المرفقة العامة */}
                                 {selectedOptions.uploadedFiles && selectedOptions.uploadedFiles.length > 0 && (
                                     <div>
                                         <span className="font-bold text-gray-900">الملفات المرفقة:</span>
@@ -333,8 +335,13 @@ const QuickOrderModal: React.FC<QuickOrderModalProps> = ({
                         <div className="border-t pt-4">
                             <div className="flex justify-between items-center mb-4">
                                 <span className="text-sm text-gray-600">إجمالي الطلب:</span>
-                                <span className="font-bold text-lg text-blue-600">
-                                    {product.price.toFixed(2)} ر.س
+                                <span className="flex items-center gap-1 font-bold text-lg text-blue-600">
+                                    <span>{product.price.toFixed(2)}</span>
+                                    <img
+                                        src="/images/sar-currency(black).svg"
+                                        alt="ريال"
+                                        className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
+                                    />
                                 </span>
                             </div>
                             <div className="flex gap-3">

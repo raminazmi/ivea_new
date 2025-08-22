@@ -93,8 +93,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
         setData('features', data.features.filter((_: string, i: number) => i !== index));
     };
 
-
-
     return (
         <AdminLayout>
             <Head title={isEditing ? "تعديل المنتج" : "إنشاء منتج جديد"} />
@@ -577,113 +575,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                                 <option value="custom">مخصص</option>
                                             </select>
                                             <InputError message={errors.pricing_method} className="mt-2" />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="border-t pt-6">
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">إعدادات الأبعاد</h3>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-4">
-                                            <h4 className="text-md font-medium text-gray-700">الأبعاد الافتراضية</h4>
-                                            <div>
-                                                <InputLabel htmlFor="default_width" value="العرض الافتراضي (سم)" />
-                                                <TextInput
-                                                    id="default_width"
-                                                    type="number"
-                                                    min="50"
-                                                    max="500"
-                                                    className="mt-1 block w-full"
-                                                    value={data.default_width}
-                                                    onChange={(e) => setData('default_width', e.target.value)}
-                                                />
-                                                <p className="text-sm text-gray-500 mt-1">العرض الذي يظهر في البداية للعملاء</p>
-                                                <InputError message={errors.default_width} className="mt-2" />
-                                            </div>
-
-                                            <div>
-                                                <InputLabel htmlFor="default_height" value="الارتفاع الافتراضي (سم)" />
-                                                <TextInput
-                                                    id="default_height"
-                                                    type="number"
-                                                    min="50"
-                                                    max="400"
-                                                    className="mt-1 block w-full"
-                                                    value={data.default_height}
-                                                    onChange={(e) => setData('default_height', e.target.value)}
-                                                />
-                                                <p className="text-sm text-gray-500 mt-1">الارتفاع الذي يظهر في البداية للعملاء</p>
-                                                <InputError message={errors.default_height} className="mt-2" />
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-4">
-                                            <h4 className="text-md font-medium text-gray-700">الحدود المسموحة</h4>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <InputLabel htmlFor="min_width" value="أقل عرض (سم)" />
-                                                    <TextInput
-                                                        id="min_width"
-                                                        type="number"
-                                                        min="10"
-                                                        className="mt-1 block w-full"
-                                                        value={data.min_width}
-                                                        onChange={(e) => setData('min_width', e.target.value)}
-                                                    />
-                                                    <InputError message={errors.min_width} className="mt-2" />
-                                                </div>
-
-                                                <div>
-                                                    <InputLabel htmlFor="max_width" value="أقصى عرض (سم)" />
-                                                    <TextInput
-                                                        id="max_width"
-                                                        type="number"
-                                                        min="50"
-                                                        className="mt-1 block w-full"
-                                                        value={data.max_width}
-                                                        onChange={(e) => setData('max_width', e.target.value)}
-                                                    />
-                                                    <InputError message={errors.max_width} className="mt-2" />
-                                                </div>
-
-                                                <div>
-                                                    <InputLabel htmlFor="min_height" value="أقل ارتفاع (سم)" />
-                                                    <TextInput
-                                                        id="min_height"
-                                                        type="number"
-                                                        min="10"
-                                                        className="mt-1 block w-full"
-                                                        value={data.min_height}
-                                                        onChange={(e) => setData('min_height', e.target.value)}
-                                                    />
-                                                    <InputError message={errors.min_height} className="mt-2" />
-                                                </div>
-
-                                                <div>
-                                                    <InputLabel htmlFor="max_height" value="أقصى ارتفاع (سم)" />
-                                                    <TextInput
-                                                        id="max_height"
-                                                        type="number"
-                                                        min="50"
-                                                        className="mt-1 block w-full"
-                                                        value={data.max_height}
-                                                        onChange={(e) => setData('max_height', e.target.value)}
-                                                    />
-                                                    <InputError message={errors.max_height} className="mt-2" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                        <h4 className="font-medium text-blue-800 mb-2">معاينة التسعير</h4>
-                                        <div className="text-sm text-blue-700">
-                                            <p>السعر الأساسي للأبعاد ({data.default_width}×{data.default_height} سم): <span className="font-bold">{data.base_price || '0'} ريال</span></p>
-                                            <p>المساحة الأساسية: <span className="font-bold">{((parseInt(data.default_width) || 100) * (parseInt(data.default_height) || 100) / 10000).toFixed(2)} م²</span></p>
-                                            {data.price_per_sqm && (
-                                                <p>السعر الإضافي: <span className="font-bold">{data.price_per_sqm} ريال/م²</span></p>
-                                            )}
                                         </div>
                                     </div>
                                 </div>

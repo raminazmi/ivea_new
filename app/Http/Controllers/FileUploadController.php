@@ -12,16 +12,13 @@ class FileUploadController extends Controller
     {
         $request->validate([
             'files' => 'required|array',
-            'files.*' => 'file|max:10240', // 10MB max per file
+            'files.*' => 'file|max:10240',
         ]);
 
         $uploadedFiles = [];
 
         foreach ($request->file('files') as $file) {
-            // توليد اسم فريد للملف
             $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
-
-            // رفع الملف إلى مجلد uploads
             $path = $file->storeAs('uploads/customizations', $fileName, 'public');
 
             $uploadedFiles[] = [
@@ -42,7 +39,6 @@ class FileUploadController extends Controller
 
     public function download($uuid)
     {
-        // البحث عن الملف بناءً على UUID
         $files = Storage::disk('public')->files('uploads/customizations');
 
         foreach ($files as $file) {

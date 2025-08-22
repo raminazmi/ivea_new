@@ -37,7 +37,6 @@ const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
                 setTabStats(stats);
             }
         } catch (error) {
-            console.error('Error fetching tab statistics:', error);
         }
     };
 

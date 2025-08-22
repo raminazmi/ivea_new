@@ -10,13 +10,11 @@ class SimpleCategoriesProductsSeeder extends Seeder
 {
     public function run(): void
     {
-        // Clear existing data safely
         \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Product::truncate();
         Category::truncate();
         \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // Create main categories with subcategories
         $mainCategories = [
             [
                 'name' => 'ستائر',
@@ -79,7 +77,6 @@ class SimpleCategoriesProductsSeeder extends Seeder
         $createdSubcategories = [];
 
         foreach ($mainCategories as $index => $categoryData) {
-            // Create main category
             $mainCategory = Category::create([
                 'name' => $categoryData['name'],
                 'slug' => $categoryData['slug'],
@@ -93,7 +90,6 @@ class SimpleCategoriesProductsSeeder extends Seeder
 
             $createdCategories[] = $mainCategory;
 
-            // Create subcategories
             foreach ($categoryData['subcategories'] as $subIndex => $subCategoryData) {
                 $subcategory = Category::create([
                     'name' => $subCategoryData['name'],
@@ -110,9 +106,7 @@ class SimpleCategoriesProductsSeeder extends Seeder
             }
         }
 
-        // Create products for subcategories - two products per main category
         $products = [
-            // ستائر الويفي - subcategory products
             [
                 'name' => 'ستارة ويفي فاخرة زرقاء',
                 'description' => 'ستارة ويفي فاخرة باللون الأزرق الداكن، مصنوعة من أجود أنواع الأقمشة',
@@ -128,14 +122,13 @@ class SimpleCategoriesProductsSeeder extends Seeder
                 'colors' => ['#1E40AF', '#FFFFFF', '#D1D5DB', '#F59E0B'],
                 'rating' => 5,
                 'tab' => 'curtains',
-                'category_id' => $createdSubcategories[0]->id, // ستائر الويفي
+                'category_id' => $createdSubcategories[0]->id,
                 'images' => [
-                    '/images/products/wave-curtain-blue-1.jpg',
-                    '/images/products/wave-curtain-blue-2.jpg'
+                    '/images/curtain1.png',
+                    '/images/curtain.png'
                 ]
             ],
 
-            // ستائر الإمريكي
             [
                 'name' => 'ستارة أمريكية كلاسيكية',
                 'description' => 'ستارة أمريكية كلاسيكية أنيقة مع تفاصيل منسوجة يدوياً',
@@ -151,14 +144,13 @@ class SimpleCategoriesProductsSeeder extends Seeder
                 'colors' => ['#8B4513', '#F5DEB3', '#FFFFFF', '#D2691E'],
                 'rating' => 4,
                 'tab' => 'curtains',
-                'category_id' => $createdSubcategories[1]->id, // ستائر الإمريكي
+                'category_id' => $createdSubcategories[1]->id,
                 'images' => [
-                    '/images/products/american-curtain-1.jpg',
-                    '/images/products/american-curtain-2.jpg'
+                    '/images/curtain.png',
+                    '/images/curtain1.png'
                 ]
             ],
 
-            // كنب مودرن
             [
                 'name' => 'كنبة مودرن فاخرة',
                 'description' => 'كنبة مودرن فاخرة مريحة بتصميم عصري، مصنوعة من الجلد الطبيعي',
@@ -174,14 +166,13 @@ class SimpleCategoriesProductsSeeder extends Seeder
                 'colors' => ['#2D2D2D', '#FFFFFF', '#C0C0C0', '#708090'],
                 'rating' => 5,
                 'tab' => 'sofas',
-                'category_id' => $createdSubcategories[4]->id, // المودرن
+                'category_id' => $createdSubcategories[4]->id,
                 'images' => [
-                    '/images/products/modern-sofa-1.jpg',
-                    '/images/products/modern-sofa-2.jpg'
+                    '/images/sofa3.png',
+                    '/images/sofa2.png'
                 ]
             ],
 
-            // كنب كلاسيك
             [
                 'name' => 'كنبة كلاسيكية بنية',
                 'description' => 'كنبة كلاسيكية أنيقة باللون البني مع تفاصيل منحوتة تقليدية',
@@ -197,14 +188,13 @@ class SimpleCategoriesProductsSeeder extends Seeder
                 'colors' => ['#8B4513', '#D2B48C', '#F5DEB3', '#000000'],
                 'rating' => 4,
                 'tab' => 'sofas',
-                'category_id' => $createdSubcategories[5]->id, // الكلاسيك
+                'category_id' => $createdSubcategories[5]->id,
                 'images' => [
-                    '/images/products/classic-sofa-brown-1.jpg',
-                    '/images/products/classic-sofa-brown-2.jpg'
+                    '/images/sofa.png',
+                    '/images/sofa2.png'
                 ]
             ],
 
-            // منتجات خشبية متنوعة
             [
                 'name' => 'منتجات خشبية مخصصة',
                 'description' => 'منتجات خشبية متنوعة قابلة للتخصيص - فواصل ديكورية، أرفف جدارية، طاولات وكراسي، ألواح كسوة، أسرة غرف نوم، تسريحات',
@@ -220,7 +210,7 @@ class SimpleCategoriesProductsSeeder extends Seeder
                 'colors' => ['#D2B48C', '#8B4513', '#A0522D', '#DEB887'],
                 'rating' => 5,
                 'tab' => 'wooden',
-                'category_id' => $createdCategories[2]->id, // خشبيات (الفئة الرئيسية)
+                'category_id' => $createdCategories[2]->id,
                 'customization_options' => [
                     'product_types' => [
                         ['value' => 'فاصل ديكوري', 'price_modifier' => 0],
@@ -244,13 +234,11 @@ class SimpleCategoriesProductsSeeder extends Seeder
                     ]
                 ],
                 'images' => [
-                    '/images/products/wooden-custom-1.jpg',
-                    '/images/products/wooden-custom-2.jpg',
-                    '/images/products/wooden-custom-3.jpg'
+                    '/images/door.png',
+                    '/images/building1.png',
+                    '/images/building2.png'
                 ]
             ],
-
-            // خزائن ملابس
             [
                 'name' => 'خزانة ملابس عصرية',
                 'description' => 'خزانة ملابس عصرية مع مرآة ووحدات تخزين متعددة',
@@ -266,14 +254,12 @@ class SimpleCategoriesProductsSeeder extends Seeder
                 'colors' => ['#FFFFFF', '#F5F5DC', '#D3D3D3', '#696969'],
                 'rating' => 4,
                 'tab' => 'cabinets',
-                'category_id' => $createdSubcategories[7]->id, // خزائن ملابس
+                'category_id' => $createdSubcategories[7]->id,
                 'images' => [
-                    '/images/products/wardrobe-modern-1.jpg',
-                    '/images/products/wardrobe-modern-2.jpg'
+                    '/images/treasury.png',
+                    '/images/building3.png'
                 ]
             ],
-
-            // خزائن تخزين عامة
             [
                 'name' => 'خزانة تخزين عامة عملية',
                 'description' => 'خزانة تخزين عامة عملية مع أرفف متحركة وأدراج، مثالية لتنظيم المساحات',
@@ -289,14 +275,12 @@ class SimpleCategoriesProductsSeeder extends Seeder
                 'colors' => ['#F5F5DC', '#FFFFFF', '#D3D3D3', '#696969'],
                 'rating' => 4,
                 'tab' => 'cabinets',
-                'category_id' => $createdSubcategories[8]->id, // خزائن تخزين عامة
+                'category_id' => $createdSubcategories[8]->id,
                 'images' => [
-                    '/images/products/general-storage-cabinet-1.jpg',
-                    '/images/products/general-storage-cabinet-2.jpg'
+                    '/images/treasury.png',
+                    '/images/building4.png'
                 ]
             ],
-
-            // خزائن أحذية
             [
                 'name' => 'خزانة أحذية أنيقة',
                 'description' => 'خزانة أحذية أنيقة مع أرفف قابلة للتعديل ومساحة لتخزين جميع أنواع الأحذية',
@@ -312,14 +296,12 @@ class SimpleCategoriesProductsSeeder extends Seeder
                 'colors' => ['#8B4513', '#FFFFFF', '#D2B48C', '#696969'],
                 'rating' => 4,
                 'tab' => 'cabinets',
-                'category_id' => $createdSubcategories[9]->id, // خزائن أحذية
+                'category_id' => $createdSubcategories[9]->id,
                 'images' => [
-                    '/images/products/shoe-cabinet-elegant-1.jpg',
-                    '/images/products/shoe-cabinet-elegant-2.jpg'
+                    '/images/treasury.png',
+                    '/images/building1.png'
                 ]
             ],
-
-            // خزائن كتب أو عرض
             [
                 'name' => 'خزانة كتب وعرض فاخرة',
                 'description' => 'خزانة كتب وعرض فاخرة مع أرفف زجاجية وإضاءة داخلية لعرض الكتب والمقتنيات',
@@ -335,14 +317,12 @@ class SimpleCategoriesProductsSeeder extends Seeder
                 'colors' => ['#8B4513', '#F5F5DC', '#FFFFFF', '#D2B48C'],
                 'rating' => 5,
                 'tab' => 'cabinets',
-                'category_id' => $createdSubcategories[10]->id, // خزائن كتب أو عرض
+                'category_id' => $createdSubcategories[10]->id,
                 'images' => [
-                    '/images/products/book-display-cabinet-1.jpg',
-                    '/images/products/book-display-cabinet-2.jpg'
+                    '/images/treasury.png',
+                    '/images/building2.png'
                 ]
             ],
-
-            // خزائن أطفال
             [
                 'name' => 'خزانة أطفال ملونة',
                 'description' => 'خزانة أطفال ملونة وآمنة مع تصميم مرح وألوان زاهية، مثالية لغرف الأطفال',
@@ -358,22 +338,18 @@ class SimpleCategoriesProductsSeeder extends Seeder
                 'colors' => ['#FF69B4', '#87CEEB', '#98FB98', '#FFD700'],
                 'rating' => 5,
                 'tab' => 'cabinets',
-                'category_id' => $createdSubcategories[11]->id, // خزائن أطفال
+                'category_id' => $createdSubcategories[11]->id,
                 'images' => [
-                    '/images/products/children-cabinet-colorful-1.jpg',
-                    '/images/products/children-cabinet-colorful-2.jpg'
+                    '/images/treasury.png',
+                    '/images/building3.png'
                 ]
             ]
         ];
 
         foreach ($products as $productData) {
-            // Add features to each product
             $productData['features'] = $this->getRandomFeatures();
             Product::create($productData);
         }
-
-        echo 'الفئات الرئيسية والفرعية: ستائر، كنب، خشبيات (منتج واحد بخيارات متعددة)، خزائن مع فئاتها الفرعية تم إنشاؤها بنجاح!' . PHP_EOL;
-        echo 'تم إنشاء ' . count($products) . ' منتج!' . PHP_EOL;
     }
 
     private function getRandomFeatures(): array

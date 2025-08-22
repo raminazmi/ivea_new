@@ -180,10 +180,10 @@ const ProductDetail: React.FC<ProductDetailProps> = React.memo(({ product, relat
                                                 className="relative group"
                                                 title={product.colorNames?.[index] || `اللون ${index + 1}`}
                                             >
-                                                <div
-                                                    className="w-8 h-8 rounded-full border-2 border-gray-300 shadow-md transition-all duration-200 hover:scale-105"
-                                                    style={{ backgroundColor: color }}
-                                                />
+                                                                                                 <div
+                                                     className="w-8 h-8 rounded-full border-2 border-gray-300 shadow-md transition-all duration-200 hover:scale-105 cursor-pointer"
+                                                     style={{ backgroundColor: color }}
+                                                 />
                                                 <span className="block text-xs text-gray-600 mt-1 text-center">
                                                     {product.colorNames?.[index] || `اللون ${index + 1}`}
                                                 </span>
@@ -207,19 +207,18 @@ const ProductDetail: React.FC<ProductDetailProps> = React.memo(({ product, relat
                                     productId={product.id}
                                     defaultWidth={product.defaultWidth || 150}
                                     defaultHeight={product.defaultHeight || 200}
-                                    minWidth={product.minWidth || 50}
+                                    minWidth={product.minWidth}
                                     maxWidth={product.maxWidth || 500}
                                     minHeight={product.minHeight || 50}
                                     maxHeight={product.maxHeight || 400}
-                                    pricingMethod={product.pricingMethod}
+                                    discount={product.discount}
                                     basePrice={product.basePrice || product.price}
-                                    pricePerSqm={product.pricePer_sqm || 50}
+                                                                         unit="سم"
                                     onPriceChange={handlePriceChange}
                                     onDimensionsChange={handleDimensionsChange}
                                 />
                             )}
 
-                            {/* الأزرار الأصلية */}
                             <ActionButtons
                                 onAddToCart={handleAddToCart}
                                 onQuickOrder={handleQuickOrder}

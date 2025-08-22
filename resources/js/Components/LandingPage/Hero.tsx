@@ -200,15 +200,10 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
         { name: 'MISSONI HOME', image: '/images/missoni.png' },
     ];
 
-    // Swiper handles slide state and navigation
-
-    // Generate category link with subcategory IDs
     const getCategoryLink = (categorySlug: string) => {
-        // Find the main category by slug
         const mainCategory = dbCategories.find((cat: Category) => cat.slug === categorySlug && !cat.parent_id);
 
         if (mainCategory) {
-            // Get all subcategory IDs for this main category
             const subcategoryIds = dbCategories
                 .filter((cat: Category) => cat.parent_id === mainCategory.id)
                 .map((cat: Category) => cat.id);
@@ -218,8 +213,6 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                 return `/products?main_category=${categorySlug}&${subcategoryParams}`;
             }
         }
-
-        // Fallback to just main_category if no subcategories found
         return `/products?main_category=${categorySlug}`;
     };
 

@@ -192,7 +192,6 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
 
     const renderQuizzesTable = () => (
         <div className="overflow-x-auto">
-            {/* تعريف القواميس للتعريب */}
             {(() => {
 
                 return (
@@ -475,7 +474,6 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
                     </div>
                 </div>
 
-                {/* Filters */}
                 <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1">
@@ -518,7 +516,6 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
                     </div>
                 </div>
 
-                {/* Tabs */}
                 <div className="bg-white rounded-lg shadow-sm">
                     <div className="border-b border-gray-200">
                         <nav className="-mb-px flex space-x-8 px-6" aria-label="التبويبات">
@@ -543,7 +540,6 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
                         </nav>
                     </div>
 
-                    {/* Bulk Actions */}
                     {selectedItems.length > 0 && (
                         <div className="px-6 py-3 bg-blue-50 border-b border-blue-200">
                             <div className="flex items-center justify-between">
@@ -562,12 +558,10 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
                         </div>
                     )}
 
-                    {/* Content */}
                     <div className="p-6">
                         {activeTab === 'quizzes' ? renderQuizzesTable() : renderSubmissionsTable()}
                     </div>
 
-                    {/* Pagination */}
                     {((activeTab === 'quizzes' && quizzes.last_page > 1) || (activeTab === 'submissions' && submissions.last_page > 1)) && (
                         <div className="px-6 py-3 border-t border-gray-200">
                             <div className="flex items-center justify-between">
@@ -576,14 +570,12 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
                                     {activeTab === 'quizzes' ? quizzes.last_page : submissions.last_page}
                                 </div>
                                 <div className="flex gap-2">
-                                    {/* يمكن إضافة أزرار التنقل بين الصفحات هنا */}
                                 </div>
                             </div>
                         </div>
                     )}
                 </div>
 
-                {/* Delete Confirmation Modal */}
                 <ConfirmModal
                     isOpen={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
@@ -595,7 +587,6 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
                     type="danger"
                 />
 
-                {/* Toast */}
                 {toast.isVisible && (
                     <Toast
                         message={toast.message}

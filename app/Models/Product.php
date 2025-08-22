@@ -28,7 +28,6 @@ class Product extends Model
         'stock',
         'sku',
         'weight',
-        'dimensions',
         'featured',
         'is_offer',
         'is_bestseller',
@@ -38,21 +37,7 @@ class Product extends Model
         'measurement_units',
         'opening_methods',
         'track_types',
-        'lining_options',
-        'min_width',
-        'max_width',
-        'min_height',
-        'max_height',
-        'default_width',
-        'default_height',
-        'fabric_reduction',
-        'coverage_increase',
-        'base_price',
-        'price_per_sqm',
-        'min_price',
-        'max_price',
-        'pricing_method',
-        'price_modifiers'
+        'lining_options'
     ];
 
     protected $casts = [
@@ -62,7 +47,6 @@ class Product extends Model
         'colors' => 'array',
         'color_names' => 'array',
         'images' => 'array',
-        'dimensions' => 'array',
         'specifications' => 'array',
         'features' => 'array',
         'stock' => 'integer',
@@ -77,19 +61,7 @@ class Product extends Model
         'opening_methods' => 'array',
         'track_types' => 'array',
         'lining_options' => 'array',
-        'min_width' => 'decimal:3',
-        'max_width' => 'decimal:3',
-        'min_height' => 'decimal:3',
-        'max_height' => 'decimal:3',
-        'default_width' => 'decimal:2',
-        'default_height' => 'decimal:2',
-        'fabric_reduction' => 'decimal:2',
-        'coverage_increase' => 'decimal:2',
-        'base_price' => 'decimal:2',
-        'price_per_sqm' => 'decimal:2',
-        'min_price' => 'decimal:2',
-        'max_price' => 'decimal:2',
-        'price_modifiers' => 'array'
+
     ];
 
     public function category()
@@ -218,7 +190,6 @@ class Product extends Model
         $colors = $this->attributes['colors'] ?? null;
 
         if ($colors) {
-            // إذا كان JSON string، قم بفك تشفيره
             if (is_string($colors)) {
                 $colors = json_decode($colors, true);
             }
@@ -227,14 +198,11 @@ class Product extends Model
                 return $colors;
             }
         }
-
-        // ألوان افتراضية كـ fallback
         return ['#FFA500', '#87CEEB', '#DDA0DD', '#9370DB'];
     }
 
     public function getColorNamesAttribute()
     {
-        // أولاً، تحقق من وجود أسماء ألوان في قاعدة البيانات
         if (isset($this->attributes['color_names'])) {
             $colorNames = $this->attributes['color_names'];
 
@@ -247,7 +215,6 @@ class Product extends Model
             }
         }
 
-        // إذا لم تكن هناك أسماء ألوان مخزنة، إرجاع أسماء افتراضية بناءً على عدد الألوان
         $colors = $this->product_colors;
         $defaultNames = [];
 
@@ -272,7 +239,6 @@ class Product extends Model
             }
         }
 
-        // Fallback to default features if none are set
         return [
             'تمنع ما يقارب 90 - 96% من الأشعة فوق البنفسجية الضارة',
             'شديدة التحمل و سهلة التنظيف',

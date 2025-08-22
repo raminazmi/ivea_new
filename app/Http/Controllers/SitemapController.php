@@ -27,7 +27,6 @@ class SitemapController extends Controller
         $lastmod = now()->toAtomString();
 
         $urls = [
-            // Static pages
             [
                 'url' => $baseUrl,
                 'lastmod' => $lastmod,
@@ -60,7 +59,6 @@ class SitemapController extends Controller
             ]
         ];
 
-        // Add categories
         $categories = Category::active()->get();
         foreach ($categories as $category) {
             $urls[] = [
@@ -71,7 +69,6 @@ class SitemapController extends Controller
             ];
         }
 
-        // Add products
         $products = Product::active()->get();
         foreach ($products as $product) {
             $urls[] = [
@@ -82,7 +79,6 @@ class SitemapController extends Controller
             ];
         }
 
-        // Add articles if exists
         if (class_exists(Article::class)) {
             try {
                 $articles = Article::all();
@@ -95,11 +91,9 @@ class SitemapController extends Controller
                     ];
                 }
             } catch (\Exception $e) {
-                // Skip articles if there's an error
             }
         }
 
-        // Add projects if exists
         if (class_exists(Project::class)) {
             try {
                 $projects = Project::all();
@@ -112,7 +106,6 @@ class SitemapController extends Controller
                     ];
                 }
             } catch (\Exception $e) {
-                // Skip projects if there's an error
             }
         }
 

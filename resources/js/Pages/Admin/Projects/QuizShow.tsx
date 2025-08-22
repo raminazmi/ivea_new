@@ -34,7 +34,6 @@ const QuizShow: React.FC<QuizShowProps> = ({ quiz }) => {
         });
     };
 
-    // تعريف القواميس للتعريب
     const SPACE_TYPES: Record<string, string> = {
         residential: 'سكني',
         offices: 'مكاتب',

@@ -40,7 +40,6 @@ class HomeController extends Controller
             ];
         });
 
-        // إذا لم تكن هناك مقالات، استخدم بيانات تجريبية
         if ($latestArticles->isEmpty()) {
             $latestArticles = collect([
                 [

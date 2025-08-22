@@ -84,6 +84,9 @@ const QuizEdit: React.FC<QuizEditProps> = ({ quiz, spaceTypes, productNeeds, pre
                                         onChange={(e) => setData('name', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         required
+                                        title="أدخل الاسم"
+                                        aria-label="الاسم"
+                                        placeholder="أدخل الاسم"
                                     />
                                     {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                                 </div>
@@ -95,6 +98,9 @@ const QuizEdit: React.FC<QuizEditProps> = ({ quiz, spaceTypes, productNeeds, pre
                                         onChange={(e) => setData('email', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         required
+                                        title="أدخل البريد الإلكتروني"
+                                        aria-label="البريد الإلكتروني"
+                                        placeholder="أدخل البريد الإلكتروني"
                                     />
                                     {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                                 </div>
@@ -106,6 +112,9 @@ const QuizEdit: React.FC<QuizEditProps> = ({ quiz, spaceTypes, productNeeds, pre
                                         onChange={(e) => setData('phone', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         required
+                                        title="أدخل رقم الهاتف"
+                                        aria-label="رقم الهاتف"
+                                        placeholder="أدخل رقم الهاتف"
                                     />
                                     {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                                 </div>
@@ -152,6 +161,9 @@ const QuizEdit: React.FC<QuizEditProps> = ({ quiz, spaceTypes, productNeeds, pre
                                     value={data.space_type_other}
                                     onChange={(e) => setData('space_type_other', e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    title="أدخل نوع المساحة الأخرى"
+                                    aria-label="نوع المساحة الأخرى"
+                                    placeholder="أدخل نوع المساحة الأخرى"
                                 />
                             </div>
                         )}
@@ -183,6 +195,9 @@ const QuizEdit: React.FC<QuizEditProps> = ({ quiz, spaceTypes, productNeeds, pre
                                     value={data.product_other}
                                     onChange={(e) => setData('product_other', e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    title="أدخل احتياجات المنتجات الأخرى"
+                                    aria-label="احتياجات المنتجات الأخرى"
+                                    placeholder="أدخل احتياجات المنتجات الأخرى"
                                 />
                             </div>
                         )}
@@ -214,6 +229,9 @@ const QuizEdit: React.FC<QuizEditProps> = ({ quiz, spaceTypes, productNeeds, pre
                                     value={data.style_other}
                                     onChange={(e) => setData('style_other', e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    title="أدخل الأسلوب الآخر"
+                                    aria-label="الأسلوب الآخر"
+                                    placeholder="أدخل الأسلوب الآخر"
                                 />
                             </div>
                         )}
