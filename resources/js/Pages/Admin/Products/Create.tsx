@@ -25,38 +25,13 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
         discount: product?.discount?.toString() || '',
         image: product?.image || '',
         images: product?.images || [] as string[],
-        rating: product?.rating?.toString() || '',
         tab: product?.tab || 'all',
         category_id: product?.category_id?.toString() || '',
         colors: product?.colors || [] as string[],
-        status: product?.status || 'active',
         stock: product?.stock?.toString() || '',
         sku: product?.sku || '',
         featured: product?.featured || false as boolean,
-        specifications: {
-            material: product?.specifications?.material || '',
-            dimensions: product?.specifications?.dimensions || '',
-            installation: product?.specifications?.installation || ''
-        },
         features: product?.features || [] as string[],
-        weight: product?.weight?.toString() || '',
-        dimensions: {
-            width: product?.dimensions?.width?.toString() || '',
-            height: product?.dimensions?.height?.toString() || '',
-            depth: product?.dimensions?.depth?.toString() || ''
-        },
-        base_price: product?.base_price?.toString() || '',
-        price_per_sqm: product?.price_per_sqm?.toString() || '25',
-        pricing_method: product?.pricing_method || 'area_based',
-        min_price: product?.min_price?.toString() || '',
-        max_price: product?.max_price?.toString() || '',
-        default_width: product?.default_width?.toString() || '100',
-        default_height: product?.default_height?.toString() || '100',
-        min_width: product?.min_width?.toString() || '50',
-        max_width: product?.max_width?.toString() || '500',
-        min_height: product?.min_height?.toString() || '50',
-        max_height: product?.max_height?.toString() || '400',
-        published_at: product?.published_at || ''
     });
 
     const [newColor, setNewColor] = useState('');
@@ -170,7 +145,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                     <InputError message={errors.description} className="mt-2" />
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div>
                                         <InputLabel htmlFor="price" value="السعر" />
                                         <TextInput
@@ -212,24 +187,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                         />
                                         <InputError message={errors.stock} className="mt-2" />
                                     </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="rating" value="التقييم" />
-                                        <TextInput
-                                            id="rating"
-                                            type="number"
-                                            min="0"
-                                            max="5"
-                                            step="0.1"
-                                            className="mt-1 block w-full"
-                                            value={data.rating}
-                                            onChange={(e) => setData('rating', e.target.value)}
-                                        />
-                                        <InputError message={errors.rating} className="mt-2" />
-                                    </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <InputLabel htmlFor="category_id" value="الفئة الفرعية" />
                                         <select
@@ -273,35 +233,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                             <option value="offers">العروض</option>
                                         </select>
                                         <InputError message={errors.tab} className="mt-2" />
-                                    </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="status" value="الحالة" />
-                                        <select
-                                            id="status"
-                                            className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                            value={data.status}
-                                            onChange={(e) => setData('status', e.target.value)}
-                                            title="اختر حالة المنتج"
-                                        >
-                                            <option value="active">نشط</option>
-                                            <option value="inactive">غير نشط</option>
-                                        </select>
-                                        <InputError message={errors.status} className="mt-2" />
-                                    </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="published_at" value="تاريخ النشر (للمنتجات الجديدة)" />
-                                        <TextInput
-                                            id="published_at"
-                                            type="datetime-local"
-                                            className="mt-1 block w-full"
-                                            value={data.published_at}
-                                            onChange={(e) => setData('published_at', e.target.value)}
-                                            title="تاريخ النشر للمنتجات الجديدة"
-                                        />
-                                        <InputError message={errors.published_at} className="mt-2" />
-                                        <p className="mt-1 text-sm text-gray-500">اتركه فارغاً إذا لم يكن منتج جديد</p>
                                     </div>
                                 </div>
 
@@ -391,191 +322,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                                 لم يتم إضافة مميزات بعد. سيتم عرض المميزات الافتراضية للمنتج.
                                             </p>
                                         )}
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div>
-                                        <InputLabel htmlFor="material" value="المادة" />
-                                        <TextInput
-                                            id="material"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={data.specifications.material}
-                                            onChange={(e) => setData('specifications', {
-                                                ...data.specifications,
-                                                material: e.target.value
-                                            })}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="dimensions" value="الأبعاد" />
-                                        <TextInput
-                                            id="dimensions"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={data.specifications.dimensions}
-                                            onChange={(e) => setData('specifications', {
-                                                ...data.specifications,
-                                                dimensions: e.target.value
-                                            })}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="installation" value="التركيب" />
-                                        <TextInput
-                                            id="installation"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={data.specifications.installation}
-                                            onChange={(e) => setData('specifications', {
-                                                ...data.specifications,
-                                                installation: e.target.value
-                                            })}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                                    <div>
-                                        <InputLabel htmlFor="weight" value="الوزن (كجم)" />
-                                        <TextInput
-                                            id="weight"
-                                            type="number"
-                                            step="0.1"
-                                            className="mt-1 block w-full"
-                                            value={data.weight}
-                                            onChange={(e) => setData('weight', e.target.value)}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="width" value="العرض" />
-                                        <TextInput
-                                            id="width"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={data.dimensions.width}
-                                            onChange={(e) => setData('dimensions', {
-                                                ...data.dimensions,
-                                                width: e.target.value
-                                            })}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="height" value="الارتفاع" />
-                                        <TextInput
-                                            id="height"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={data.dimensions.height}
-                                            onChange={(e) => setData('dimensions', {
-                                                ...data.dimensions,
-                                                height: e.target.value
-                                            })}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="depth" value="العمق" />
-                                        <TextInput
-                                            id="depth"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={data.dimensions.depth}
-                                            onChange={(e) => setData('dimensions', {
-                                                ...data.dimensions,
-                                                depth: e.target.value
-                                            })}
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* قسم التسعير الديناميكي */}
-                                <div className="border-t pt-6">
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">إعدادات التسعير الديناميكي</h3>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <InputLabel htmlFor="base_price" value="السعر الأساسي (ريال)" />
-                                            <TextInput
-                                                id="base_price"
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                className="mt-1 block w-full"
-                                                value={data.base_price}
-                                                onChange={(e) => setData('base_price', e.target.value)}
-                                                required
-                                            />
-                                            <p className="text-sm text-gray-500 mt-1">السعر للأبعاد الافتراضية</p>
-                                            <InputError message={errors.base_price} className="mt-2" />
-                                        </div>
-
-                                        <div>
-                                            <InputLabel htmlFor="price_per_sqm" value="السعر لكل متر مربع (ريال)" />
-                                            <TextInput
-                                                id="price_per_sqm"
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                className="mt-1 block w-full"
-                                                value={data.price_per_sqm}
-                                                onChange={(e) => setData('price_per_sqm', e.target.value)}
-                                            />
-                                            <p className="text-sm text-gray-500 mt-1">سعر إضافي لكل متر مربع إضافي</p>
-                                            <InputError message={errors.price_per_sqm} className="mt-2" />
-                                        </div>
-
-                                        <div>
-                                            <InputLabel htmlFor="min_price" value="أقل سعر (ريال)" />
-                                            <TextInput
-                                                id="min_price"
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                className="mt-1 block w-full"
-                                                value={data.min_price}
-                                                onChange={(e) => setData('min_price', e.target.value)}
-                                            />
-                                            <p className="text-sm text-gray-500 mt-1">الحد الأدنى للسعر</p>
-                                            <InputError message={errors.min_price} className="mt-2" />
-                                        </div>
-
-                                        <div>
-                                            <InputLabel htmlFor="max_price" value="أقصى سعر (ريال)" />
-                                            <TextInput
-                                                id="max_price"
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                className="mt-1 block w-full"
-                                                value={data.max_price}
-                                                onChange={(e) => setData('max_price', e.target.value)}
-                                            />
-                                            <p className="text-sm text-gray-500 mt-1">الحد الأقصى للسعر</p>
-                                            <InputError message={errors.max_price} className="mt-2" />
-                                        </div>
-
-                                        <div>
-                                            <InputLabel htmlFor="pricing_method" value="طريقة التسعير" />
-                                            <select
-                                                id="pricing_method"
-                                                className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                                value={data.pricing_method}
-                                                onChange={(e) => setData('pricing_method', e.target.value)}
-                                                title="اختر طريقة التسعير للمنتج"
-                                            >
-                                                <option value="fixed">ثابت</option>
-                                                <option value="area_based">حسب المساحة</option>
-                                                <option value="size_based">حسب الحجم</option>
-                                                <option value="custom">مخصص</option>
-                                            </select>
-                                            <InputError message={errors.pricing_method} className="mt-2" />
-                                        </div>
                                     </div>
                                 </div>
 

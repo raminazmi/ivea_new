@@ -70,31 +70,22 @@ class ProductController extends Controller
             'image' => 'nullable|string',
             'images' => 'nullable|array',
             'images.*' => 'string',
-            'rating' => 'nullable|numeric|min:0|max:5',
             'tab' => 'required|string|in:all,featured,new,bestsellers,offers',
             'category_id' => 'required|exists:categories,id',
             'colors' => 'nullable|array',
             'colors.*' => 'string',
-            'status' => 'required|in:active,inactive',
             'stock' => 'required|integer|min:0',
             'sku' => 'nullable|string|max:255|unique:products,sku',
             'featured' => 'boolean',
-            'specifications' => 'nullable|array',
-            'specifications.material' => 'nullable|string',
-            'specifications.dimensions' => 'nullable|string',
-            'specifications.installation' => 'nullable|string',
             'features' => 'nullable|array',
             'features.*' => 'string',
-            'weight' => 'nullable|numeric|min:0',
-            'published_at' => 'nullable|date',
         ]);
 
         $validated['featured'] = $validated['featured'] ?? false;
         $validated['images'] = $validated['images'] ?? [];
         $validated['colors'] = $validated['colors'] ?? [];
-        $validated['specifications'] = $validated['specifications'] ?? [];
         $validated['features'] = $validated['features'] ?? [];
-
+        $validated['status'] = 'active'; // إضافة تلقائية للحالة
 
         if (empty($validated['image']) && !empty($validated['images'])) {
             $validated['image'] = $validated['images'][0];
@@ -137,23 +128,15 @@ class ProductController extends Controller
             'image' => 'nullable|string',
             'images' => 'nullable|array',
             'images.*' => 'string',
-            'rating' => 'nullable|numeric|min:0|max:5',
             'tab' => 'required|string|in:all,featured,new,bestsellers,offers',
             'category_id' => 'required|exists:categories,id',
             'colors' => 'nullable|array',
             'colors.*' => 'string',
-            'status' => 'required|in:active,inactive',
             'stock' => 'required|integer|min:0',
             'sku' => 'nullable|string|max:255|unique:products,sku,' . $product->id,
             'featured' => 'boolean',
-            'specifications' => 'nullable|array',
-            'specifications.material' => 'nullable|string',
-            'specifications.dimensions' => 'nullable|string',
-            'specifications.installation' => 'nullable|string',
             'features' => 'nullable|array',
             'features.*' => 'string',
-            'weight' => 'nullable|numeric|min:0',
-            'published_at' => 'nullable|date',
         ]);
 
         $product->update($validated);

@@ -106,7 +106,14 @@ const CartIndex: React.FC = () => {
                                     )}
                                     <div className="flex-1 w-full text-center sm:text-start px-4">
                                         <div className="font-semibold text-lg text-gray-800">{item.name}</div>
-                                        <div className="text-yellow-600 font-bold mt-1">{item.price} ريال</div>
+                                        <div className="flex items-center gap-1 mt-1 text-xl font-bold text-gray-800 text-center">
+                                               <span className="text-yellow-600">{item.price}</span>
+                                            <img
+                                                src="/images/sar-currency(black).svg"
+                                                alt="ريال"
+                                                className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
+                                            />
+                                        </div>
                                         {(item.color || item.width || item.height || item.openingMethod || item.trackType || item.liningOption || item.customizations) ? (
                                             <div className="mt-3 bg-white rounded-lg shadow-sm p-3 border border-yellow-100 text-sm text-gray-700 space-y-1">
                                                 {item.color && (
@@ -214,7 +221,16 @@ const CartIndex: React.FC = () => {
                                 </li>
                             ))}
                         </ul>
-                        <div className="mt-8 text-2xl font-bold text-gray-800 text-center">المجموع: <span className="text-yellow-600">{total} ريال</span></div>
+                            <div className="flex items-center gap-1 mt-8 text-2xl font-bold text-gray-800 text-center">
+                                    <p>
+                                        المجموع : <span className="text-yellow-600">{total.toFixed(2)}</span>
+                                    </p>
+                                    <img
+                                        src="/images/sar-currency(black).svg"
+                                        alt="ريال"
+                                        className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
+                                    />
+                            </div>
                         <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center">
                             <button
                                 onClick={() => setShowOrderForm(true)}
@@ -383,7 +399,7 @@ const CartIndex: React.FC = () => {
                                     <div className="border-t pt-4">
                                         <div className="flex justify-between items-center mb-4">
                                             <span className="text-sm text-gray-600">إجمالي الطلب:</span>
-                                            <span className="font-bold text-lg text-blue-600">{total} ريال</span>
+                                            <span className="font-bold text-lg text-blue-600">{total.toFixed(1)} ريال</span>
                                         </div>
                                         <div className="flex gap-3">
                                             <button

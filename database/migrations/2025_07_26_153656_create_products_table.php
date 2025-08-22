@@ -18,7 +18,6 @@ return new class extends Migration
             $table->decimal('discount', 5, 2)->nullable();
             $table->string('image')->nullable();
             $table->json('images')->nullable();
-            $table->decimal('rating', 2, 1)->default(0);
             $table->string('tab')->default('all');
             $table->unsignedBigInteger('category_id');
             $table->json('colors')->nullable();
@@ -30,10 +29,6 @@ return new class extends Migration
             $table->boolean('is_offer')->default(false);
             $table->boolean('is_bestseller')->default(false);
             $table->integer('sales_count')->default(0);
-            $table->timestamp('published_at')->nullable();
-            $table->json('specifications')->nullable();
-            $table->decimal('weight', 8, 2)->nullable();
-            $table->json('dimensions')->nullable();
             $table->json('features')->nullable();
             $table->json('customization_options')->nullable();
             $table->json('measurement_units')->nullable();

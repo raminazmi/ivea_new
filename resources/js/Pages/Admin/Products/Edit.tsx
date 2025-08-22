@@ -20,16 +20,13 @@ interface EditProductProps {
         discount: number;
         image: string;
         images: string[];
-        rating: number;
         tab: string;
         category_id: number;
         colors: string[];
-        status: string;
         stock: number;
         sku: string;
         featured: boolean;
         specifications: {
-            material: string;
             installation: string;
         };
         features: string[];
@@ -48,20 +45,13 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
         discount: product.discount ? product.discount.toString() : '',
         image: product.image || '',
         images: product.images || [],
-        rating: product.rating.toString(),
         tab: product.tab,
         category_id: product.category_id.toString(),
         colors: product.colors || [],
-        status: product.status,
         stock: product.stock.toString(),
         sku: product.sku || '',
         featured: product.featured,
-        specifications: {
-            material: product.specifications?.material || '',
-            installation: product.specifications?.installation || ''
-        },
         features: product.features || [],
-        weight: product.weight ? product.weight.toString() : '',
     });
 
     const [newColor, setNewColor] = useState('');
@@ -213,44 +203,16 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                         <InputError message={errors.stock} className="mt-2" />
                                     </div>
 
-                                        <div>
+                                    <div>
                                             <InputLabel htmlFor="sku" value="رمز المنتج (SKU)" />
-                                            <TextInput
+                                        <TextInput
                                                 id="sku"
                                                 type="text"
-                                                className="mt-1 block w-full"
+                                            className="mt-1 block w-full"
                                                 value={data.sku}
                                                 onChange={(e) => setData('sku', e.target.value)}
                                             />
                                             <InputError message={errors.sku} className="mt-2" />
-                                    </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="rating" value="التقييم" />
-                                        <TextInput
-                                            id="rating"
-                                            type="number"
-                                            min="0"
-                                            max="5"
-                                            step="0.1"
-                                            className="mt-1 block w-full"
-                                            value={data.rating}
-                                            onChange={(e) => setData('rating', e.target.value)}
-                                        />
-                                        <InputError message={errors.rating} className="mt-2" />
-                                </div>
-
-                                    <div>
-                                            <InputLabel htmlFor="weight" value="الوزن (كجم)" />
-                                            <TextInput
-                                                id="weight"
-                                                type="number"
-                                                step="0.1"
-                                                className="mt-1 block w-full"
-                                                value={data.weight}
-                                                onChange={(e) => setData('weight', e.target.value)}
-                                            />
-                                            <InputError message={errors.weight} className="mt-2" />
                                     </div>
 
                                     <div>
@@ -271,23 +233,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                         </select>
                                         <InputError message={errors.tab} className="mt-2" />
                                     </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="status" value="الحالة" />
-                                        <select
-                                            id="status"
-                                            className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                            value={data.status}
-                                            onChange={(e) => setData('status', e.target.value)}
-                                                required
-                                            title="اختر حالة المنتج"
-                                        >
-                                            <option value="active">نشط</option>
-                                            <option value="inactive">غير نشط</option>
-                                        </select>
-                                        <InputError message={errors.status} className="mt-2" />
                                     </div>
-                                </div>
 
                                     <div className="mt-4">
                                         <label className="flex items-center">
@@ -361,39 +307,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                 </div>
 
                                 <div>
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">المواصفات</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <InputLabel htmlFor="material" value="المادة" />
-                                        <TextInput
-                                            id="material"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={data.specifications.material}
-                                            onChange={(e) => setData('specifications', {
-                                                ...data.specifications,
-                                                material: e.target.value
-                                            })}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <InputLabel htmlFor="installation" value="التركيب" />
-                                        <TextInput
-                                            id="installation"
-                                            type="text"
-                                            className="mt-1 block w-full"
-                                            value={data.specifications.installation}
-                                            onChange={(e) => setData('specifications', {
-                                                ...data.specifications,
-                                                installation: e.target.value
-                                            })}
-                                        />
-                                    </div>
-                                    </div>
-                                </div>
-
-                                        <div>
                                     <h3 className="text-lg font-semibold text-gray-800 mb-4">المميزات</h3>
                                     <div className="space-y-4">
                                         <div className="flex gap-2">
@@ -412,13 +325,13 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                             {data.features.map((feature, index) => (
                                                 <div key={index} className="flex items-center gap-2 bg-blue-100 px-3 py-1 rounded-full">
                                                     <span className="text-sm">{feature}</span>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeFeature(index)}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeFeature(index)}
                                                         className="text-red-500 hover:text-red-700"
-                                                    >
-                                                        ×
-                                                    </button>
+                                                        >
+                                                            ×
+                                                        </button>
                                         </div>
                                             ))}
                                         </div>
@@ -445,7 +358,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                                 <strong>الكمية:</strong> {data.stock}
                                                 </div>
                                                 <div>
-                                                <strong>الحالة:</strong> {data.status === 'active' ? 'نشط' : 'غير نشط'}
+                                                <strong>التبويب:</strong> {data.tab === 'all' ? 'الكل' : data.tab === 'featured' ? 'مميز' : data.tab === 'new' ? 'جديد' : data.tab === 'bestsellers' ? 'الأكثر مبيعاً' : 'العروض'}
                                             </div>
                                         </div>
                                     </div>

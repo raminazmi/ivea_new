@@ -19,7 +19,6 @@ class Product extends Model
         'discount',
         'image',
         'images',
-        'rating',
         'tab',
         'category_id',
         'colors',
@@ -27,12 +26,10 @@ class Product extends Model
         'status',
         'stock',
         'sku',
-        'weight',
         'featured',
         'is_offer',
         'is_bestseller',
         'sales_count',
-        'published_at',
         'customization_options',
         'measurement_units',
         'opening_methods',
@@ -43,25 +40,20 @@ class Product extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'discount' => 'integer',
-        'rating' => 'integer',
         'colors' => 'array',
         'color_names' => 'array',
         'images' => 'array',
-        'specifications' => 'array',
         'features' => 'array',
         'stock' => 'integer',
-        'weight' => 'decimal:2',
         'featured' => 'boolean',
         'is_offer' => 'boolean',
         'is_bestseller' => 'boolean',
         'sales_count' => 'integer',
-        'published_at' => 'datetime',
         'customization_options' => 'array',
         'measurement_units' => 'array',
         'opening_methods' => 'array',
         'track_types' => 'array',
         'lining_options' => 'array',
-
     ];
 
     public function category()
@@ -96,9 +88,9 @@ class Product extends Model
 
     public function scopeNew($query)
     {
-        return $query->whereNotNull('published_at')
-            ->where('published_at', '>=', now()->subDays(30))
-            ->orderBy('published_at', 'desc');
+        // المنتجات الجديدة هي التي تم إنشاؤها خلال الأسبوع الماضي
+        return $query->where('created_at', '>=', now()->subWeek())
+            ->orderBy('created_at', 'desc');
     }
 
     public function scopeOffers($query)
@@ -303,164 +295,6 @@ class Product extends Model
         return [
             ['value' => 'with', 'label' => 'مع بطانة'],
             ['value' => 'without', 'label' => 'بدون بطانة']
-        ];
-    }
-
-    public function getDefaultWidthAttribute()
-    {
-        $min_width = $this->attributes['min_width'] ?? null;
-        return $min_width ?: 35.000;
-    }
-
-    public function getDefaultHeightAttribute()
-    {
-        $min_height = $this->attributes['min_height'] ?? null;
-        return $min_height ?: 35.000;
-    }
-
-    public function getFabricReductionAttribute()
-    {
-        $fabric_reduction = $this->attributes['fabric_reduction'] ?? null;
-        return $fabric_reduction ?: 4.00;
-    }
-
-    public function getCoverageIncreaseAttribute()
-    {
-        $coverage_increase = $this->attributes['coverage_increase'] ?? null;
-        return $coverage_increase ?: 5.00;
-    }
-
-    public function getPricesFromAttribute()
-    {
-        $min_price = $this->attributes['min_price'] ?? null;
-
-        if ($min_price) {
-            return $min_price;
-        }
-
-        switch ($this->pricing_method) {
-            case 'area_based':
-                $minArea = ($this->default_width / 100) * ($this->default_height / 100); // Convert cm to m²
-                return $this->base_price + ($minArea * ($this->price_per_sqm ?? 0));
-
-            case 'size_based':
-                return $this->base_price;
-
-            case 'custom':
-                return $this->calculateCustomPrice();
-
-            default:
-                return $this->price;
-        }
-    }
-
-    public function calculateDynamicPrice($width = null, $height = null, $options = [])
-    {
-        $width = $width ?: $this->default_width;
-        $height = $height ?: $this->default_height;
-
-        $basePrice = $this->base_price ?: $this->price;
-
-        switch ($this->pricing_method) {
-            case 'area_based':
-                $area = ($width / 100) * ($height / 100);
-                $price = $basePrice + ($area * ($this->price_per_sqm ?? 0));
-                break;
-
-            case 'size_based':
-                $price = $this->calculateSizeBasedPrice($width, $height);
-                break;
-
-            case 'custom':
-                $price = $this->calculateCustomPrice($width, $height, $options);
-                break;
-
-            default:
-                $price = $basePrice;
-        }
-
-        $price = $this->applyPriceModifiers($price, $options);
-
-        if ($this->has_discount) {
-            $price = $price - ($price * $this->discount / 100);
-        }
-
-        return round($price, 2);
-    }
-
-    private function calculateSizeBasedPrice($width, $height)
-    {
-        $basePrice = $this->base_price ?: $this->price;
-
-        $area = $width * $height;
-
-        if ($area <= 5000) {
-            return $basePrice;
-        } elseif ($area <= 15000) {
-            return $basePrice * 1.3;
-        } elseif ($area <= 30000) {
-            return $basePrice * 1.6;
-        } else {
-            return $basePrice * 2.0;
-        }
-    }
-
-    private function calculateCustomPrice($width = null, $height = null, $options = [])
-    {
-        $basePrice = $this->base_price ?: $this->price;
-        if ($width && $height) {
-            $area = ($width / 100) * ($height / 100);
-            $basePrice = $basePrice + ($area * ($this->price_per_sqm ?? 100));
-        }
-
-        return $basePrice;
-    }
-
-    private function applyPriceModifiers($price, $options = [])
-    {
-        $modifiers = $this->price_modifiers ?? [];
-
-        foreach ($options as $optionKey => $optionValue) {
-            if (isset($modifiers[$optionKey][$optionValue])) {
-                $modifier = $modifiers[$optionKey][$optionValue];
-
-                if (isset($modifier['type']) && isset($modifier['value'])) {
-                    switch ($modifier['type']) {
-                        case 'percentage':
-                            $price = $price * (1 + $modifier['value'] / 100);
-                            break;
-                        case 'fixed':
-                            $price = $price + $modifier['value'];
-                            break;
-                        case 'multiply':
-                            $price = $price * $modifier['value'];
-                            break;
-                    }
-                }
-            }
-        }
-
-        return $price;
-    }
-
-    public function getPriceRangeAttribute()
-    {
-        $minPrice = $this->prices_from;
-
-        $maxPrice = $this->max_price;
-        if (!$maxPrice) {
-            $maxWidth = $this->max_width ?: ($this->default_width * 3);
-            $maxHeight = $this->max_height ?: ($this->default_height * 3);
-            $maxPrice = $this->calculateDynamicPrice($maxWidth, $maxHeight);
-        }
-
-        return [
-            'min' => $minPrice,
-            'max' => $maxPrice,
-            'currency' => 'ر.س',
-            'display' => $minPrice == $maxPrice
-                ? number_format($minPrice, 2) . ' ر.س'
-                : 'تبدأ من ' . number_format($minPrice, 2) . ' ر.س'
         ];
     }
 
