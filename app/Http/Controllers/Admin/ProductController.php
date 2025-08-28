@@ -40,7 +40,11 @@ class ProductController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        $categories = Category::active()->ordered()->get();
+        $categories = Category::with('children')
+            ->whereNull('parent_id')
+            ->active()
+            ->ordered()
+            ->get();
 
         return Inertia::render('Admin/Products/Index', [
             'products' => $products,
@@ -51,7 +55,13 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = Category::active()->ordered()->get();
+        $subCategories = Category::whereNotNull('parent_id')->active()->ordered()->get();
+        $woodenCategory = Category::where('slug', 'wooden')->active()->first();
+
+        $categories = $subCategories;
+        if ($woodenCategory) {
+            $categories = $categories->push($woodenCategory);
+        }
 
         return Inertia::render('Admin/Products/Create', [
             'categories' => $categories
@@ -81,11 +91,25 @@ class ProductController extends Controller
             'features.*' => 'string',
         ]);
 
+        $category = Category::find($validated['category_id']);
+        if (!$category) {
+            return redirect()->back()
+                ->withErrors(['category_id' => 'الفئة المختارة غير موجودة'])
+                ->withInput();
+        }
+
+        if (!is_null($category->parent_id) || $category->slug === 'wooden') {
+        } else {
+            return redirect()->back()
+                ->withErrors(['category_id' => 'يجب اختيار فئة فرعية أو فئة الخشبيات'])
+                ->withInput();
+        }
+
         $validated['featured'] = $validated['featured'] ?? false;
         $validated['images'] = $validated['images'] ?? [];
         $validated['colors'] = $validated['colors'] ?? [];
         $validated['features'] = $validated['features'] ?? [];
-        $validated['status'] = 'active'; // إضافة تلقائية للحالة
+        $validated['status'] = 'active';
 
         if (empty($validated['image']) && !empty($validated['images'])) {
             $validated['image'] = $validated['images'][0];
@@ -106,7 +130,14 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $categories = Category::active()->ordered()->get();
+        $subCategories = Category::whereNotNull('parent_id')->active()->ordered()->get();
+        $woodenCategory = Category::where('slug', 'wooden')->active()->first();
+
+        $categories = $subCategories;
+        if ($woodenCategory) {
+            $categories = $categories->push($woodenCategory);
+        }
+
         $product->load('category');
 
         return Inertia::render('Admin/Products/Create', [
@@ -138,6 +169,20 @@ class ProductController extends Controller
             'features' => 'nullable|array',
             'features.*' => 'string',
         ]);
+
+        $category = Category::find($validated['category_id']);
+        if (!$category) {
+            return redirect()->back()
+                ->withErrors(['category_id' => 'الفئة المختارة غير موجودة'])
+                ->withInput();
+        }
+
+        if (!is_null($category->parent_id) || $category->slug === 'wooden') {
+        } else {
+            return redirect()->back()
+                ->withErrors(['category_id' => 'يجب اختيار فئة فرعية أو فئة الخشبيات'])
+                ->withInput();
+        }
 
         $product->update($validated);
 

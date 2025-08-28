@@ -10,7 +10,12 @@ import ColorSwatch from '@/Components/Common/ColorSwatch';
 import ImageUpload from '@/Components/Admin/ImageUpload';
 
 interface CreateProductProps {
-    categories: any[];
+    categories: {
+        id: number;
+        name: string;
+        slug?: string;
+        parent_id?: number;
+    }[];
     product?: any;
     isEditing?: boolean;
 }
@@ -32,6 +37,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
         sku: product?.sku || '',
         featured: product?.featured || false as boolean,
         features: product?.features || [] as string[],
+
     });
 
     const [newColor, setNewColor] = useState('');
@@ -191,30 +197,24 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <InputLabel htmlFor="category_id" value="الفئة الفرعية" />
+                                        <InputLabel htmlFor="category_id" value="الفئة" />
                                         <select
                                             id="category_id"
                                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                             value={data.category_id}
                                             onChange={(e) => setData('category_id', e.target.value)}
                                             required
-                                            title="اختر الفئة الفرعية للمنتج"
+                                            title="اختر فئة المنتج"
                                         >
-                                            <option value="">اختر الفئة الفرعية</option>
-                                            {categories.filter(cat => !cat.parent_id).map((mainCategory) => (
-                                                <optgroup key={`group-${mainCategory.id}`} label={mainCategory.name}>
-                                                    {categories
-                                                        .filter(sub => sub.parent_id === mainCategory.id)
-                                                        .map((subCategory) => (
-                                                            <option key={`sub-${subCategory.id}`} value={subCategory.id}>
-                                                                {subCategory.name}
-                                                            </option>
-                                                        ))}
-                                                </optgroup>
+                                            <option value="">اختر الفئة</option>
+                                            {categories.map((category) => (
+                                                <option key={category.id} value={category.id}>
+                                                    {category.name}
+                                                </option>
                                             ))}
                                         </select>
                                         <InputError message={errors.category_id} className="mt-2" />
-                                        <p className="mt-1 text-sm text-gray-500">يمكن ربط المنتجات بالفئات الفرعية فقط</p>
+                                        <p className="mt-1 text-sm text-gray-500">يمكن ربط المنتجات بالفئات الفرعية أو فئة الخشبيات</p>
                                     </div>
 
                                     <div>
@@ -336,6 +336,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                     />
                                     <InputLabel htmlFor="featured" value="منتج مميز" className="ml-2" />
                                 </div>
+
+
 
                                 <div className="flex items-center justify-end mt-6 gap-4">
                                     <SecondaryButton

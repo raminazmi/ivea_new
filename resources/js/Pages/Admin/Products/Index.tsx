@@ -29,6 +29,7 @@ interface Category {
     id: number;
     name: string;
     parent_id?: number;
+    children?: Category[];
 }
 
 interface ProductsProps {
@@ -296,15 +297,13 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
                                                 aria-label="فلتر الفئة"
                                             >
                                                 <option value="all">الكل</option>
-                                                {categories.filter(cat => !cat.parent_id).map((mainCategory) => (
+                                                {categories.map((mainCategory) => (
                                                     <optgroup key={`group-${mainCategory.id}`} label={mainCategory.name}>
-                                                        {categories
-                                                            .filter(sub => sub.parent_id === mainCategory.id)
-                                                            .map((subCategory) => (
-                                                                <option key={`sub-${subCategory.id}`} value={subCategory.id}>
-                                                                    {subCategory.name}
-                                                                </option>
-                                                            ))}
+                                                        {mainCategory.children && mainCategory.children.map((subCategory) => (
+                                                            <option key={`sub-${subCategory.id}`} value={subCategory.id}>
+                                                                {subCategory.name}
+                                                            </option>
+                                                        ))}
                                                     </optgroup>
                                                 ))}
                                             </select>

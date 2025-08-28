@@ -31,8 +31,16 @@ interface EditProductProps {
         };
         features: string[];
         weight: number;
+        product_options: {
+            [key: string]: any;
+        };
     };
-    categories: any[];
+    categories: {
+        id: number;
+        name: string;
+        slug?: string;
+        parent_id?: number;
+    }[];
 }
 
 const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
@@ -52,6 +60,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
         sku: product.sku || '',
         featured: product.featured,
         features: product.features || [],
+
     });
 
     const [newColor, setNewColor] = useState('');
@@ -134,6 +143,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                                 ))}
                                             </select>
                                             <InputError message={errors.category_id} className="mt-2" />
+                                            <p className="mt-1 text-sm text-gray-500">يمكن ربط المنتجات بالفئات الفرعية أو فئة الخشبيات</p>
                                     </div>
 
                                     <div>
@@ -363,6 +373,8 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                         </div>
                                     </div>
                                 </div>
+
+
 
                                 <div className="flex justify-end gap-4">
                                     <SecondaryButton type="button" onClick={() => window.history.back()}>

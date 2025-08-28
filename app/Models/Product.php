@@ -34,7 +34,8 @@ class Product extends Model
         'measurement_units',
         'opening_methods',
         'track_types',
-        'lining_options'
+        'lining_options',
+        'product_options'
     ];
 
     protected $casts = [
@@ -54,6 +55,7 @@ class Product extends Model
         'opening_methods' => 'array',
         'track_types' => 'array',
         'lining_options' => 'array',
+        'product_options' => 'array',
     ];
 
     public function category()
@@ -74,6 +76,13 @@ class Product extends Model
     public function scopeByCategory($query, $categoryId)
     {
         return $query->where('category_id', $categoryId);
+    }
+
+    public function scopeBySubcategory($query)
+    {
+        return $query->whereHas('category', function ($q) {
+            $q->whereNotNull('parent_id');
+        });
     }
 
     public function scopeWithDiscount($query)
@@ -296,6 +305,60 @@ class Product extends Model
             ['value' => 'with', 'label' => 'مع بطانة'],
             ['value' => 'without', 'label' => 'بدون بطانة']
         ];
+    }
+
+    public function getProductOptionsAttribute()
+    {
+        $productOptions = $this->attributes['product_options'] ?? null;
+
+        if ($productOptions && is_array($productOptions)) {
+            return $productOptions;
+        }
+
+        // إذا كان المنتج ينتمي لفئة الخشبيات، نعيد الخيارات الافتراضية
+        if ($this->category && $this->category->slug === 'wooden') {
+            return [
+                'quantity' => [
+                    'type' => 'number',
+                    'label' => 'الكمية',
+                    'min' => 1,
+                    'max' => 100,
+                    'default' => 1
+                ],
+                'decorative_partition' => [
+                    'type' => 'checkbox',
+                    'label' => 'فاصل ديكوري',
+                    'default' => false
+                ],
+                'wall_shelf' => [
+                    'type' => 'checkbox',
+                    'label' => 'رف جداري',
+                    'default' => false
+                ],
+                'tables_chairs' => [
+                    'type' => 'checkbox',
+                    'label' => 'طاوالت وكراسي خشبية',
+                    'default' => false
+                ],
+                'wall_paneling' => [
+                    'type' => 'checkbox',
+                    'label' => 'ألواح وكسوة جدران',
+                    'default' => false
+                ],
+                'bedroom_furniture' => [
+                    'type' => 'checkbox',
+                    'label' => 'أسرة غرف نوم',
+                    'default' => false
+                ],
+                'dressers' => [
+                    'type' => 'checkbox',
+                    'label' => 'تسريحات',
+                    'default' => false
+                ]
+            ];
+        }
+
+        return [];
     }
 
     public function setNameAttribute($value)

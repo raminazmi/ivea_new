@@ -188,45 +188,118 @@ class SimpleCategoriesProductsSeeder extends Seeder
             ],
 
             [
-                'name' => 'منتجات خشبية مخصصة',
-                'description' => 'منتجات خشبية متنوعة قابلة للتخصيص - فواصل ديكورية، أرفف جدارية، طاولات وكراسي، ألواح كسوة، أسرة غرف نوم، تسريحات',
-                'price' => 500.00,
+                'name' => 'فاصل ديكوري خشبي كلاسيكي',
+                'description' => 'فاصل ديكوري خشبي كلاسيكي أنيق، مثالي لتقسيم المساحات وإضافة لمسة جمالية',
+                'price' => 800.00,
                 'discount' => 15,
-                'sku' => 'WOOD-CUSTOM-001',
+                'sku' => 'WOOD-PART-CLAS-001',
                 'featured' => true,
-                'stock' => 25,
+                'stock' => 8,
                 'brand' => 'إيفيا وود',
-                'collection' => 'المنتجات الخشبية المخصصة',
+                'collection' => 'الفواصل الديكورية',
                 'colors' => ['#D2B48C', '#8B4513', '#A0522D', '#DEB887'],
                 'tab' => 'wooden',
-                'category_id' => $createdCategories[2]->id,
-                'customization_options' => [
-                    'product_types' => [
-                        ['value' => 'فاصل ديكوري', 'price_modifier' => 0],
-                        ['value' => 'رف جداري', 'price_modifier' => -100],
-                        ['value' => 'طاولات وكراسي خشبية', 'price_modifier' => 200],
-                        ['value' => 'ألواح وكسوة جدران', 'price_modifier' => 150],
-                        ['value' => 'أسرة غرف نوم', 'price_modifier' => 800],
-                        ['value' => 'تسريحات', 'price_modifier' => 400]
-                    ],
-                    'wood_types' => [
-                        ['value' => 'خشب البلوط', 'price_modifier' => 0],
-                        ['value' => 'خشب الصنوبر', 'price_modifier' => -50],
-                        ['value' => 'خشب الجوز', 'price_modifier' => 100],
-                        ['value' => 'خشب الماهوجني', 'price_modifier' => 200]
-                    ],
-                    'finishes' => [
-                        ['value' => 'طبيعي', 'price_modifier' => 0],
-                        ['value' => 'مصقول', 'price_modifier' => 50],
-                        ['value' => 'مطلي', 'price_modifier' => 75],
-                        ['value' => 'منحوت يدوياً', 'price_modifier' => 150]
-                    ]
-                ],
+                'category_id' => $createdCategories[2]->id, // فئة الخشبيات الرئيسية
                 'image' => '/images/door.png',
                 'images' => [
                     '/images/door.png',
                     '/images/building1.png',
                     '/images/building2.png'
+                ]
+            ],
+            [
+                'name' => 'رف جداري خشبي عصري',
+                'description' => 'رف جداري خشبي عصري مع تصميم بسيط وأنيق، مثالي لعرض الكتب والمقتنيات',
+                'price' => 350.00,
+                'discount' => 10,
+                'sku' => 'WOOD-SHELF-MOD-001',
+                'featured' => true,
+                'stock' => 15,
+                'brand' => 'إيفيا وود',
+                'collection' => 'الأرفف الجدارية',
+                'colors' => ['#D2B48C', '#8B4513', '#A0522D', '#DEB887'],
+                'tab' => 'wooden',
+                'category_id' => $createdCategories[2]->id, // فئة الخشبيات الرئيسية
+                'image' => '/images/door.png',
+                'images' => [
+                    '/images/door.png',
+                    '/images/building1.png'
+                ]
+            ],
+            [
+                'name' => 'طاولة طعام خشبية فاخرة',
+                'description' => 'طاولة طعام خشبية فاخرة مع 6 كراسي مريحة، مصنوعة من خشب البلوط الطبيعي',
+                'price' => 1200.00,
+                'discount' => 20,
+                'sku' => 'WOOD-TABLE-LUX-001',
+                'featured' => true,
+                'stock' => 5,
+                'brand' => 'إيفيا وود',
+                'collection' => 'طاولات وكراسي',
+                'colors' => ['#D2B48C', '#8B4513', '#A0522D', '#DEB887'],
+                'tab' => 'wooden',
+                'category_id' => $createdCategories[2]->id, // فئة الخشبيات الرئيسية
+                'image' => '/images/door.png',
+                'images' => [
+                    '/images/door.png',
+                    '/images/building2.png'
+                ]
+            ],
+            [
+                'name' => 'كسوة جدران خشبية طبيعية',
+                'description' => 'كسوة جدران خشبية طبيعية مع نسيج خشبي جميل، مثالية لتغطية الجدران',
+                'price' => 450.00,
+                'discount' => 12,
+                'sku' => 'WOOD-PANEL-NAT-001',
+                'featured' => false,
+                'stock' => 20,
+                'brand' => 'إيفيا وود',
+                'collection' => 'كسوة الجدران',
+                'colors' => ['#D2B48C', '#8B4513', '#A0522D', '#DEB887'],
+                'tab' => 'wooden',
+                'category_id' => $createdCategories[2]->id, // فئة الخشبيات الرئيسية
+                'image' => '/images/door.png',
+                'images' => [
+                    '/images/door.png',
+                    '/images/building1.png'
+                ]
+            ],
+            [
+                'name' => 'سرير خشبي كلاسيكي',
+                'description' => 'سرير خشبي كلاسيكي أنيق مع تفاصيل منحوتة يدوياً، مصنوع من خشب الجوز',
+                'price' => 1500.00,
+                'discount' => 15,
+                'sku' => 'WOOD-BED-CLAS-001',
+                'featured' => true,
+                'stock' => 6,
+                'brand' => 'إيفيا وود',
+                'collection' => 'أثاث غرف النوم',
+                'colors' => ['#D2B48C', '#8B4513', '#A0522D', '#DEB887'],
+                'tab' => 'wooden',
+                'category_id' => $createdCategories[2]->id, // فئة الخشبيات الرئيسية
+                'image' => '/images/door.png',
+                'images' => [
+                    '/images/door.png',
+                    '/images/building2.png'
+                ]
+            ],
+            [
+                'name' => 'تسريحة خشبية عصرية',
+                'description' => 'تسريحة خشبية عصرية مع مرآة كبيرة وأدراج متعددة، مثالية لغرف النوم',
+                'price' => 900.00,
+                'discount' => 18,
+                'sku' => 'WOOD-DRESS-MOD-001',
+                'featured' => true,
+                'stock' => 10,
+                'brand' => 'إيفيا وود',
+                'collection' => 'التسريحات',
+                'colors' => ['#D2B48C', '#8B4513', '#A0522D', '#DEB887'],
+                'tab' => 'wooden',
+                'category_id' => $createdCategories[2]->id, // فئة الخشبيات الرئيسية
+                'image' => '/images/door.png',
+                'images' => [
+                    '/images/door.png',
+                    '/images/building1.png'
                 ]
             ],
             [
@@ -328,6 +401,50 @@ class SimpleCategoriesProductsSeeder extends Seeder
 
         foreach ($products as $productData) {
             $productData['features'] = $this->getRandomFeatures();
+
+            // إضافة خيارات المنتج الافتراضية للمنتجات الخشبية
+            if ($productData['tab'] === 'wooden') {
+                $productData['product_options'] = [
+                    'quantity' => [
+                        'type' => 'number',
+                        'label' => 'الكمية',
+                        'min' => 1,
+                        'max' => 100,
+                        'default' => 1
+                    ],
+                    'decorative_partition' => [
+                        'type' => 'checkbox',
+                        'label' => 'فاصل ديكوري',
+                        'default' => false
+                    ],
+                    'wall_shelf' => [
+                        'type' => 'checkbox',
+                        'label' => 'رف جداري',
+                        'default' => false
+                    ],
+                    'tables_chairs' => [
+                        'type' => 'checkbox',
+                        'label' => 'طاوالت وكراسي خشبية',
+                        'default' => false
+                    ],
+                    'wall_paneling' => [
+                        'type' => 'checkbox',
+                        'label' => 'ألواح وكسوة جدران',
+                        'default' => false
+                    ],
+                    'bedroom_furniture' => [
+                        'type' => 'checkbox',
+                        'label' => 'أسرة غرف نوم',
+                        'default' => false
+                    ],
+                    'dressers' => [
+                        'type' => 'checkbox',
+                        'label' => 'تسريحات',
+                        'default' => false
+                    ]
+                ];
+            }
+
             Product::create($productData);
         }
     }
