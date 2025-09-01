@@ -120,7 +120,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
             <CoverSection
                 imageUrl="/images/projects_cover.png"
                 title="تصفح  المشاريــــــــع"
-                subtitle="اكتشف إبداعاتنا في التصميم الداخلي"
+                subtitle="اكتشف إبداعاتنا في التصميم والتأثيث"
                 description="مجموعة متنوعة من المشاريع المنجزة"
                 socialLinks={{
                     facebook: 'https://facebook.com',
@@ -140,7 +140,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                             />
                             <div className="mt-6 md:mt-8 max-w-4xl mx-auto">
                                 <p className="text-base md:text-lg text-gray-700 leading-relaxed">
-                                    لست متأكدًا مما إذا كان أسلوبك وهميًا أم فخمًا أم عصريًا؟ يساعدك نموذجنا على اكتشاف أسلوبك الفريد في التصميم. بمجرد إرسال بياناتك، سيساعدك فريقنا الموهوب من المصممين في تصميم منزل تحب العيش فيه.
+                                    لست متأكدًا مما إذا كان أسلوبك كلاسيكيًا أم فخمًا أم عصريًا؟ يساعدك نموذجنا على اكتشاف أسلوبك الفريد في التصميم. بمجرد إرسال بياناتك، سيساعدك فريقنا الموهوب من المصممين في تصميم مساحة ملهمة تعشق تفاصيلها.
                                 </p>
                                 <div className="mt-8 flex flex-wrap justify-center gap-2">
                                     <div className="flex gap-1 bg-gray-100 rounded-lg p-1 mb-8">
@@ -181,11 +181,11 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                                 <h3 className="text-xl font-semibold mb-6">ما نوع مساحتك؟</h3>
                                                                 <div className="grid md:grid-cols-2 gap-4">
                                                                     {[
-                                                                        { key: 'residential', value: 'المنازل السكنية' },
-                                                                        { key: 'offices', value: 'المكاتب والشركات' },
-                                                                        { key: 'shops', value: 'المحلات التجارية' },
-                                                                        { key: 'hotels', value: 'الفنادق والمنتجعات' },
-                                                                        { key: 'other', value: 'أخرى' },
+                                                                        { key: 'residential', value: 'منزلك السكني' },
+                                                                        { key: 'offices', value: 'مكتبك أو شركتك' },
+                                                                        { key: 'shops', value: 'محلك التجاري' },
+                                                                        { key: 'hotels', value: 'فندقك أو منتجعك' },
+                                                                        { key: 'other', value: 'مساحة أخرى' },
                                                                     ].map(({ key, value }) => (
                                                                         <label key={key} className="flex items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
                                                                             <input
@@ -306,30 +306,58 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                                 
                                                                 <div className="mt-6">
                                                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                                        صور المساحة (اختيارية - 1-5 صور)
-                                                                    </label>
-                                                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary-yellow transition-colors">
-                                                                        <HiUpload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                                                                      اضافة صور المساحة                                                                   </label>
+                                                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 text-center">
+                                                                        <HiUpload className="mx-auto h-8 w-8 md:h-12 md:w-12 text-gray-400 mb-3 md:mb-4" />
+                                                                        <p className="text-sm md:text-base text-gray-600 mb-2">
+                                                                            رفع مخطط أو صورة للتصميم والمكان المطلوب
+                                                                        </p>
+                                                                        <label className="cursor-pointer">
+                                                                            <span className="text-primary-yellow hover:text-primary-yellow/80 font-medium text-sm md:text-base">
+                                                                                اختر الملفات
+                                                                            </span>
                                                                         <input
                                                                             type="file"
                                                                             multiple
-                                                                            accept="image/*"
-                                                                            className="hidden"
-                                                                            id="quiz-images"
+                                                                                accept="image/*,.pdf"
                                                                             onChange={(e) => {
                                                                                 const files = Array.from(e.target.files || []);
                                                                                 quizForm.setData('images', files.slice(0, 5) as File[]);
                                                                             }}
-                                                                            title="اختر صور مساحتك"
+                                                                                className="hidden"
+                                                                                title="اختر الملفات"
                                                                         />
-                                                                        <label htmlFor="quiz-images" className="cursor-pointer">
-                                                                            <span className="text-primary-yellow font-medium">اختر الصور</span>
-                                                                            <p className="text-sm text-gray-500 mt-2">JPG, PNG, GIF حتى 5MB لكل صورة</p>
                                                                         </label>
+                                                                        <p className="text-xs md:text-sm text-gray-500 mt-2">
+                                                                            حتى 10MB (حد أقصى 5 ملفات) صورة/PDF
+                                                                        </p>
                                                                         {quizForm.data.images.length > 0 && (
-                                                                            <p className="mt-2 text-sm text-green-600">
-                                                                                تم اختيار {quizForm.data.images.length} صورة
-                                                                            </p>
+                                                                            <div className="mt-4 space-y-2">
+                                                                                <h4 className="font-medium text-sm">الملفات المرفوعة:</h4>
+                                                                                <div className="space-y-2">
+                                                                                    {quizForm.data.images.map((file, index) => (
+                                                                                        <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                                                                                            <div className="flex items-center gap-2">
+                                                                                                <span>📎</span>
+                                                                                                <span className="text-sm text-gray-700">{file.name}</span>
+                                                                                                <span className="text-xs text-gray-500">
+                                                                                                    ({(file.size / 1024).toFixed(1)} KB)
+                                                                                                </span>
+                                                                                            </div>
+                                                                                            <button
+                                                                                                type="button"
+                                                                                                onClick={() => {
+                                                                                                    const newFiles = quizForm.data.images.filter((_, i) => i !== index);
+                                                                                                    quizForm.setData('images', newFiles);
+                                                                                                }}
+                                                                                                className="text-red-500 hover:text-red-700 text-sm"
+                                                                                            >
+                                                                                                حذف
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                            </div>
                                                                         )}
                                                                     </div>
                                                                 </div>

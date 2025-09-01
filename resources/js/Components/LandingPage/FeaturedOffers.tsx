@@ -63,8 +63,7 @@ const FeaturedOffers: React.FC = () => {
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-6 md:gap-8 lg:gap-12">
                     <div ref={contentRef} className="text-center lg:text-start w-full lg:w-1/2 mb-6 lg:mb-0">
                         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#0D1D25] mb-2 md:mb-3">
-                            عــــرض اليوم
-                        </h2>
+                            عــــرض اليوم الوطـنـي                        </h2>
                         <p className="text-xs sm:text-sm md:text-base text-[#424242] max-w-2xl mx-auto lg:mx-0">
                             اطلع على عروضنا اليومية التي تجمع بين خصومات كبيرة على منتجات المنزل. العروض قد تتغير يوميا، فلا تفوت الفرصة :)
                         </p>

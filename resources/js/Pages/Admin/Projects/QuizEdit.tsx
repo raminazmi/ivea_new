@@ -172,7 +172,10 @@ const QuizEdit: React.FC<QuizEditProps> = ({ quiz, spaceTypes, productNeeds, pre
                     <div className="bg-white rounded-lg shadow-sm p-6">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">احتياجات المنتجات</h3>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            {Object.entries(productNeeds).map(([key, label]) => (
+                            {Object.entries({
+                                ...productNeeds,
+                                sofas: 'كنب'
+                            }).map(([key, label]) => (
                                 <div key={key} className="flex items-center">
                                     <input
                                         type="checkbox"

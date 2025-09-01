@@ -40,6 +40,7 @@ class ProjectSubmission extends Model
     const PRODUCT_TYPES = [
         'curtains' => 'ستائر',
         'furniture' => 'أثاث',
+        'sofas' => 'كنب',
         'cabinets' => 'خزائن',
         'woodwork' => 'خشبيات',
         'finishes' => 'تشطيبات',

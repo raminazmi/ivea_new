@@ -273,80 +273,192 @@ class ProductController extends Controller
             ->limit(6)
             ->get();
 
+        // تنظيف البيانات المرتبطة
+        $cleanRelatedProducts = $relatedProducts->map(function ($relatedProduct) {
+            return [
+                'id' => (int) ($relatedProduct->id ?? 0),
+                'name' => $relatedProduct->name ? mb_convert_encoding($relatedProduct->name, 'UTF-8', 'UTF-8') : '',
+                'price' => (float) ($relatedProduct->price ?? 0),
+                'description' => $relatedProduct->description ? mb_convert_encoding($relatedProduct->description, 'UTF-8', 'UTF-8') : '',
+                'category' => [
+                    'id' => (int) ($relatedProduct->category->id ?? 0),
+                    'name' => $relatedProduct->category->name ? mb_convert_encoding($relatedProduct->category->name, 'UTF-8', 'UTF-8') : '',
+                    'slug' => $relatedProduct->category->slug ?? '',
+                ],
+                'brand' => $relatedProduct->brand ? mb_convert_encoding($relatedProduct->brand, 'UTF-8', 'UTF-8') : 'Antartica',
+                'collection' => $relatedProduct->collection ? mb_convert_encoding($relatedProduct->collection, 'UTF-8', 'UTF-8') : 'Paragon I',
+                'sku' => $relatedProduct->sku ?: '6-52CH',
+                'discount' => $relatedProduct->discount ? (int) $relatedProduct->discount : null,
+                'stock' => (int) ($relatedProduct->stock ?? 0),
+                'colors' => $relatedProduct->product_colors ?? [],
+                'colorNames' => $relatedProduct->color_names ?? [],
+                'image' => $relatedProduct->main_image ?? '',
+                'images' => $relatedProduct->product_images ?? [],
+                'rating' => (float) ($relatedProduct->rating ?? 0),
+                'inStock' => (bool) ($relatedProduct->in_stock ?? true),
+                'hasDiscount' => (bool) ($relatedProduct->has_discount ?? false),
+                'finalPrice' => (float) ($relatedProduct->final_price ?? $relatedProduct->price ?? 0),
+            ];
+        })->toArray();
+
+        // تنظيف البيانات للتأكد من عدم وجود أحرف غير صالحة
+        $cleanFeatures = [];
+        if ($product->features && is_array($product->features)) {
+            foreach ($product->features as $feature) {
+                if (is_string($feature)) {
+                    $cleanFeatures[] = mb_convert_encoding($feature, 'UTF-8', 'UTF-8');
+                }
+            }
+        }
+
         $formattedProduct = [
-            'id' => $product->id,
-            'name' => $product->name,
-            'price' => (float) $product->price,
-            'description' => $product->description,
+            'id' => (int) $product->id,
+            'name' => $product->name ? mb_convert_encoding($product->name, 'UTF-8', 'UTF-8') : '',
+            'price' => (float) ($product->price ?? 0),
+            'description' => $product->description ? mb_convert_encoding($product->description, 'UTF-8', 'UTF-8') : '',
             'category' => [
-                'id' => $product->category->id,
-                'name' => $product->category->name,
-                'slug' => $product->category->slug,
+                'id' => (int) ($product->category->id ?? 0),
+                'name' => $product->category->name ? mb_convert_encoding($product->category->name, 'UTF-8', 'UTF-8') : '',
+                'slug' => $product->category->slug ?? '',
             ],
-            'brand' => $product->brand ?: 'Antartica',
-            'collection' => $product->collection ?: 'Paragon I',
+            'brand' => $product->brand ? mb_convert_encoding($product->brand, 'UTF-8', 'UTF-8') : 'Antartica',
+            'collection' => $product->collection ? mb_convert_encoding($product->collection, 'UTF-8', 'UTF-8') : 'Paragon I',
             'sku' => $product->sku ?: '6-52CH',
             'discount' => $product->discount ? (int) $product->discount : null,
-            'stock' => $product->stock,
-            'colors' => $product->product_colors,
-            'colorNames' => $product->color_names,
-            'specifications' => $product->specifications,
-            'image' => $product->main_image,
-            'images' => $product->product_images,
-            'features' => $product->features,
-            'rating' => $product->rating,
-            'weight' => $product->weight,
-            'inStock' => $product->in_stock,
-            'hasDiscount' => $product->has_discount,
-            'finalPrice' => (float) $product->final_price,
-            'discountAmount' => (float) $product->discount_amount,
-
+            'stock' => (int) ($product->stock ?? 0),
+            'colors' => $product->product_colors ?? [],
+            'colorNames' => $product->color_names ?? [],
+            'specifications' => $product->specifications ?? [],
+            'image' => $product->main_image ?? '',
+            'images' => $product->product_images ?? [],
+            'features' => $cleanFeatures,
+            'rating' => (float) ($product->rating ?? 0),
+            'weight' => $product->weight ? (float) $product->weight : null,
+            'inStock' => (bool) ($product->in_stock ?? true),
+            'hasDiscount' => (bool) ($product->has_discount ?? false),
+            'finalPrice' => (float) ($product->final_price ?? $product->price ?? 0),
+            'discountAmount' => $product->discount_amount ? (float) $product->discount_amount : null,
         ];
 
-        $seoData = $this->seoService->getProductSeo($product);
-        $structuredData = $this->seoService->generateStructuredData($seoData, 'product');
+        try {
+            $seoData = $this->seoService->getProductSeo($product);
 
-        return Inertia::render('ProductDetail', [
-            'product' => $formattedProduct,
-            'relatedProducts' => $relatedProducts,
-            'seo' => $seoData,
-            'structuredData' => $structuredData,
-        ]);
+            // تنظيف بيانات SEO
+            if (is_array($seoData)) {
+                foreach ($seoData as $key => $value) {
+                    if (is_string($value)) {
+                        $seoData[$key] = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+                        // إزالة الأحرف غير الصالحة
+                        $seoData[$key] = preg_replace('/[\x00-\x1F\x7F]/', '', $seoData[$key]);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error getting SEO data: ' . $e->getMessage());
+            $seoData = [];
+        }
+
+        try {
+            $structuredData = $this->seoService->generateStructuredData($seoData, 'product');
+
+            // تنظيف البيانات المنظمة
+            if (is_array($structuredData)) {
+                $this->cleanArrayRecursively($structuredData);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error generating structured data: ' . $e->getMessage());
+            $structuredData = [];
+        }
+
+        try {
+            // تنظيف إضافي للبيانات
+            $this->cleanArrayRecursively($formattedProduct);
+            $this->cleanArrayRecursively($cleanRelatedProducts);
+
+            // التأكد من أن جميع البيانات صالحة للـ JSON
+            $data = [
+                'product' => $formattedProduct,
+                'relatedProducts' => $cleanRelatedProducts,
+                'seo' => $seoData,
+                'structuredData' => $structuredData,
+            ];
+
+            // اختبار JSON encoding
+            $jsonTest = json_encode($data);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                \Log::error('JSON encoding error: ' . json_last_error_msg());
+                \Log::error('Data that caused error: ' . print_r($data, true));
+                return redirect()->route('products')->with('error', 'حدث خطأ في ترميز البيانات');
+            }
+
+            return Inertia::render('ProductDetail', $data);
+        } catch (\Exception $e) {
+            \Log::error('Error rendering ProductDetail: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            return redirect()->route('products')->with('error', 'حدث خطأ في عرض تفاصيل المنتج');
+        }
     }
 
     public function options($id)
     {
         $product = Product::with('category')->active()->findOrFail($id);
 
+        // تنظيف البيانات للتأكد من عدم وجود أحرف غير صالحة
+        $cleanFeatures = [];
+        if ($product->features && is_array($product->features)) {
+            foreach ($product->features as $feature) {
+                if (is_string($feature)) {
+                    $cleanFeatures[] = mb_convert_encoding($feature, 'UTF-8', 'UTF-8');
+                }
+            }
+        }
+
         $formattedProduct = [
-            'id' => $product->id,
-            'name' => $product->name,
-            'price' => (float) $product->price,
-            'description' => $product->description,
+            'id' => (int) ($product->id ?? 0),
+            'name' => $product->name ? mb_convert_encoding($product->name, 'UTF-8', 'UTF-8') : '',
+            'price' => (float) ($product->price ?? 0),
+            'description' => $product->description ? mb_convert_encoding($product->description, 'UTF-8', 'UTF-8') : '',
             'category' => [
-                'id' => $product->category->id,
-                'name' => $product->category->name,
-                'slug' => $product->category->slug,
-                'customization_fields' => $product->category->customization_fields,
+                'id' => (int) ($product->category->id ?? 0),
+                'name' => $product->category->name ? mb_convert_encoding($product->category->name, 'UTF-8', 'UTF-8') : '',
+                'slug' => $product->category->slug ?? '',
+                'customization_fields' => $product->category->customization_fields ?? [],
             ],
-            'brand' => $product->brand ?: 'Antartica',
-            'collection' => $product->collection ?: 'Paragon I',
+            'brand' => $product->brand ? mb_convert_encoding($product->brand, 'UTF-8', 'UTF-8') : 'Antartica',
+            'collection' => $product->collection ? mb_convert_encoding($product->collection, 'UTF-8', 'UTF-8') : 'Paragon I',
             'sku' => $product->sku ?: '6-52CH',
             'discount' => $product->discount ? (int) $product->discount : null,
-            'stock' => $product->stock,
-            'colors' => $product->product_colors,
-            'colorNames' => $product->color_names,
-            'image' => $product->main_image,
-            'images' => $product->product_images,
-            'features' => $product->features,
-            'inStock' => $product->in_stock,
-            'hasDiscount' => $product->has_discount,
-            'finalPrice' => (float) $product->final_price,
+            'stock' => (int) ($product->stock ?? 0),
+            'colors' => $product->product_colors ?? [],
+            'colorNames' => $product->color_names ?? [],
+            'image' => $product->main_image ?? '',
+            'images' => $product->product_images ?? [],
+            'features' => $cleanFeatures,
+            'inStock' => (bool) ($product->in_stock ?? true),
+            'hasDiscount' => (bool) ($product->has_discount ?? false),
+            'finalPrice' => (float) ($product->final_price ?? $product->price ?? 0),
         ];
 
-        return Inertia::render('ProductOptions', [
-            'product' => $formattedProduct
-        ]);
+        try {
+            // تنظيف إضافي للبيانات
+            $this->cleanArrayRecursively($formattedProduct);
+
+            // اختبار JSON encoding
+            $jsonTest = json_encode($formattedProduct);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                \Log::error('JSON encoding error in options: ' . json_last_error_msg());
+                \Log::error('Product data that caused error: ' . print_r($formattedProduct, true));
+                return redirect()->route('products')->with('error', 'حدث خطأ في ترميز بيانات المنتج');
+            }
+
+            return Inertia::render('ProductOptions', [
+                'product' => $formattedProduct
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error rendering ProductOptions: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            return redirect()->route('products')->with('error', 'حدث خطأ في عرض خيارات المنتج');
+        }
     }
 
     public function getAll(): JsonResponse
@@ -547,5 +659,21 @@ class ProductController extends Controller
     public function getFilterOptionsApi(): JsonResponse
     {
         return response()->json($this->getFilterOptions());
+    }
+
+    /**
+     * تنظيف المصفوفة بشكل متكرر من الأحرف غير الصالحة
+     */
+    private function cleanArrayRecursively(&$array)
+    {
+        foreach ($array as $key => &$value) {
+            if (is_string($value)) {
+                $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+                // إزالة الأحرف غير الصالحة
+                $value = preg_replace('/[\x00-\x1F\x7F]/', '', $value);
+            } elseif (is_array($value)) {
+                $this->cleanArrayRecursively($value);
+            }
+        }
     }
 }

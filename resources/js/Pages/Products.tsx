@@ -77,7 +77,10 @@ interface ProductsProps {
 
 const Products: React.FC<ProductsProps> = ({ products, categories, filters, filterOptions }) => {
     const [currentPage, setCurrentPage] = useState(products.current_page);
-    const [currentFilters, setCurrentFilters] = useState(filters);
+    const [currentFilters, setCurrentFilters] = useState({
+        ...filters,
+        sort: filters.sort || 'created_at'
+    });
     const [activeTab, setActiveTab] = useState(() => {
         if (filters.tab) {
             return filters.tab;
@@ -157,7 +160,12 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
     const handlePageChange = (page: number) => {
         setLoading(true);
         setCurrentPage(page);
-        router.get('/products', { ...currentFilters, page }, {
+        const updatedFilters = {
+            ...currentFilters,
+            page,
+            sort: currentFilters.sort || 'created_at'
+        };
+        router.get('/products', updatedFilters, {
             preserveState: true,
             onFinish: () => setLoading(false)
         });
@@ -165,9 +173,13 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
 
     const handleFilterChange = (newFilters: any) => {
         setLoading(true);
-        setCurrentFilters(newFilters);
+        const updatedFilters = {
+            ...newFilters,
+            sort: newFilters.sort || 'created_at'
+        };
+        setCurrentFilters(updatedFilters);
         setCurrentPage(1);
-        router.get('/products', { ...newFilters, page: 1 }, {
+        router.get('/products', { ...updatedFilters, page: 1 }, {
             preserveState: true,
             onFinish: () => setLoading(false)
         });
@@ -198,10 +210,10 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
 
     const handleClearAllFilters = () => {
         setLoading(true);
-        setCurrentFilters({});
+        setCurrentFilters({ sort: 'created_at' });
         setCurrentPage(1);
         setActiveTab('all');
-        router.get('/products', { page: 1 }, {
+        router.get('/products', { page: 1, sort: 'created_at' }, {
             preserveState: true,
             onFinish: () => setLoading(false)
         });
@@ -231,9 +243,13 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
             }
         }
 
-        setCurrentFilters(newFilters);
+        const updatedFilters = {
+            ...newFilters,
+            sort: currentFilters.sort || 'created_at'
+        };
+        setCurrentFilters(updatedFilters);
         setCurrentPage(1);
-        router.get('/products', newFilters, {
+        router.get('/products', updatedFilters, {
             preserveState: true,
             onFinish: () => setLoading(false)
         });
@@ -267,9 +283,13 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters, filt
             };
         }
 
-        setCurrentFilters(newFilters);
+        const updatedFilters = {
+            ...newFilters,
+            sort: currentFilters.sort || 'created_at'
+        };
+        setCurrentFilters(updatedFilters);
         setCurrentPage(1);
-        router.get('/products', newFilters, {
+        router.get('/products', updatedFilters, {
             preserveState: true,
             onFinish: () => setLoading(false)
         });

@@ -93,6 +93,18 @@ class CategoryCustomizationSeeder extends Seeder
                             'required' => true,
                             'default' => 1
                         ],
+                        'room_type' => [
+                            'label' => 'نوع المكان',
+                            'type' => 'select',
+                            'options' => [
+                                'majlis' => 'مجلس',
+                                'bedroom' => 'غرفة نوم',
+                                'living_room' => 'غرفة جلوس',
+                                'guest_room' => 'غرفة ضيوف',
+                                'hall' => 'صالة'
+                            ],
+                            'required' => true
+                        ],
                         'sofa_type' => [
                             'label' => 'نوع الكنب',
                             'type' => 'select',
@@ -129,7 +141,9 @@ class CategoryCustomizationSeeder extends Seeder
                             'type' => 'select',
                             'options' => [
                                 'high_density_foam' => 'إسفنج عالي الكثافة',
-                                'fiber_foam' => 'فيبر + إسفنج'
+                                'fiber_foam' => 'فيبر + إسفنج',
+                                'feather' => 'ريش',
+                                'memory_foam' => 'ميموري فوم'
                             ],
                             'required' => true
                         ],
@@ -168,14 +182,6 @@ class CategoryCustomizationSeeder extends Seeder
                             'required' => true,
                             'units' => ['سم'],
                             'fields' => ['width' => 'العرض', 'height' => 'الارتفاع']
-                        ],
-                        'wood_type' => [
-                            'label' => 'نوع الخشب',
-                            'type' => 'select',
-                            'options' => [
-                                'italian_chipboard' => 'شيورد إيطالي (جودة عالية)'
-                            ],
-                            'required' => true
                         ],
                         'opening_type' => [
                             'label' => 'نوع الفتح',
@@ -261,42 +267,6 @@ class CategoryCustomizationSeeder extends Seeder
                                 'dressers' => 'تسريحات'
                             ],
                             'required' => true
-                        ],
-                        'wood_material' => [
-                            'label' => 'نوع الخشب',
-                            'type' => 'select',
-                            'options' => [
-                                'oak' => 'خشب البلوط',
-                                'pine' => 'خشب الصنوبر',
-                                'walnut' => 'خشب الجوز',
-                                'mahogany' => 'خشب الماهوجني',
-                                'mdf' => 'MDF'
-                            ],
-                            'required' => true
-                        ],
-                        'wood_finish' => [
-                            'label' => 'التشطيب',
-                            'type' => 'select',
-                            'options' => [
-                                'natural' => 'طبيعي',
-                                'polished' => 'مصقول',
-                                'painted' => 'مطلي',
-                                'hand_carved' => 'منحوت يدوياً',
-                                'matte' => 'مطفي',
-                                'glossy' => 'لامع'
-                            ],
-                            'required' => true
-                        ],
-                        'wood_color' => [
-                            'label' => 'لون الخشب',
-                            'type' => 'color_selector',
-                            'required' => true
-                        ],
-                        'dimensions' => [
-                            'label' => 'القياس (الطول × العرض × الارتفاع)',
-                            'type' => 'dimensions_3d',
-                            'required' => false,
-                            'units' => ['سم', 'متر']
                         ],
                         'file_upload' => [
                             'label' => 'رفع صورة التصميم أو المخطط المطلوب',

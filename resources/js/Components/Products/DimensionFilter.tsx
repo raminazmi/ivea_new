@@ -41,7 +41,7 @@ const DimensionFilter: React.FC<DimensionFilterProps> = ({
 
     useEffect(() => {
         onDimensionChange({ width, height });
-    }, [width, height, onDimensionChange]);
+    }, [width, height]);
 
     const handleWidthChange = (newWidth: number) => {
         setWidth(newWidth);

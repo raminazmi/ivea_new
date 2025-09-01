@@ -1,7 +1,7 @@
 // src/Components/Footer.tsx
 import React from 'react';
 import { Link } from '@inertiajs/react';
-import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa';
+import { FaInstagram, FaSnapchatGhost, FaTiktok } from 'react-icons/fa';
 
 const Footer: React.FC = () => {
     return (
@@ -22,10 +22,10 @@ const Footer: React.FC = () => {
                                 <FaInstagram className="w-4 h-4 md:w-5 md:h-5" />
                             </a>
                             <a href="#" className="text-white hover:text-yellow-400 transition">
-                                <FaFacebookF className="w-4 h-4 md:w-5 md:h-5" />
+                                <FaSnapchatGhost className="w-4 h-4 md:w-5 md:h-5" />
                             </a>
                             <a href="#" className="text-white hover:text-yellow-400 transition">
-                                <FaYoutube className="w-4 h-4 md:w-5 md:h-5" />
+                                <FaTiktok className="w-4 h-4 md:w-5 md:h-5" />
                             </a>
                         </div>
                     </div>
@@ -33,17 +33,17 @@ const Footer: React.FC = () => {
                     <div>
                         <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4">الرئيسية</h3>
                         <ul className="space-y-2 md:space-y-3">
-                            <li><Link href="#" className="text-gray-300 hover:text-yellow-400 transition text-sm">تعرف علينا</Link></li>
-                            <li><Link href="#" className="text-gray-300 hover:text-yellow-400 transition text-sm">خدماتنا</Link></li>
-                            <li><Link href="#" className="text-gray-300 hover:text-yellow-400 transition text-sm">المدونة</Link></li>
+                            <li><Link href="/products" className="text-gray-300 hover:text-yellow-400 transition text-sm">المنتجات</Link></li>
+                            <li><Link href="/about" className="text-gray-300 hover:text-yellow-400 transition text-sm">من نحن</Link></li>
+                            <li><Link href="/tools-and-guidelines" className="text-gray-300 hover:text-yellow-400 transition text-sm">أدوات وإرشادات</Link></li>
                         </ul>
                     </div>
 
                     <div>
                         <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4">تواصل معنا</h3>
                         <div className="space-y-2 md:space-y-3 text-gray-300 text-sm">
-                            <p>info@thabethejazi.com</p>
-                            <p>+966 66666666</p>
+                            <p>info@ivea.sa</p>
+                            <p>+966 541444066</p>
                         </div>
                     </div>
 

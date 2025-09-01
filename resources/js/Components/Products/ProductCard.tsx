@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, removeFromCart } from '@/store/features/cartSlice';
 import { HiShoppingCart, HiCheck } from 'react-icons/hi';
 import { RootState } from '@/store';
+import SofaPriceCalculator from './SofaPriceCalculator';
 
 interface ProductCardProps {
     product: {
@@ -68,7 +69,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
             const initialPrice = calculatePrice(currentDimensions.width, currentDimensions.height);
             setCurrentPrice(initialPrice);
         }
-    }, [product, currentDimensions, currentPrice, dimensions]);
+    }, [product, currentDimensions, dimensions]);
 
     useEffect(() => {
         const newPrice = calculatePrice(currentDimensions.width, currentDimensions.height);
@@ -82,7 +83,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
         if (onDimensionChange) {
             onDimensionChange(product.id, newPrice);
         }
-    }, [currentDimensions, product, onDimensionChange]);
+    }, [currentDimensions, product]);
 
     useEffect(() => {
         if (dimensions) {
@@ -98,6 +99,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
     const getPriceDisplayText = () => {
         const categoryName = product.category?.name?.toLowerCase();
         const isCurtainsOrCabinets = categoryName?.includes('ستا') || categoryName?.includes('خزا');
+        const isSofa = categoryName?.includes('كنب');
         
         if (currentPrice > 0 && currentPrice !== discountedPrice && dimensions && isCurtainsOrCabinets) {
             return 'السعر للأبعاد المحددة';
@@ -155,7 +157,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                             <div className="flex flex-col space-y-2">
                                 <Link
                                     href={`/products/${product.id}/options`}
-                                    className="bg-white text-gray-900 px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors text-xs sm:text-sm text-center"
+                                    className="bg-primary-yellow text-primary-black px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg font-medium hover:bg-yellow-400 transition-colors text-xs sm:text-sm text-center"
                                 >
                                     خيارات المنتج
                                 </Link>
@@ -282,6 +284,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                         </button>
                     </div>
                 </div>
+                
+                {/* مكون حساب السعر للكنب */}
+                {product.category?.name?.toLowerCase().includes('كنب') && (
+                    <div className="px-3 sm:px-4 pb-3 sm:pb-4">
+                        <SofaPriceCalculator 
+                            product={{
+                                id: product.id,
+                                name: product.name,
+                                price: product.price,
+                                finalPrice: product.final_price || product.price,
+                                category: product.category
+                            }} 
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

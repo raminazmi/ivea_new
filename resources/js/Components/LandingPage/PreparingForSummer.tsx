@@ -65,10 +65,10 @@ const PreparingForSummer: React.FC = () => {
                 <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-6 md:gap-8 lg:gap-12">
                     <div ref={contentRef} className="w-full md:w-[45%] text-center md:text-right">
                         <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-primary-black mb-2 md:mb-4 leading-tight">
-                            استعد لفصل الصيف
+استمتع بالصيف بأناقة
                         </h2>
                         <p className="text-xs sm:text-sm md:text-base text-[#424242] mb-4 md:mb-6 max-w-xl mx-auto md:mx-0">
-                            استمتع بالدفء مع أحبائك على الأرائك الفاخرة لدينا، وانعم باحتضان الأقمشة الجاهزة لفصل الشتاء. استمتع بأجواء الموسم مع أثاث غرفة معيشة أنيق وجذاب.
+من أقمشة عازلة الى تصاميم عصرية .. صممناها لتناسب حرارة الصيف تمنحك راحة طوال اليوم.
                         </p>
                         <Link
                             href="/products"
@@ -78,28 +78,28 @@ const PreparingForSummer: React.FC = () => {
                         </Link>
                     </div>
                     <div ref={imagesRef} className="w-full md:w-[45%] relative mt-6 md:mt-0">
-                        <div className="absolute left-0 md:left-2 bottom-0 w-[60px] h-[60px] md:w-[80px] md:h-[80px] bg-primary-yellow -z-10 rounded-2xl transition-all duration-1000 hover:scale-110"></div>
+                        <div className="absolute left-0 md:left-2 bottom-[-16px] md:bottom-0 w-[60px] h-[60px] md:w-[80px] md:h-[80px] bg-primary-yellow -z-10 rounded-2xl transition-all duration-1000 hover:scale-110"></div>
                         <div className="gap-3 md:gap-4 relative z-10 flex justify-center">
                             <Link
                                 href="/products?category=knb-wraayk"
-                                className="w-1/2 max-w-[100px] md:max-w-[140px] relative group overflow-hidden bg-white rounded-2xl shadow-lg h-32 md:h-48 flex items-center justify-center md:mt-6 transition-all duration-1000 hover:scale-105 hover:shadow-xl block cursor-pointer"
+                                className="w-[120px] md:w-[140px] relative group overflow-hidden bg-white rounded-2xl shadow-lg h-32 md:h-48 flex items-center justify-center md:mt-6 transition-all duration-1000 hover:scale-105 hover:shadow-xl block cursor-pointer flex-shrink-0"
                             >
-                                <div className="relative z-10 flex items-center justify-center">
+                                <div className="relative z-10 flex items-center justify-center w-full h-full">
                                     <img
-                                        src="/images/shadow1.png"
-                                        alt="أثاث صيفي"
+                                        src="https://plus.unsplash.com/premium_photo-1668073437337-5734dc7ef812?q=80&w=687&auto=format&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                        alt="كنب صيفي أنيق"
                                         className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
                                     />
                                 </div>
                             </Link>
                             <Link
                                 href="/products?category=knb-wraayk"
-                                className="w-1/2 relative group overflow-hidden bg-white rounded-2xl shadow-lg h-32 md:h-48 flex items-center justify-center transition-all duration-1000 hover:scale-105 hover:shadow-xl block cursor-pointer"
+                                className="w-[140px] md:w-[280px] relative group overflow-hidden bg-white rounded-2xl shadow-lg h-32 md:h-48 flex items-center justify-center transition-all duration-1000 hover:scale-105 hover:shadow-xl block cursor-pointer flex-shrink-0"
                             >
                                 <div className="relative z-10 w-full h-full flex items-center justify-center">
                                     <img
-                                        src="/images/shadow2.png"
-                                        alt="أثاث صيفي"
+                                        src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400"
+                                        alt="أثاث خارجي صيفي"
                                         className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
                                     />
                                 </div>

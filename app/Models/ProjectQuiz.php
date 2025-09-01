@@ -53,6 +53,7 @@ class ProjectQuiz extends Model
     const PRODUCT_NEEDS = [
         'curtains' => 'ستائر',
         'furniture' => 'أثاث',
+        'sofas' => 'كنب',
         'cabinets' => 'خزائن',
         'doors' => 'أبواب',
         'woodwork' => 'خشبيات',

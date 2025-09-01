@@ -126,7 +126,7 @@ const ContactForm = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <div>
                 <label htmlFor="first_name" className="block text-right text-primary-black mb-2 text-sm md:text-base">
-                  الاسم الأول
+                  الاسم الأول <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -145,7 +145,7 @@ const ContactForm = () => {
 
               <div>
                 <label htmlFor="last_name" className="block text-right text-primary-black mb-2 text-sm md:text-base">
-                  اسم العائلة
+                  اسم العائلة <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -166,7 +166,7 @@ const ContactForm = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <div>
                 <label htmlFor="email" className="block text-right text-primary-black mb-2 text-sm md:text-base">
-                  البريد الإلكتروني
+                  البريد الإلكتروني <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
@@ -185,7 +185,7 @@ const ContactForm = () => {
 
               <div>
                 <label htmlFor="phone_number" className="block text-right text-primary-black mb-2 text-sm md:text-base">
-                  رقم الهاتف
+                  رقم الهاتف <span className="text-red-500">*</span>
                 </label>
                 <div className="flex">
                   <select
@@ -221,7 +221,7 @@ const ContactForm = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <div>
                 <label htmlFor="subject" className="block text-right text-primary-black mb-2 text-sm md:text-base">
-                  موضوع
+                  موضوع <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -240,7 +240,7 @@ const ContactForm = () => {
 
               <div>
                 <label htmlFor="category" className="block text-right text-primary-black mb-2 text-sm md:text-base">
-                  الفئة
+                  الفئة <span className="text-red-500">*</span>
                 </label>
                 <select
                   id="category"
@@ -264,7 +264,7 @@ const ContactForm = () => {
 
             <div>
               <label htmlFor="message" className="block text-right text-primary-black mb-2 text-sm md:text-base">
-                كيف يمكننا المساعدة؟
+                كيف يمكننا المساعدة؟ <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="message"

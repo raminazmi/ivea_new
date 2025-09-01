@@ -13,7 +13,7 @@ class OrderController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'email' => 'nullable|email|max:255',
             'phone' => 'required|string|max:20',
             'city' => 'required|string|max:255',
             'address' => 'nullable|string',
@@ -86,7 +86,7 @@ class OrderController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'email' => 'nullable|email|max:255',
             'phone' => 'required|string|max:20',
             'city' => 'required|string|max:255',
             'address' => 'required|string',

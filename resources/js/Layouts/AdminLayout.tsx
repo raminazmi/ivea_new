@@ -22,22 +22,26 @@ interface AdminLayoutProps {
     children: ReactNode;
     title?: string;
     user?: User;
+    notifications?: {
+        unreadOrders?: number;
+        unreadMessages?: number;
+    };
 }
 
-const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة التحكم', user }) => {
+const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة التحكم', user, notifications }) => {
     const { auth, user: pageUser } = usePage<PageProps>().props;
     const currentUser = user || pageUser || auth.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const menuItems = [
         { name: 'الرئيسية', icon: FaHome, href: route('admin.dashboard'), active: route().current('admin.dashboard') },
         { name: 'المنتجات', icon: FaBox, href: route('admin.products.index'), active: route().current('admin.products.*') },
-        { name: 'الطلبات', icon: FaShoppingCart, href: route('admin.orders.index'), active: route().current('admin.orders.*') },
+        { name: 'الطلبات', icon: FaShoppingCart, href: route('admin.orders.index'), active: route().current('admin.orders.*'), badge: notifications?.unreadOrders },
         { name: 'الفئات', icon: FaTags, href: route('admin.categories.index'), active: route().current('admin.categories.*') },
         { name: 'المقالات', icon: FaNewspaper, href: route('admin.articles.index'), active: route().current('admin.articles.*') },
         { name: 'المشاريع', icon: FaPaintBrush, href: route('admin.projects.index'), active: route().current('admin.projects.*') },
         { name: 'الوظائف', icon: FaBriefcase, href: route('admin.jobs.index'), active: route().current('admin.jobs.*') },
         { name: 'التقديمات', icon: FaFileAlt, href: route('admin.applications.index'), active: route().current('admin.applications.*') },
-        { name: 'الرسائل', icon: FaEnvelope, href: route('admin.contacts.index'), active: route().current('admin.contacts.*') },
+        { name: 'الرسائل', icon: FaEnvelope, href: route('admin.contacts.index'), active: route().current('admin.contacts.*'), badge: notifications?.unreadMessages },
     ];
 
     return (
@@ -71,13 +75,20 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    className={`flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${item.active
+                                    className={`flex items-center justify-between space-x-3 rtl:space-x-reverse px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${item.active
                                         ? 'bg-primary-yellow text-primary-black shadow-md'
                                         : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                                         }`}
                                 >
-                                    <Icon className="w-5 h-5" />
-                                    <span>{item.name}</span>
+                                    <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                                        <Icon className="w-5 h-5" />
+                                        <span>{item.name}</span>
+                                    </div>
+                                    {item.badge && item.badge > 0 && (
+                                        <div className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center min-w-[20px]">
+                                            {item.badge > 99 ? '99+' : item.badge}
+                                        </div>
+                                    )}
                                 </Link>
                             );
                         })}

@@ -57,15 +57,18 @@ const SPACE_TYPES: Record<string, string> = {
     hotel: 'فندق',
     other: 'أخرى'
 };
+
 const PRODUCT_NEEDS: Record<string, string> = {
     curtains: 'ستائر',
     furniture: 'أثاث',
+    sofas: 'كنب',
     cabinets: 'خزائن',
     doors: 'أبواب',
     woodwork: 'خشبيات',
     finishes: 'تشطيبات',
     other: 'أخرى'
 };
+
 const PREFERRED_STYLES: Record<string, string> = {
     modern: 'عصري',
     classic: 'كلاسيكي',
@@ -192,9 +195,6 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
 
     const renderQuizzesTable = () => (
         <div className="overflow-x-auto">
-            {(() => {
-
-                return (
                     <table className="min-w-full bg-white border border-gray-200">
                         <thead className="bg-gray-50">
                             <tr>
@@ -310,8 +310,6 @@ const Projects: React.FC<ProjectsProps> = ({ quizzes, submissions, filters }) =>
                             ))}
                         </tbody>
                     </table>
-                );
-            })()}
         </div>
     );
 

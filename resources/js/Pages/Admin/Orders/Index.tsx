@@ -177,8 +177,19 @@ const OrdersIndex: React.FC<OrdersIndexProps> = ({ orders, statistics, filters }
         }
     };
 
+    const handleExportExcel = () => {
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (status) params.append('status', status);
+        if (dateFrom) params.append('date_from', dateFrom);
+        if (dateTo) params.append('date_to', dateTo);
+        
+        const url = `${route('admin.orders.export')}?${params.toString()}`;
+        window.open(url, '_blank');
+    };
+
     return (
-        <AdminLayout>
+        <AdminLayout notifications={{ unreadOrders: safeStatistics.pending }}>
             <Head title="إدارة الطلبات" />
 
             <div className="space-y-6">
@@ -291,6 +302,13 @@ const OrdersIndex: React.FC<OrdersIndexProps> = ({ orders, statistics, filters }
 
                     <div className="flex justify-between items-center">
                         <div className="flex space-x-2">
+                            <button
+                                onClick={handleExportExcel}
+                                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-1"
+                            >
+                                <HiDownload className="w-4 h-4" />
+                                تصدير Excel
+                            </button>
                             {selectedOrders.length > 0 && (
                                 <button
                                     onClick={handleBulkDelete}

@@ -48,14 +48,15 @@ const QuizShow: React.FC<QuizShowProps> = ({ quiz }) => {
         other: 'أخرى'
     };
     const PRODUCT_NEEDS: Record<string, string> = {
-        curtains: 'ستائر',
-        furniture: 'أثاث',
-        cabinets: 'خزائن',
-        doors: 'أبواب',
-        woodwork: 'خشبيات',
-        finishes: 'تشطيبات',
-        other: 'أخرى'
-    };
+    curtains: 'ستائر',
+    furniture: 'أثاث',
+    sofas: 'كنب',
+    cabinets: 'خزائن',
+    doors: 'أبواب',
+    woodwork: 'خشبيات',
+    finishes: 'تشطيبات',
+    other: 'أخرى'
+};
     const PREFERRED_STYLES: Record<string, string> = {
         modern: 'عصري',
         classic: 'كلاسيكي',

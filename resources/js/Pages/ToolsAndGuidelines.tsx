@@ -69,6 +69,43 @@ const ToolsAndGuidelines: React.FC<ToolsAndGuidelinesProps> = ({
         });
     };
 
+    const handleShareArticle = () => {
+        if (navigator.share) {
+            navigator.share({
+                title: mainArticle?.title || 'مقال من ايفيا',
+                text: mainArticle?.title || 'مقال مثير للاهتمام من موقع ايفيا',
+                url: window.location.href,
+            }).catch((error) => {
+                console.log('Error sharing:', error);
+                // Fallback: copy to clipboard
+                copyToClipboard(window.location.href);
+            });
+        } else {
+            // Fallback: copy to clipboard
+            copyToClipboard(window.location.href);
+        }
+    };
+
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text).then(() => {
+            // يمكن إضافة toast notification هنا
+            alert('تم نسخ رابط المقال إلى الحافظة');
+        }).catch(() => {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('تم نسخ رابط المقال إلى الحافظة');
+        });
+    };
+
+    const handleRequestConsultation = () => {
+        router.get('/contact');
+    };
+
     const filteredTools = tools.filter(tool => {
         const matchesCategory = selectedCategory === 'all' || tool.category === selectedCategory;
         const matchesSearch = searchQuery === '' ||
@@ -164,25 +201,20 @@ const ToolsAndGuidelines: React.FC<ToolsAndGuidelinesProps> = ({
 
                                 <div className="bg-gray-50 rounded-lg p-4 md:p-6">
                                     <div className="flex items-start gap-3 md:gap-4">
-                                        <img
-                                            src={mainArticle?.author_image || "/images/pepole.png"}
-                                            alt={mainArticle?.author || "سمية الحسن"}
-                                            className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover"
-                                        />
                                         <div className="flex-1">
-                                            <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-1">
-                                                {mainArticle?.author || "سمية الحسن"}
-                                            </h3>
-                                            <p className="text-xs md:text-sm text-gray-600 mb-2 md:mb-3">كاتبة وباحثة</p>
-                                            <p className="text-xs md:text-sm text-gray-700 mb-3 md:mb-4 leading-relaxed">
-                                                {mainArticle?.author_bio || "كاتبة وباحثة متخصصة في مجال البناء والعقارات، لها العديد من المؤلفات والدراسات المنشورة في المجلات المتخصصة. حاصلة على جوائز عديدة في مجال الكتابة والبحث العلمي."}
-                                            </p>
                                             <div className="flex gap-2 md:gap-3">
-                                                <button className="px-3 md:px-4 py-1.5 md:py-2 bg-yellow-400 text-gray-900 rounded-lg hover:bg-yellow-500 transition-colors text-xs md:text-sm">
-                                                    صفحة الكاتب
+                                                <button 
+                                                    onClick={handleShareArticle}
+                                                    className="px-3 md:px-4 py-1.5 md:py-2 bg-yellow-400 text-gray-900 rounded-lg hover:bg-yellow-500 transition-colors text-xs md:text-sm flex items-center gap-1"
+                                                >
+                                                    <HiShare className="w-3 h-3 md:w-4 md:h-4" />
+                                                    مشاركة المقالة
                                                 </button>
-                                                <button className="px-3 md:px-4 py-1.5 md:py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-xs md:text-sm">
-                                                    كاتبة وباحثة
+                                                <button 
+                                                    onClick={handleRequestConsultation}
+                                                    className="px-3 md:px-4 py-1.5 md:py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-xs md:text-sm flex items-center gap-1"
+                                                >
+                                                    طلب استشارة
                                                 </button>
                                             </div>
                                         </div>

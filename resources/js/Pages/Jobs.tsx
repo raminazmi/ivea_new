@@ -62,7 +62,7 @@ const Jobs: React.FC<JobsProps> = ({ jobs, categories }) => {
   };
 
   const handleApply = (jobId: number) => {
-    router.visit(route('jobs.apply', { id: jobId }), {
+    router.visit(route('jobs.apply.form', { id: jobId }), {
       onSuccess: () => {
         setToast({
           isVisible: true,
@@ -93,7 +93,7 @@ const Jobs: React.FC<JobsProps> = ({ jobs, categories }) => {
   return (
     <AppLayout>
       <CoverSection
-        imageUrl="/images/cv_cover.png"
+        imageUrl="/images/saudi_cover.png"
         title="اعمل معنا:"
         subtitle="نقدم لكم الدعم ونضع معاً خطة تنفيذ لتحقيق النجاح، لأن شراكتنا طريق للتميز"
         description=""

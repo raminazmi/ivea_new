@@ -45,8 +45,14 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
     return (
         <div className={`space-y-2 ${className}`}>
             {showLabel && (
-                <div className="text-sm text-gray-600">{dynamicLabel}</div>
+                <div className="text-sm text-gray-600 flex juatify-stert items-center gap-2">
+                    <div>{dynamicLabel}</div>
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                    Standard
+                </span>
+                </div>
             )}
+            
             <div className="flex items-center space-x-2">
                 <span className="text-2xl font-bold text-green-600">
                     {displayPrice.toFixed(2)}

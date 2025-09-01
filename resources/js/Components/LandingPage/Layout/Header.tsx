@@ -53,7 +53,7 @@ const Header = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col md:flex-row justify-between items-center">
                         <div className="flex items-center gap-3 md:gap-6">
-                            {isAuthenticated ? (
+                            {/* {isAuthenticated ? (
                                 <Link
                                     href={isAdmin ? "/admin/dashboard" : "/dashboard"}
                                     className="flex items-center text-gray-300 hover:text-white transition whitespace-nowrap"
@@ -66,20 +66,20 @@ const Header = () => {
                                     <FaUser className="ml-1 text-xs" />
                                     تسجيل الدخول
                                 </Link>
-                            )}
+                            )} */}
                         </div>
 
                         <div className="flex flex-wrap justify-center items-center gap-3 md:gap-6 mb-2 md:mb-0">
                             <a href="mailto:info@ivea.store" className="flex items-center text-gray-300 hover:text-white transition whitespace-nowrap text-xs">
-                                <span className="truncate max-w-[160px] sm:max-w-none">الرياض - المملكة العربية السعودية</span>
+                                <span className="truncate max-w-[160px] sm:max-w-none">المملكة العربية السعودية</span>
                                 <FaMapMarkerAlt className="ms-2 text-xs" />
                             </a>
-                            <a href="tel:+966500000000" className="text-xs flex items-center text-gray-300 hover:text-white transition whitespace-nowrap">
-                                +966 50 000 0000
+                            <a href="tel:+966541444066" className="text-xs flex items-center text-gray-300 hover:text-white transition whitespace-nowrap">
+                                541444066 (966+)
                                 <FaPhoneAlt className="ms-2 text-xs" />
                             </a>
-                            <a href="mailto:info@ivea.store" className="text-xs flex items-center text-gray-300 hover:text-white transition whitespace-nowrap">
-                                evya.store@gmail.com
+                            <a href="mailto:info@ivea.sa" className="text-xs flex items-center text-gray-300 hover:text-white transition whitespace-nowrap">
+                                info@ivea.sa
                                 <FaEnvelope className="ms-2 text-xs" />
                             </a>
                         </div>

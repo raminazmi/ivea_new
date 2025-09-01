@@ -273,7 +273,7 @@ const CartIndex: React.FC = () => {
                                 <form onSubmit={handleSubmitOrder} className="space-y-4">
                                     <div>
                                         <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-1">
-                                            الاسم الأول *
+                                            الاسم الأول <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
@@ -291,7 +291,7 @@ const CartIndex: React.FC = () => {
 
                                     <div>
                                         <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-1">
-                                            الاسم الأخير *
+                                            الاسم الأخير <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
@@ -309,7 +309,7 @@ const CartIndex: React.FC = () => {
 
                                     <div>
                                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                            البريد الإلكتروني *
+                                            البريد الإلكتروني
                                         </label>
                                         <input
                                             type="email"
@@ -317,17 +317,16 @@ const CartIndex: React.FC = () => {
                                             value={data.email}
                                             onChange={(e) => setData('email', e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            required
-                                            title="أدخل البريد الإلكتروني"
-                                            aria-label="البريد الإلكتروني"
-                                            placeholder="أدخل البريد الإلكتروني"
+                                            title="أدخل البريد الإلكتروني (اختياري)"
+                                            aria-label="البريد الإلكتروني (اختياري)"
+                                            placeholder="أدخل البريد الإلكتروني (اختياري)"
                                         />
                                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                                     </div>
 
                                     <div>
                                         <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                                            رقم الهاتف *
+                                            رقم الهاتف <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="tel"
@@ -345,7 +344,7 @@ const CartIndex: React.FC = () => {
 
                                     <div>
                                         <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
-                                            المدينة *
+                                            المدينة <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
@@ -363,7 +362,7 @@ const CartIndex: React.FC = () => {
 
                                     <div>
                                         <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                                            العنوان التفصيلي *
+                                            العنوان التفصيلي <span className="text-red-500">*</span>
                                         </label>
                                         <textarea
                                             id="address"
@@ -373,8 +372,8 @@ const CartIndex: React.FC = () => {
                                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             required
                                             title="أدخل العنوان التفصيلي"
-                                            aria-label="العنوان التفصيلي"
-                                            placeholder="أدخل العنوان التفصيلي"
+                                            aria-label="العنوان التفصيلي (اسم الحي، اسم الشارع)"
+                                            placeholder="العنوان التفصيلي (اسم الحي، اسم الشارع)"
                                         ></textarea>
                                         {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
                                     </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from '@inertiajs/react';
-import { FaWhatsapp, FaCouch, FaShieldAlt, FaTruck } from 'react-icons/fa';
+import { FaWhatsapp, FaCouch, FaComments, FaTruck } from 'react-icons/fa';
 import { HiChevronRight, HiChevronLeft } from 'react-icons/hi';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -147,23 +147,15 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
     const heroImages = [
         {
             src: '/images/hero_ivea.png',
-            alt: 'إيفيا - التصميم العصري'
+            alt: 'إيفيا #تشاركك_ذوقك'
         },
         {
             src: '/images/building1.png',
-            alt: 'إيفيا - المباني الحديثة'
+            alt: 'تفاصيل تلامس حواسك'
         },
         {
             src: '/images/building2.png',
-            alt: 'إيفيا - التصميم الفاخر'
-        },
-        {
-            src: '/images/building3.png',
-            alt: 'إيفيا - اللمسات النهائية'
-        },
-        {
-            src: '/images/building4.png',
-            alt: 'إيفيا - التفاصيل المميزة'
+            alt: 'عروض اليوم الوطني بدأت'
         }
     ];
 
@@ -183,21 +175,24 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
             borderColor: 'border-0'
         },
         {
-            icon: <FaShieldAlt className="text-primary-yellow text-lg sm:text-xl md:text-2xl" />,
-            title: 'مدفوعات آمنة',
-            description: 'مدفوعات آمنة',
+            icon: <FaComments className="text-primary-yellow text-lg sm:text-xl md:text-2xl" />,
+            title: 'استشارات مجانية',
+            description: 'استشارات مجانية',
             containerBg: 'bg-white',
             borderColor: 'border-0'
         }
     ];
 
     const brands = [
-        { name: '3M', image: '/images/3m.png' },
-        { name: 'ARMANI/CASA', image: '/images/armani.png' },
-        { name: 'York Weave', image: '/images/york.png' },
-        { name: 'IKEA', image: '/images/ikea.png' },
-        { name: 'SOMFY', image: '/images/somfy.png' },
-        { name: 'MISSONI HOME', image: '/images/missoni.png' },
+        // { name: '3M', image: '/images/3m.png' },
+        // { name: 'ARMANI/CASA', image: '/images/armani.png' },
+        // { name: 'York Weave', image: '/images/york.png' },
+        // { name: 'SOMFY', image: '/images/somfy.png' },
+        // { name: 'MISSONI HOME', image: '/images/missoni.png' },
+        { name: 'Classen', image: '/images/brans/classen.png' },
+        { name: 'Kronospan', image: '/images/brans/kronospan.png' },
+        { name: 'Guangdong A-OK', image: '/images/brans/guangdong_a_ok_technology_grand_development_co_ltd_logo.png' },
+        { name: 'مجموعة القثمي', image: '/images/brans/مجموعة-القثمي-للأقمشة.png' },
     ];
 
     const getCategoryLink = (categorySlug: string) => {
@@ -279,6 +274,15 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                                                 className="w-full h-full object-cover"
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                            
+                                            {/* النص الذي يظهر على الصورة */}
+                                            <div className="absolute inset-0 flex items-center justify-center z-10">
+                                                <div className="bg-black/40 backdrop-blur-sm rounded-lg p-2 sm:p-3 md:p-4 text-center text-white shadow-lg border border-white/10">
+                                                    <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold drop-shadow-lg">
+                                                        {image.alt}
+                                                    </h2>
+                                                </div>
+                                            </div>
                                         </div>
                                     </SwiperSlide>
                                 ))}
@@ -327,13 +331,13 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                                 استكشف عروضنا
                             </Link>
                             <a
-                                href="https://wa.me/966123456789?text=مرحباً، أود الحصول على استشارة مجانية"
+                                href="https://wa.me/966541444066?text=مرحباً، أود الحصول على استشارة مجانية"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center justify-center gap-2 text-[#616161] font-medium transition-all duration-500 hover:scale-105"
                             >
                                 <FaWhatsapp className="text-xl sm:text-2xl md:text-3xl text-white bg-[#4CAF50] hover:bg-[#3d8b40] rounded-full p-1 sm:p-1.5 md:p-2 transition-all duration-500 hover:scale-110" />
-                                <span className="text-xs sm:text-sm md:text-base">للإستشارة المجانية</span>
+                                <span className="text-xs sm:text-sm md:text-base">للتواصل والإستشارات</span>
                             </a>
                         </div>
                     </div>
@@ -344,7 +348,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                     data-section="features"
                     className="relative"
                 >
-                    <div ref={featuresContainerRef} className="relative mt-6 sm:mt-8 md:mt-12 lg:absolute lg:bottom-[-30px] lg:right-[5%] lg:w-[80%] xl:w-[70%] bg-white shadow rounded-xl md:rounded-full py-2 px-3 sm:px-4 md:px-6 flex flex-col md:flex-row items-center gap-3 sm:gap-4">
+                    <div ref={featuresContainerRef} className="relative mt-6 sm:mt-8 md:mt-12 lg:absolute lg:bottom-[-30px] lg:right-[5%] lg:w-[80%] xl:w-[75%] bg-white shadow rounded-xl md:rounded-full py-2 px-3 sm:px-4 md:px-6 flex flex-col md:flex-row items-center gap-3 sm:gap-4">
                         <div className='flex flex-wrap justify-center md:justify-start items-center gap-2 sm:gap-3 md:gap-4 w-full'>
                             {features.map((feature, index) => (
                                 <div
@@ -381,6 +385,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                         <Swiper
                             slidesPerView={3}
                             breakpoints={{
+                                200: { slidesPerView: 3},
                                 640: { slidesPerView: 5 }
                             }}
                             spaceBetween={0}
@@ -404,10 +409,11 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                                             <img
                                                 src={brand.image}
                                                 alt={brand.name}
-                                                className="h-4 sm:h-5 md:h-6 lg:h-8 min-w-[100px] object-contain"
+                                                className="h-8 sm:h-10 md:h-12 lg:h-24 w-auto max-w-[120px] object-contain"
                                                 style={{
                                                     filter: 'grayscale(100%)',
-                                                    opacity: 0.8
+                                                    opacity: 0.8,
+                                                    maxHeight: '60px'
                                                 }}
                                             />
                                         </div>
