@@ -5,11 +5,33 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const FeaturedOffers: React.FC = () => {
+interface Offer {
+    id: number;
+    title: string;
+    discount_percentage: number;
+    category_slug: string;
+    category_name: string;
+}
+
+interface FeaturedOffersProps {
+    offers?: Offer[];
+}
+
+const FeaturedOffers: React.FC<FeaturedOffersProps> = ({ offers = [] }) => {
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const cardsRef = useRef<HTMLDivElement>(null);
+
+    const getCategoryImage = (categorySlug: string) => {
+        const categoryImages = {
+            curtains: '/images/curtain.png',
+            sofas: '/images/sofa3.png',
+            cabinets: '/images/treasury.png',
+            wooden: '/images/chair.png'
+        };
+        return categoryImages[categorySlug as keyof typeof categoryImages] || '/images/default-offer.png';
+    };
 
     useEffect(() => {
         if (contentRef.current) {
@@ -54,6 +76,11 @@ const FeaturedOffers: React.FC = () => {
         };
     }, []);
 
+    // إخفاء السكشن بالكامل إذا لم توجد عروض
+    if (offers.length === 0) {
+        return null;
+    }
+
     return (
         <section
             ref={sectionRef}
@@ -78,43 +105,29 @@ const FeaturedOffers: React.FC = () => {
                     </div>
 
                     <div ref={cardsRef} className="w-full lg:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                        <Link
-                            href="/products?category=tawlat&tab=offers"
-                            className="relative rounded-2xl overflow-hidden bg-light-blue shadow-lg flex transition-all duration-1000 hover:scale-105 hover:shadow-xl cursor-pointer block"
-                        >
-                            <div className='flex flex-col justify-between gap-6 py-4 ps-6 pe-2'>
-                                <div className='w-10 h-10 bg-primary-yellow rounded-full flex justify-center items-center transition-all duration-700 hover:scale-110'>
-                                    <span className='text-base font-bold'>15%</span>
+                        {offers.slice(0, 2).map((offer, index) => (
+                            <Link
+                                key={offer.id}
+                                href={`/products?category=${offer.category_slug}&tab=offers`}
+                                className={`relative rounded-2xl overflow-hidden shadow-lg flex transition-all duration-1000 hover:scale-105 hover:shadow-xl cursor-pointer block ${
+                                    index === 0 ? 'bg-gray-50' : 'bg-peach'
+                                }`}
+                            >
+                                <div className='flex flex-col justify-between gap-6 py-4 ps-6 pe-2'>
+                                    <div className='w-10 h-10 bg-primary-yellow rounded-full flex justify-center items-center transition-all duration-700 hover:scale-110'>
+                                        <span className='text-base font-bold'>{offer.discount_percentage}%</span>
+                                    </div>
+                                    <div><p className='font-bold text-base'>{offer.category_name}</p></div>
                                 </div>
-                                <div><p className='font-bold text-base'>خـــزائن</p></div>
-                            </div>
-                            <div className="flex-grow flex items-center justify-center">
-                                <img
-                                    src="/images/treasury.png"
-                                    alt="خزانة"
-                                    className="w-full object-contain transition-transform duration-1000 hover:scale-110 max-h-32 sm:max-h-40 md:max-h-48"
-                                />
-                            </div>
-                        </Link>
-
-                        <Link
-                            href="/products?category=stayr-nbsh&tab=offers"
-                            className="relative rounded-2xl overflow-hidden bg-peach shadow-lg flex transition-all duration-1000 hover:scale-105 hover:shadow-xl cursor-pointer block"
-                        >
-                            <div className='flex flex-col justify-between gap-6 py-4 ps-6 pe-2'>
-                                <div className='w-10 h-10 bg-primary-yellow rounded-full flex justify-center items-center transition-all duration-700 hover:scale-110'>
-                                    <span className='text-base font-bold'>30%</span>
+                                <div className="flex-grow flex items-center justify-center">
+                                    <img
+                                        src={getCategoryImage(offer.category_slug)}
+                                        alt={offer.category_name}
+                                        className="w-full object-contain transition-transform duration-1000 hover:scale-110 max-h-32 sm:max-h-40 md:max-h-48"
+                                    />
                                 </div>
-                                <div><p className='font-bold text-base'>ستـــائر</p></div>
-                            </div>
-                            <div className="flex-grow flex items-center justify-center">
-                                <img
-                                    src="/images/curtain.png"
-                                    alt="ستارة"
-                                    className="w-full object-contain transition-transform duration-1000 hover:scale-110 max-h-32 sm:max-h-40 md:max-h-48"
-                                />
-                            </div>
-                        </Link>
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>

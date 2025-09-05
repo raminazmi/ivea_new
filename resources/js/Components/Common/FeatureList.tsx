@@ -9,7 +9,7 @@ interface FeatureListProps {
 
 const FeatureList: React.FC<FeatureListProps> = ({
     features,
-    title = "المميزات والفوائد:",
+    title = "خصائص ومزايا المنتج :",
     className = ""
 }) => {
     return (

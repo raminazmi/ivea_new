@@ -12,7 +12,9 @@ interface ActionButtonsProps {
     buttons?: ActionButton[];
     onAddToCart?: () => void;
     onQuickOrder?: () => void;
+    onRemoveFromCart?: () => void;
     inStock?: boolean;
+    inCart?: boolean;
     className?: string;
     showQuickOrder?: boolean;
 }
@@ -22,7 +24,9 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
     buttons,
     onAddToCart,
     onQuickOrder,
+    onRemoveFromCart,
     inStock = true,
+    inCart = false,
     className = "",
     showQuickOrder = true
 }) => {
@@ -50,20 +54,22 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
     }
 
     const handleAddToCartClick = () => {
-        if (added || !inStock) return;
+        if (added || inCart || !inStock) return;
         setCartAnim(true);
-        setAdded(true);
         if (onAddToCart) onAddToCart();
         setTimeout(() => setCartAnim(false), 700);
     };
 
     const handleRemoveFromCartClick = () => {
         setAdded(false);
+        if (onRemoveFromCart) {
+            onRemoveFromCart();
+        }
     };
 
     return (
         <div className={`flex flex-col sm:flex-row gap-3 sm:gap-4 ${className}`}>
-            {!added ? (
+            {!added && !inCart ? (
                 <button
                     onClick={handleAddToCartClick}
                     disabled={!inStock}
@@ -73,7 +79,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
                     <HiShoppingCart className={`text-xl ${cartAnim ? 'animate-bounce-cart' : ''}`} />
                     {inStock ? 'أضف إلى السلة' : 'غير متوفر'}
                 </button>
-            ) : (
+            ) : (added || inCart) ? (
                 <button
                     onClick={handleRemoveFromCartClick}
                     className="flex-1 flex items-center justify-center gap-2 font-bold py-3 px-6 rounded-xl transition-all duration-300 bg-red-500 hover:bg-red-600 text-white shadow-lg focus:outline-none focus:ring-2 focus:ring-red-300 active:scale-95"
@@ -81,7 +87,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     حذف من السلة
                 </button>
-            )}
+            ) : null}
 
             {showQuickOrder && (
                 <button

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Article;
+use App\Models\Offer;
 use App\Services\SeoService;
 use Inertia\Inertia;
 
@@ -27,6 +28,9 @@ class HomeController extends Controller
         });
 
         $categories = Category::active()->whereNull('parent_id')->withCount('products')->ordered()->get();
+
+        // Get latest 2 offers for featured offers section
+        $featuredOffers = Offer::ordered()->take(2)->get();
 
         $latestArticles = Article::published()->ordered()->take(6)->get()->map(function ($article) {
             return [
@@ -105,6 +109,7 @@ class HomeController extends Controller
         return Inertia::render('Home', [
             'featuredProducts' => $featuredProducts,
             'categories' => $categories,
+            'featuredOffers' => $featuredOffers,
             'latestArticles' => $latestArticles,
             'seo' => $seoData,
             'structuredData' => $structuredData,

@@ -69,13 +69,22 @@ interface Article {
     slug: string;
 }
 
+interface Offer {
+    id: number;
+    title: string;
+    discount_percentage: number;
+    category_slug: string;
+    category_name: string;
+}
+
 interface HomeProps extends PageProps {
     featuredProducts: Product[];
     categories: Category[];
+    featuredOffers?: Offer[];
     latestArticles?: Article[];
 }
 
-const Home: React.FC<HomeProps> = ({ featuredProducts, categories, latestArticles = [] }) => {
+const Home: React.FC<HomeProps> = ({ featuredProducts, categories, featuredOffers = [], latestArticles = [] }) => {
     useSEO();
 
     return (
@@ -83,7 +92,7 @@ const Home: React.FC<HomeProps> = ({ featuredProducts, categories, latestArticle
             <div className="container mx-auto px-2 sm:px-4 lg:px-8">
                 <Hero categories={categories} />
             </div>
-            <FeaturedOffers />
+            <FeaturedOffers offers={featuredOffers} />
             <PreparingForSummer />
             <CategoryShowcase featuredProducts={featuredProducts} categories={categories} />
             <div className="container mx-auto px-2 sm:px-4 lg:px-8 xl:px-24">

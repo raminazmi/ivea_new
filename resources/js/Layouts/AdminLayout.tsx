@@ -1,7 +1,7 @@
 import React, { useState, ReactNode } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
-import { FaHome, FaBox, FaTags, FaNewspaper, FaEnvelope, FaCog, FaSignOutAlt, FaBars, FaTimes, FaUser, FaTools, FaPaintBrush, FaBriefcase, FaFileAlt, FaUsers, FaShoppingCart } from 'react-icons/fa';
+import { FaHome, FaBox, FaTags, FaNewspaper, FaEnvelope, FaCog, FaSignOutAlt, FaBars, FaTimes, FaUser, FaTools, FaPaintBrush, FaBriefcase, FaFileAlt, FaUsers, FaShoppingCart, FaGift } from 'react-icons/fa';
 
 interface User {
     id: number;
@@ -37,6 +37,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
         { name: 'المنتجات', icon: FaBox, href: route('admin.products.index'), active: route().current('admin.products.*') },
         { name: 'الطلبات', icon: FaShoppingCart, href: route('admin.orders.index'), active: route().current('admin.orders.*'), badge: notifications?.unreadOrders },
         { name: 'الفئات', icon: FaTags, href: route('admin.categories.index'), active: route().current('admin.categories.*') },
+        { name: 'العروض', icon: FaGift, href: route('admin.offers.index'), active: route().current('admin.offers.*') },
         { name: 'المقالات', icon: FaNewspaper, href: route('admin.articles.index'), active: route().current('admin.articles.*') },
         { name: 'المشاريع', icon: FaPaintBrush, href: route('admin.projects.index'), active: route().current('admin.projects.*') },
         { name: 'الوظائف', icon: FaBriefcase, href: route('admin.jobs.index'), active: route().current('admin.jobs.*') },

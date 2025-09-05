@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ImageUploadController;
 use App\Http\Controllers\Admin\JobController as AdminJobController;
+use App\Http\Controllers\Admin\OfferController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ToolController;
 use Illuminate\Support\Facades\Route;
@@ -140,6 +141,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('orders/{id}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::put('orders/{id}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
     Route::delete('orders/{id}', [AdminOrderController::class, 'destroy'])->name('orders.destroy');
+
+    // Offers
+    Route::resource('offers', OfferController::class);
 });
 
 // Cart

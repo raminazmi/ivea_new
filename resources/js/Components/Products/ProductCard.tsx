@@ -133,7 +133,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
     return (
         <div className="group transition-all duration-300 hover:-translate-y-1">
             <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group-hover:shadow-lg">
-                <Link href={`/products/${product.id}`} className="block">
+                <Link href={`/products/${product.id}/options`} className="block">
                     <div className="relative h-32 sm:h-36 md:h-40 bg-white rounded-t-xl overflow-hidden">
                         <img
                             src={product.image}
@@ -167,7 +167,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                 </Link>
 
                 <div className="p-3 sm:p-4 text-start">
-                    <Link href={`/products/${product.id}`} className="block">
+                    <Link href={`/products/${product.id}/options`} className="block">
                         <h3 className="font-bold text-base sm:text-md text-[#0D1F40] hover:text-[#0D1D25] transition-colors">
                             {product.name}
                         </h3>

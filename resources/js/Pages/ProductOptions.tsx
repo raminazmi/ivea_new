@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HiMinus, HiPlus, HiUpload, HiCheck, HiShoppingCart, HiChevronDown, HiChevronUp, HiAdjustments } from 'react-icons/hi';
+import { HiMinus, HiPlus, HiUpload, HiCheck, HiCog, HiChevronDown, HiChevronUp, HiAdjustments } from 'react-icons/hi';
 import { useDispatch } from 'react-redux';
 import Breadcrumb from '@/Components/Common/Breadcrumb';
 import ColorSelector from '@/Components/Common/ColorSelector';
@@ -12,7 +12,8 @@ import FeatureList from '@/Components/Common/FeatureList';
 import AppLayout from '@/Components/LandingPage/Layout/AppLayout';
 import ContactUs from '@/Components/LandingPage/ContactUs';
 import DimensionPriceCalculator from '@/Components/Products/DimensionPriceCalculator';
-import { addToCart, syncCartData } from '@/store/features/cartSlice';
+import Toast from '@/Components/Common/Toast';
+import { addToCart, removeFromCart, syncCartData } from '@/store/features/cartSlice';
 
 interface ProductOptionsProps {
     product: {
@@ -79,7 +80,10 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     const [added, setAdded] = useState(false);
     const [showQuickOrderModal, setShowQuickOrderModal] = useState(false);
     const [showMoreOptions, setShowMoreOptions] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
     const dispatch = useDispatch();
+
 
     const customizationFields = product.category?.customization_fields || {};
     const categoryName = product.category?.name?.toLowerCase();
@@ -255,7 +259,88 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
         setUploadedFiles(prev => prev.filter((_, i) => i !== index));
     };
 
+    const handleRemoveFromCart = () => {
+        // حذف المنتج من السلة
+        dispatch(removeFromCart(product.id));
+        setInCart(false);
+        setAdded(false);
+        syncCartData();
+    };
+
+    // التحقق من اكتمال جميع الخيارات المطلوبة
+    const validateRequiredOptions = () => {
+        const missingOptions: string[] = [];
+
+        // تم إزالة التحقق من اللون لأنه له قيمة افتراضية (أول لون)
+
+        // التحقق من الحقول المطلوبة
+        Object.entries(customizationFields).forEach(([fieldName, field]) => {
+            const fieldType = (field as any)?.type;
+            const fieldLabel = (field as any)?.label;
+            const required = (field as any)?.required;
+            const fieldValue = formData[fieldName];
+
+            // تجاهل حقول الألوان والمقاسات لأنها اختيارية
+            if (fieldLabel && (
+                fieldLabel.includes('لون القماش') || 
+                fieldLabel.includes('لون') || 
+                fieldLabel.includes('المقاس') ||
+                fieldLabel.includes('عرض × ارتفاع') ||
+                fieldLabel.includes('الأبعاد') ||
+                fieldName.includes('color') || 
+                fieldName.includes('fabric_color') ||
+                fieldName.includes('dimensions') ||
+                fieldName.includes('size')
+            )) {
+                return;
+            }
+
+            if (required) {
+                if (fieldType === 'checkbox_multiple') {
+                    if (!fieldValue || !Array.isArray(fieldValue) || fieldValue.length === 0) {
+                        missingOptions.push(fieldLabel);
+                    }
+                } else if (fieldType === 'select') {
+                    if (!fieldValue || fieldValue === '') {
+                        missingOptions.push(fieldLabel);
+                    }
+                } else if (fieldType === 'number') {
+                    if (!fieldValue || fieldValue === 0) {
+                        missingOptions.push(fieldLabel);
+                    }
+                } else if (fieldType === 'file_upload') {
+                    if (uploadedFiles.length === 0) {
+                        missingOptions.push(fieldLabel);
+                    }
+                } else {
+                    if (!fieldValue || fieldValue === '') {
+                        missingOptions.push(fieldLabel);
+                    }
+                }
+            }
+        });
+
+        // تم إزالة التحقق من الأبعاد لأن لها قيمة افتراضية (1×1)
+
+        return missingOptions;
+    };
+
     const handleAddToCart = () => {
+        const missingOptions = validateRequiredOptions();
+        
+        if (missingOptions.length > 0) {
+            const hasExtraOptions = isCurtainsOrCabinets && Object.keys(extraFields).length > 0;
+            setToastMessage(`يرجى ملء الخيارات التالية أولاً:\n${missingOptions.join('\n')}`);
+            setShowToast(true);
+            
+            // فتح قسم "المزيد من الخيارات" إذا كان هناك خيارات إضافية مطلوبة
+            if (hasExtraOptions) {
+                setShowMoreOptions(true);
+            }
+            return; // لا يتم إضافة المنتج للسلة
+        }
+
+        // التحقق من الخيارات نجح، الآن يمكن إضافة المنتج للسلة
         const customizationData: Record<string, any> = {};
         Object.entries(customizationFields).forEach(([fieldName, field]) => {
             const fieldValue = formData[fieldName];
@@ -355,18 +440,28 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
             cartId: `${product.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
         };
 
+        // إضافة المنتج للسلة بنجاح
         dispatch(addToCart(cartItem));
-        setInCart(true);
-        setAdded(true);
+        setInCart(true); // يتم تعيين inCart فقط بعد إضافة المنتج بنجاح
 
         syncCartData();
-
-        setTimeout(() => {
-            setAdded(false);
-        }, 2000);
     };
 
     const handleQuickOrder = () => {
+        const missingOptions = validateRequiredOptions();
+        
+        if (missingOptions.length > 0) {
+            const hasExtraOptions = isCurtainsOrCabinets && Object.keys(extraFields).length > 0;
+            setToastMessage(`يرجى ملء الخيارات التالية أولاً:\n${missingOptions.join('\n')}`);
+            setShowToast(true);
+            
+            // فتح قسم "المزيد من الخيارات" إذا كان هناك خيارات إضافية مطلوبة
+            if (hasExtraOptions) {
+                setShowMoreOptions(true);
+            }
+            return;
+        }
+
         setShowQuickOrderModal(true);
     };
 
@@ -1224,12 +1319,10 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         <button
                                             type="button"
                                             onClick={() => setShowMoreOptions((prev) => !prev)}
-                                            className={
-                                                `group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white rounded-xl text-base font-bold shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-300`
-                                            }
-                                            style={{ boxShadow: '0 2px 12px 0 rgba(17, 24, 39, 0.15)' }}
+                                            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
                                         >
                                             <span className="flex items-center gap-1">
+                                                <HiCog className="w-4 h-4" />
                                                 {showMoreOptions ? 'إخفاء الخيارات' : 'عرض المزيد من الخيارات'}
                                             </span>
                                             {showMoreOptions ? (
@@ -1368,11 +1461,14 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                             )}
                                         </div>
                                     </div>
+
                                     
                                     <ActionButtons
                                         onAddToCart={handleAddToCart}
                                         onQuickOrder={handleQuickOrder}
+                                        onRemoveFromCart={handleRemoveFromCart}
                                         inStock={product.inStock}
+                                        inCart={inCart}
                                         className="w-full"
                                     />
                                 </div>
@@ -1497,6 +1593,15 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
             <div className="container mx-auto px-2 sm:px-4 lg:px-8">
                 <ContactUs />
             </div>
+
+            {/* Toast Notification */}
+            <Toast
+                show={showToast}
+                message={toastMessage}
+                type="warning"
+                duration={4000}
+                onClose={() => setShowToast(false)}
+            />
         </AppLayout>
     );
 };

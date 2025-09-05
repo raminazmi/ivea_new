@@ -23,22 +23,23 @@ const About: React.FC = () => {
             <div className="container mx-auto px-2 sm:px-4 lg:px-8">
                 <section className="py-12 md:py-16 lg:py-20">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12 items-start">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12 items-center">
                             <div className="flex justify-end">
                                 <div className="relative">
                                     <img
-                                        src="/images/curtain1.png"
+                                        src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                                         alt="ستائر أنيقة"
-                                        className="w-full max-w-sm md:max-w-md max-h-80 md:max-h-96 rounded-lg shadow-lg"
+                                        className="w-full max-h-80 md:max-h-96 rounded-lg shadow-lg object-cover"
                                     />
                                 </div>
                             </div>
 
-                            <div className="text-start col-span-2 mt-8 lg:mt-10">
+                            <div className="text-start col-span-2">
                                 <SectionTitle
                                     text="من نحن"
                                     size="3xl"
                                     align="start"
+                                    className="pt-0 pb-3"
                                 />
                                 <div className="mt-2 md:mt-2 text-base md:text-lg text-gray-700 leading-relaxed space-y-3 md:space-y-4">
                                     <p>
@@ -62,16 +63,17 @@ const About: React.FC = () => {
                         <div className="">
                             <div className="mt-6 md:mt-8 flex justify-center">
                                 <img
-                                    src="/images/pepole.png"
+                                    src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                                     alt="فريق العمل"
-                                    className="w-full h-auto rounded-lg"
+                                    className="w-full h-64 rounded-lg object-cover"
                                 />
                             </div>
-                            <div className="text-right mt-6 md:mt-8">
+                            <div className="text-right">
                                 <SectionTitle
                                     text="رسالتنا"
                                     size="2xl"
                                     align="start"
+                                    className="pt-4 pb-2"
                                 />
                                 <p className="text-base md:text-lg text-gray-700 leading-relaxed mt-2">
                                     نصمم وننفّذ حلولاً داخلية توازن بين الجمال، الجودة، والوظائف العملية، لنمنح عملاءنا مساحات مريحة تُعبّر عنهم وتُلبي احتياجاتهم اليومية.
@@ -82,16 +84,17 @@ const About: React.FC = () => {
                         <div className="">
                             <div className="mt-6 md:mt-8 flex justify-center">
                                 <img
-                                    src="/images/chair.png"
+                                    src="https://images.unsplash.com/photo-1519710164239-da123dc03ef4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                                     alt="أثاث أنيق"
-                                    className="w-full h-auto rounded-lg"
+                                    className="w-full h-64 rounded-lg object-cover"
                                 />
                             </div>
-                            <div className="text-right mt-6 md:mt-8">
+                            <div className="text-right">
                                 <SectionTitle
                                     text="رؤيتنا"
                                     size="2xl"
                                     align="start"
+                                    className="pt-4 pb-2"
                                 />
                                 <p className="text-base md:text-lg text-gray-700 leading-relaxed mt-2">
                                     أن نصبح الوجهة الأولى في المملكة والمنطقة للتصميم والتأثيث، من خلال حلول مبتكرة ومستدامة تضع العميل في قلب الاهتمام، وتجمع بين الراحة والجمال بجودة تدوم طويلاً، لتجعل من إيفيا رمزًا للثقة، الإبداع، والنمو المستمر.

@@ -146,15 +146,15 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
 
     const heroImages = [
         {
-            src: '/images/hero_ivea.png',
-            alt: 'إيفيا #تشاركك_ذوقك'
+            src: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            alt: 'إيفيا # تشاركك_ذوقك'
         },
         {
-            src: '/images/building1.png',
+            src: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
             alt: 'تفاصيل تلامس حواسك'
         },
         {
-            src: '/images/building2.png',
+            src: 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
             alt: 'عروض اليوم الوطني بدأت'
         }
     ];
@@ -448,7 +448,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                                         <img
                                             src={category.image}
                                             alt={category.name}
-                                            className="w-28 sm:w-32 md:w-36 h-[160px] sm:h-[180px] md:h-[200px] object-contain transition-all duration-1000 group-hover:scale-110 transform -rotate-12 group-hover:rotate-1"
+                                            className={`h-[160px] sm:h-[180px] md:h-[200px] ${category.image == '/images/treasury.png' ? 'w-32 sm:w-36 md:w-48' :'w-28 sm:w-32 md:w-36' } object-contain transition-all duration-1000 group-hover:scale-110 transform -rotate-12 group-hover:rotate-1`}
                                             style={{ zIndex: 10 }}
                                         />
                                     </div>

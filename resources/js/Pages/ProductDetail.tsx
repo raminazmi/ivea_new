@@ -196,8 +196,8 @@ const ProductDetail: React.FC<ProductDetailProps> = React.memo(({ product, relat
                                         className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
                                     >
                                         <HiCog className="w-4 h-4" />
-                                        <span>خيارات المنتج</span>
-                                        </Link>
+                                            <span>خيارات المنتج</span>
+                                    </Link>
                                     </div>
                                 </div>
                             )}
