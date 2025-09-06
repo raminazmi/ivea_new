@@ -277,7 +277,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                         </div>
                     </div>
 
-                    <div ref={heroContentRef} className="pt-20 w-full lg:w-1/2 text-center lg:text-right pr-0 lg:pr-4">
+                    <div ref={heroContentRef} className="md:pt-20 w-full lg:w-1/2 text-center lg:text-right pr-0 lg:pr-4">
                         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-[#0D1D25] mb-2 md:mb-3 leading-tight">
                             الانسجام المثالي..
                         </h1>
