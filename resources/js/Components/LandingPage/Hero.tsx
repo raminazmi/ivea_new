@@ -146,15 +146,15 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
 
     const heroImages = [
         {
-            src: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            src: '/images/hero_banner2.jpg',
             alt: 'إيفيا # تشاركك_ذوقك'
         },
         {
-            src: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            src: '/images/hero_banner.jpg',
             alt: 'تفاصيل تلامس حواسك'
         },
         {
-            src: 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            src: '/images/hero_banner3.jpg',
             alt: 'عروض اليوم الوطني بدأت'
         }
     ];
@@ -251,10 +251,8 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                     className="flex flex-col lg:flex-row-reverse items-center gap-4 sm:gap-6 lg:gap-10 xl:gap-14"
                 >
                     <div ref={heroImageRef} className="w-full lg:w-1/2 relative">
-                        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg w-full" style={{
-                            aspectRatio: '1/1.2',
-                            maxHeight: '340px',
-                            minHeight: '220px'
+                        <div className="max-h-[200px] lg:max-h-[280px] relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg w-full" style={{
+                            aspectRatio: '9/6',
                         }}>
                             <Swiper
                                 slidesPerView={1}
@@ -267,34 +265,19 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                             >
                                 {heroImages.map((image, index) => (
                                     <SwiperSlide key={index}>
-                                        <div className="absolute inset-0 w-full h-full transition-all duration-1500 ease-in-out opacity-100 scale-100 translate-x-0">
-                                            <img
-                                                src={image.src}
-                                                alt={image.alt}
-                                                className="w-full h-full object-cover"
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                                            
-                                            {/* النص الذي يظهر على الصورة */}
-                                            <div className="absolute inset-0 flex items-center justify-center z-10">
-                                                <div className="bg-black/40 backdrop-blur-sm rounded-lg p-2 sm:p-3 md:p-4 text-center text-white shadow-lg border border-white/10">
-                                                    <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold drop-shadow-lg">
-                                                        {image.alt}
-                                                    </h2>
-                                                </div>
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <div className="relative inline-block max-w-full max-h-full">
+                                                <img
+                                                    src={image.src}
+                                                    alt={image.alt}
+                                                    className="max-w-full max-h-full object-contain"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                                             </div>
                                         </div>
                                     </SwiperSlide>
                                 ))}
                             </Swiper>
-
-                            <div className="absolute top-3 sm:top-4 md:top-6 right-3 sm:right-4 md:right-6 bg-[#0D1D25] p-1.5 sm:p-2 md:p-2 rounded-lg z-10">
-                                <img
-                                    src="/images/logo_white.png"
-                                    alt="إيفيا"
-                                    className="h-5 sm:h-6 md:h-8 w-auto object-contain"
-                                />
-                            </div>
 
                             <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 left-3 sm:left-4 md:left-6 flex gap-1.5 sm:gap-2 z-10">
                                 <button
@@ -353,7 +336,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                             {features.map((feature, index) => (
                                 <div
                                     key={index}
-                                    className={`${feature.containerBg} ${feature.borderColor} rounded-xl sm:rounded-2xl p-2 sm:p-3 md:p-4 text-center transition-all duration-700 flex items-center gap-2 sm:gap-2.5 md:gap-3`}
+                                    className={`${feature.containerBg} ${feature.borderColor} rounded-xl sm:rounded-2xl p-2 sm:p-3 md:p-4 md:py-2 text-center transition-all duration-700 flex items-center gap-2 sm:gap-2.5 md:gap-3`}
                                 >
                                     <div className={`w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-700`}>
                                         {feature.icon}
@@ -370,7 +353,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                         </div>
                         <Link
                             href="/products"
-                            className="border border-[2px] border-black bg-white text-[#0D1D25] px-3 sm:px-4 md:px-6 py-1 md:py-2 rounded-full shadow-lg font-medium text-xs sm:text-sm lg:text-base hover:bg-gray-50 transition-all duration-500 whitespace-nowrap mt-2 md:mt-0 hover:scale-105 hover:shadow-xl block text-center"
+                            className="border-2 border-black bg-white text-[#0D1D25] px-3 sm:px-4 md:px-6 py-1 md:py-2 rounded-full shadow-lg font-medium text-xs sm:text-sm lg:text-base hover:bg-gray-50 transition-all duration-500 whitespace-nowrap mt-2 md:mt-0 hover:scale-105 hover:shadow-xl block text-center"
                         >
                             عرض المزيد
                         </Link>
@@ -385,7 +368,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                         <Swiper
                             slidesPerView={3}
                             breakpoints={{
-                                200: { slidesPerView: 3},
+                                200: { slidesPerView: 3 },
                                 640: { slidesPerView: 5 }
                             }}
                             spaceBetween={0}
@@ -436,7 +419,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                                 className="group relative overflow-visible rounded-xl sm:rounded-2xl transition-all duration-1000 cursor-pointer hover:scale-105 block"
                             >
                                 <div className={`${category.bgColor} flex justify-between items-center gap-2 rounded-xl sm:rounded-2xl p-3 sm:p-4 pb-2 transition-all duration-700 group-hover:shadow-xl`}>
-                                    <div className="text-center w-28 sm:w-32 md:w-36 flex flex-col gap-2 sm:gap-3 w-fit text-center">
+                                    <div className="w-28 sm:w-32 md:w-36 flex flex-col gap-2 sm:gap-3 text-center">
                                         <h3 className="font-bold text-sm sm:text-base md:text-lg text-[#0D1D25] transition-all duration-700 group-hover:text-[#0D1D25]/80">
                                             {category.name}
                                         </h3>
@@ -448,7 +431,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                                         <img
                                             src={category.image}
                                             alt={category.name}
-                                            className={`h-[160px] sm:h-[180px] md:h-[200px] ${category.image == '/images/treasury.png' ? 'w-32 sm:w-36 md:w-48' :'w-28 sm:w-32 md:w-36' } object-contain transition-all duration-1000 group-hover:scale-110 transform -rotate-12 group-hover:rotate-1`}
+                                            className={`h-[160px] sm:h-[180px] md:h-[200px] ${category.image == '/images/treasury.png' ? 'w-32 sm:w-36 md:w-48' : 'w-28 sm:w-32 md:w-36'} object-contain transition-all duration-1000 group-hover:scale-110 transform -rotate-12 group-hover:rotate-1`}
                                             style={{ zIndex: 10 }}
                                         />
                                     </div>
