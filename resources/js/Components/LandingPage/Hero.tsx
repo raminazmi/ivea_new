@@ -37,12 +37,10 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
     // Removed local slider state, using Swiper instead
 
     const heroRef = useRef<HTMLDivElement>(null);
-    const featuresRef = useRef<HTMLDivElement>(null);
     const brandsRef = useRef<HTMLDivElement>(null);
     const categoriesRef = useRef<HTMLDivElement>(null);
     const heroContentRef = useRef<HTMLDivElement>(null);
     const heroImageRef = useRef<HTMLDivElement>(null);
-    const featuresContainerRef = useRef<HTMLDivElement>(null);
     const brandsContainerRef = useRef<HTMLDivElement>(null);
     const categoriesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -77,25 +75,6 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                         trigger: heroRef.current,
                         start: "top 80%",
                         end: "bottom 20%",
-                        toggleActions: "play none none reverse"
-                    }
-                }
-            );
-        }
-
-        if (featuresContainerRef.current) {
-            gsap.fromTo(featuresContainerRef.current,
-                { opacity: 0, y: 30 },
-                {
-                    opacity: 1,
-                    y: 0,
-                    duration: 1,
-                    ease: "power2.out",
-                    delay: 0.5,
-                    scrollTrigger: {
-                        trigger: featuresRef.current,
-                        start: "top 85%",
-                        end: "bottom 15%",
                         toggleActions: "play none none reverse"
                     }
                 }
@@ -243,17 +222,17 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
     ];
 
     return (
-        <section className="bg-white py-4 sm:py-6 md:py-8 lg:pt-20">
+        <section className="bg-white py-4 sm:py-6 md:py-8 lg:pt-10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div
                     ref={heroRef}
                     data-section="hero"
-                    className="flex flex-col lg:flex-row-reverse items-center gap-4 sm:gap-6 lg:gap-10 xl:gap-14"
+                    className="pt-12 flex flex-col lg:flex-row-reverse items-start gap-4 sm:gap-6 lg:gap-10 xl:gap-14"
                 >
-                    <div ref={heroImageRef} className="w-full lg:w-1/2 relative">
-                        <div className="max-h-[200px] lg:max-h-[280px] relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg w-full" style={{
-                            aspectRatio: '9/6',
-                        }}>
+                    <div ref={heroImageRef} className="w-full lg:w-1/2 relative" style={{
+                        aspectRatio: '9/6',
+                    }}>
+                        <div className="max-w-full max-h-full object-contain relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg w-full">
                             <Swiper
                                 slidesPerView={1}
                                 loop
@@ -261,12 +240,12 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                                 pagination={{ clickable: true, el: '.hero-swiper-pagination' }}
                                 navigation={{ nextEl: '.hero-swiper-next', prevEl: '.hero-swiper-prev' }}
                                 modules={[Pagination, Autoplay, Navigation]}
-                                className="w-full h-full"
+                                className="max-w-full max-h-full object-contain"
                             >
                                 {heroImages.map((image, index) => (
                                     <SwiperSlide key={index}>
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <div className="relative inline-block max-w-full max-h-full">
+                                        <div className="max-w-full max-h-full object-contain flex items-center justify-center">
+                                            <div className="relative inline-block">
                                                 <img
                                                     src={image.src}
                                                     alt={image.alt}
@@ -298,7 +277,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                         </div>
                     </div>
 
-                    <div ref={heroContentRef} className="w-full lg:w-1/2 text-center lg:text-right pr-0 lg:pr-4">
+                    <div ref={heroContentRef} className="pt-20 w-full lg:w-1/2 text-center lg:text-right pr-0 lg:pr-4">
                         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-[#0D1D25] mb-2 md:mb-3 leading-tight">
                             الانسجام المثالي..
                         </h1>
@@ -327,11 +306,9 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                 </div>
 
                 <div
-                    ref={featuresRef}
-                    data-section="features"
                     className="relative"
                 >
-                    <div ref={featuresContainerRef} className="relative mt-6 sm:mt-8 md:mt-12 lg:absolute lg:bottom-[-30px] lg:right-[5%] lg:w-[80%] xl:w-[75%] bg-white shadow rounded-xl md:rounded-full py-2 px-3 sm:px-4 md:px-6 flex flex-col md:flex-row items-center gap-3 sm:gap-4">
+                    <div className="relative mt-6 sm:mt-8 md:mt-12 lg:absolute lg:bottom-[30px] lg:right-[5%] lg:w-[80%] xl:w-[75%] bg-white shadow rounded-xl md:rounded-full py-2 px-3 sm:px-4 md:px-6 flex flex-col md:flex-row items-center gap-3 sm:gap-4">
                         <div className='flex flex-wrap justify-center md:justify-start items-center gap-2 sm:gap-3 md:gap-4 w-full'>
                             {features.map((feature, index) => (
                                 <div
