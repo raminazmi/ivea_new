@@ -88,7 +88,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     const customizationFields = product.category?.customization_fields || {};
     const categoryName = product.category?.name?.toLowerCase();
     const isCurtainsOrCabinets = categoryName?.includes('ستا') || categoryName?.includes('خزا');
-    const isSofaOrWood = categoryName?.includes('كنب') || categoryName?.includes('خشب');
+    const isSofaOrWood = categoryName?.includes('كنب') || categoryName?.includes('خشب') || categoryName?.includes('مودرن') || categoryName?.includes('كلاسيك');
         const priorityFields = ['quantity', 'dimensions', 'dimensions_3d']; // الحقول ذات الأولوية للستائر والخزائن
     const mainFields: Record<string, any> = {};
     const extraFields: Record<string, any> = {};
@@ -157,7 +157,18 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
         if (isCurtainsOrCabinets) {
             return basePrice * (formData.quantity || quantity || 1);
         } else if (isSofaOrWood) {
-            return (product.finalPrice || product.price) * (formData.quantity || quantity || 1);
+            // للكنب، استخدم السعر المحسوب من الأبعاد إذا كان متوفراً، وإلا استخدم السعر الأساسي
+            const hasDimensions = Object.entries(customizationFields).some(([fieldName, field]) => {
+                const fieldType = (field as any)?.type;
+                return ['dimensions', 'dimensions_3d'].includes(fieldType) && (field as any)?.units;
+            });
+            
+            // للكنب، استخدم السعر المحسوب إذا كان متوفراً (حتى لو لم تكن حقول الأبعاد موجودة في البيانات)
+            if (calculatedPrice > 0 && (hasDimensions || isSofaOrWood)) {
+                return calculatedPrice;
+            } else {
+                return (product.finalPrice || product.price) * (formData.quantity || quantity || 1);
+            }
         } else {
             return (product.finalPrice || product.price) * (formData.quantity || quantity || 1);
         }
@@ -194,10 +205,17 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
             const finalPrice = calculateFinalPrice();
             setCalculatedPrice(finalPrice);
         } else if (isSofaOrWood) {
+            // للكنب، تحقق من وجود حقول الأبعاد
+            const hasDimensions = Object.entries(customizationFields).some(([fieldName, field]) => {
+                const fieldType = (field as any)?.type;
+                return ['dimensions', 'dimensions_3d'].includes(fieldType) && (field as any)?.units;
+            });
+            
+            // للكنب، استخدم السعر المحسوب إذا كان متوفراً
             const finalPrice = calculateFinalPrice();
             setCalculatedPrice(finalPrice);
         }
-    }, [formData.measurement_unit, basePrice, formData.quantity, quantity]);
+    }, [formData.measurement_unit, basePrice, formData.quantity, quantity, calculatedPrice]);
 
     const handleFieldChange = (fieldName: string, value: any) => {
         setFormData(prev => ({
@@ -417,10 +435,30 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
 
         const selectedColorInfo = getSelectedColorInfo();
 
+        // تحديد السعر الأساسي حسب نوع المنتج
+        let baseItemPrice;
+        if (isCurtainsOrCabinets) {
+            baseItemPrice = basePrice;
+        } else if (isSofaOrWood) {
+            const hasDimensions = Object.entries(customizationFields).some(([fieldName, field]) => {
+                const fieldType = (field as any)?.type;
+                return ['dimensions', 'dimensions_3d'].includes(fieldType) && (field as any)?.units;
+            });
+            
+            // للكنب، استخدم السعر المحسوب إذا كان متوفراً
+            if (calculatedPrice > 0 && (hasDimensions || isSofaOrWood)) {
+                baseItemPrice = calculatedPrice / (formData.quantity || quantity || 1);
+            } else {
+                baseItemPrice = product.finalPrice || product.price;
+            }
+        } else {
+            baseItemPrice = product.finalPrice || product.price;
+        }
+
         const cartItem = {
             id: product.id,
             name: product.name,
-            price: isCurtainsOrCabinets ? basePrice : (product.finalPrice || product.price), // السعر الأساسي للقطعة الواحدة
+            price: baseItemPrice, // السعر الأساسي للقطعة الواحدة
             finalPrice: calculateFinalPrice(),
             image: product.image,
             quantity: formData.quantity || quantity || 1,
@@ -847,44 +885,55 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         {product.name}
                                     </h1>
 
-                                    <div className="flex items-center gap-4">
-                                        {isCurtainsOrCabinets ? (
-                                            <div className="flex flex-col gap-2">
-                                                <PriceDisplay
-                                                    price={product.price}
-                                                    finalPrice={product.finalPrice}
-                                                    hasDiscount={product.hasDiscount}
-                                                    discount={product.discount}
-                                                    showLabel={true}
-                                                    label="سعر المتر المربع يبدأ من"
-                                                    className=""
-                                                />
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div className="flex items-center gap-3">
+                                            {isCurtainsOrCabinets ? (
+                                                <div className="flex flex-col gap-2">
+                                                    <PriceDisplay
+                                                        price={product.price}
+                                                        finalPrice={product.finalPrice}
+                                                        hasDiscount={product.hasDiscount}
+                                                        discount={product.discount}
+                                                        showLabel={true}
+                                                        label="سعر المتر المربع يبدأ من"
+                                                        className=""
+                                                    />
+                                                </div>
+                                            ) : isSofaOrWood ? (
+                                                <div className="flex flex-col gap-2">
+                                                    <PriceDisplay
+                                                        price={product.price}
+                                                        finalPrice={product.finalPrice}
+                                                        hasDiscount={product.hasDiscount}
+                                                        discount={product.discount}
+                                                        showLabel={true}
+                                                        label="سعر المتر المربع يبدأ من"
+                                                        className=""
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col gap-2">
+                                                    <PriceDisplay
+                                                        price={product.price}
+                                                        finalPrice={product.finalPrice}
+                                                        hasDiscount={product.hasDiscount}
+                                                        discount={product.discount}
+                                                        showLabel={true}
+                                                        label="سعر المتر المربع يبدأ من"
+                                                        className=""
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-sm font-medium">
+                                                {product.brand || 'IVEA'}
                                             </div>
-                                        ) : isSofaOrWood ? (
-                                            <div className="flex flex-col gap-2">
-                                                <PriceDisplay
-                                                    price={product.price}
-                                                    finalPrice={product.finalPrice}
-                                                    hasDiscount={product.hasDiscount}
-                                                    discount={product.discount}
-                                                    showLabel={true}
-                                                    label="سعر المتر المربع يبدأ من"
-                                                    className=""
-                                                />
+                                            <div className="text-xs text-gray-500 text-right">
+                                                قسط دفعاتك مع tabby
                                             </div>
-                                        ) : (
-                                            <div className="flex flex-col gap-2">
-                                                <PriceDisplay
-                                                    price={product.price}
-                                                    finalPrice={product.finalPrice}
-                                                    hasDiscount={product.hasDiscount}
-                                                    discount={product.discount}
-                                                    showLabel={true}
-                                                    label="سعر المتر المربع يبدأ من"
-                                                    className=""
-                                                />
-                                            </div>
-                                        )}
+                                        </div>
                                     </div>
 
                                     <div className="text-sm md:text-base text-gray-600 leading-relaxed">
@@ -1360,27 +1409,78 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                     {renderField(fieldName, field)}
                                                 </div>
                                             );
-                                        })}
+                                        }                                        )}
+                                        
+                                        {/* حاسبة الأبعاد للكنب والخشب */}
+                                        {isSofaOrWood && (
+                                            <div className="space-y-4 md:space-y-6">
+                                                <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                                                    حاسبة الأبعاد والأسعار
+                                                </h3>
+                                                
+                                                <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
+                                                    <div className="space-y-4">
+                                                        <div className="space-y-2">
+                                                            <label className="block text-sm md:text-base font-medium text-gray-700">
+                                                               وحدة القياس <span className="text-red-500">*</span>
+                                                            </label>
+                                                            <select
+                                                                value={formData['measurement_unit'] || 'م'}
+                                                                onChange={(e) => handleUnitChange(e.target.value)}
+                                                                className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                                                title="اختر وحدة القياس"
+                                                            >
+                                                                <option value="م">م</option>
+                                                                <option value="سم">سم</option>
+                                                            </select>
+                                                        </div>
+                                                        
+                                                        <div className="lg:col-span-2">
+                                                            <DimensionPriceCalculator
+                                                                key={`${product.id}-${formData.measurement_unit}-${formData.quantity || quantity}`}
+                                                                productId={product.id}
+                                                                defaultWidth={dimensions.width}
+                                                                defaultHeight={dimensions.height}
+                                                                minWidth={formData.measurement_unit === 'م' ? 1 : 100}
+                                                                maxWidth={formData.measurement_unit === 'م' ? 20 : 2000}
+                                                                minHeight={formData.measurement_unit === 'م' ? 1 : 100}
+                                                                maxHeight={formData.measurement_unit === 'م' ? 20 : 2000}
+                                                                basePrice={product.price}
+                                                                discount={product.discount}
+                                                                unit={formData.measurement_unit || 'م'}
+                                                                quantity={formData.quantity || quantity || 1}
+                                                                onPriceChange={handlePriceChange}
+                                                                onDimensionsChange={handleDimensionsChange}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
+
 
                                 {isSofaOrWood && Object.keys(customizationFields).length > 0 && (
                                     <div className="space-y-4 md:space-y-6">
                                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
                                             خيارات التخصيص
                                         </h3>
+                                        
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                                             {(() => {
                                                 const fieldsArray = Object.entries(customizationFields).filter(([fieldName, field]) => {
                                                     const isQuantity = fieldName === 'quantity' || (field as any)?.label?.includes('كمية') || (field as any)?.label?.includes('Quantity');
-                                                    return !isQuantity; // تخطي حقل الكمية
+                                                    const fieldType = (field as any)?.type;
+                                                    const isDimensionsField = ['dimensions', 'dimensions_3d'].includes(fieldType) && (field as any)?.units;
+                                                    return !isQuantity && !isDimensionsField; // تخطي حقل الكمية وحقول الأبعاد
                                                 });
 
                                                 return fieldsArray.map(([fieldName, field], index) => {
                                                     const fieldType = (field as any)?.type;
                                                     const fieldLabel = (field as any)?.label;
 
-                                                    const fullWidthFields = ['dimensions', 'dimensions_3d', 'file_upload'];
+                                                    const fullWidthFields = ['file_upload'];
 
                                                     const isProductOptionsField = fieldName === 'product_options' && fieldType === 'checkbox_multiple';
 
@@ -1442,7 +1542,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                             <div className="flex items-center gap-2">
                                                 <span className="flex items-center justify-center gap-1 text-lg sm:text-xl md:text-2xl font-bold text-green-600">
                                     <span className="text-xl font-bold text-green-600">
-                                                            {isCurtainsOrCabinets || isSofaOrWood ? calculatedPrice.toFixed(2) : (calculateFinalPrice()).toFixed(2)}
+                                                            {calculateFinalPrice().toFixed(2)}
                                     </span>
                                     <img
                                         src="/images/sar-currency(black).svg"
@@ -1456,7 +1556,11 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                             </div>
                                             {isSofaOrWood && (
                                                 <div className="text-xs sm:text-sm text-gray-600">
-                                                    السعر الأساسي: {(product.finalPrice || product.price).toFixed(2)} ر.س × الكمية: {formData.quantity || quantity || 1} = {calculatedPrice.toFixed(2)} ر.س
+                                                    {calculatedPrice > 0 ? (
+                                                        <span>السعر المحسوب حسب الأبعاد والكمية</span>
+                                                    ) : (
+                                                        <span>السعر الأساسي: {(product.finalPrice || product.price).toFixed(2)} ر.س × الكمية: {formData.quantity || quantity || 1} = {calculatedPrice.toFixed(2)} ر.س</span>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
@@ -1484,7 +1588,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                 product={{
                     id: product.id,
                     name: product.name,
-                    price: isCurtainsOrCabinets || isSofaOrWood ? calculatedPrice : (product.finalPrice || product.price),
+                    price: calculateFinalPrice(),
                     image: product.image
                 }}
                 selectedOptions={{

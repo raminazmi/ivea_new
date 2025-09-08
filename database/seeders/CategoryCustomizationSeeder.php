@@ -93,6 +93,13 @@ class CategoryCustomizationSeeder extends Seeder
                             'required' => true,
                             'default' => 1
                         ],
+                        'dimensions' => [
+                            'label' => 'المقاس (عرض × ارتفاع)',
+                            'type' => 'dimensions',
+                            'required' => true,
+                            'units' => ['سم', 'متر'],
+                            'description' => 'أدخل أبعاد الكنب المطلوبة'
+                        ],
                         'room_type' => [
                             'label' => 'نوع المكان',
                             'type' => 'select',
@@ -254,6 +261,13 @@ class CategoryCustomizationSeeder extends Seeder
                             'max' => 50,
                             'required' => true,
                             'default' => 1
+                        ],
+                        'dimensions' => [
+                            'label' => 'المقاس (عرض × ارتفاع)',
+                            'type' => 'dimensions',
+                            'required' => true,
+                            'units' => ['سم', 'متر'],
+                            'description' => 'أدخل أبعاد المنتج الخشبي المطلوب'
                         ],
                         'product_options' => [
                             'label' => 'خيارات المنتج (اختيار أكثر من خيار)',

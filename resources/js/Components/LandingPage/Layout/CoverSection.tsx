@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
+import { FaSnapchat, FaInstagram, FaTiktok } from 'react-icons/fa';
 
 interface CoverSectionProps {
   imageUrl?: string;
@@ -7,10 +7,9 @@ interface CoverSectionProps {
   subtitle?: string;
   description?: string;
   socialLinks?: {
-    facebook?: string;
-    twitter?: string;
     instagram?: string;
-    linkedin?: string;
+    snapchat?: string;
+    tiktok?: string;
   };
 }
 
@@ -20,10 +19,9 @@ const CoverSection: React.FC<CoverSectionProps> = ({
   subtitle = '',
   description = '',
   socialLinks = {
-    facebook: '#',
-    twitter: '#',
     instagram: '#',
-    linkedin: '#',
+    snapchat: '#',
+    tiktok: '#',
   },
 }) => {
   return (
@@ -50,22 +48,6 @@ const CoverSection: React.FC<CoverSectionProps> = ({
               <span className="font-bold text-sm md:text-md">شارك</span>
               <div className="flex space-x-2 md:space-x-3 rtl:space-x-reverse">
                 <a
-                  href={socialLinks.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="transition-all hover:text-yellow-400"
-                >
-                  <FaLinkedinIn className="w-3 h-3 md:w-6 md:h-6" />
-                </a>
-                <a
-                  href={socialLinks.facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="transition-all hover:text-yellow-400"
-                >
-                  <FaFacebookF className="w-3 h-3 md:w-6 md:h-6" />
-                </a>
-                <a
                   href={socialLinks.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -74,12 +56,20 @@ const CoverSection: React.FC<CoverSectionProps> = ({
                   <FaInstagram className="w-3 h-3 md:w-6 md:h-6" />
                 </a>
                 <a
-                  href={socialLinks.twitter}
+                  href={socialLinks.snapchat}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-all hover:text-yellow-400"
                 >
-                  <FaTwitter className="w-3 h-3 md:w-6 md:h-6" />
+                  <FaSnapchat className="w-3 h-3 md:w-6 md:h-6" />
+                </a>
+                <a
+                  href={socialLinks.tiktok}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-all hover:text-yellow-400"
+                >
+                  <FaTiktok className="w-3 h-3 md:w-6 md:h-6" />
                 </a>
               </div>
             </div>

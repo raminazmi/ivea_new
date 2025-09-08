@@ -71,7 +71,7 @@ const Header = () => {
 
                         <div className="flex flex-wrap justify-center items-center gap-3 md:gap-6 mb-2 md:mb-0">
                             <a href="mailto:info@ivea.store" className="flex items-center text-gray-300 hover:text-white transition whitespace-nowrap text-xs">
-                                <span className="truncate max-w-[160px] sm:max-w-none">المملكة العربية السعودية</span>
+                                <span className="truncate max-w-[160px] sm:max-w-none">المملكة العربية السعودية - الرياض</span>
                                 <FaMapMarkerAlt className="ms-2 text-xs" />
                             </a>
                             <a href="tel:+966541444066" className="text-xs flex items-center text-gray-300 hover:text-white transition whitespace-nowrap">

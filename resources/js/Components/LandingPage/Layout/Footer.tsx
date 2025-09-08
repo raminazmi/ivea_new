@@ -18,13 +18,13 @@ const Footer: React.FC = () => {
                             خبراؤنا يمكنهم تقديم رؤى قيمة ومساعدتك في تحديد العقارات.
                         </p>
                         <div className="flex gap-3 md:gap-4 space-x-reverse">
-                            <a href="#" className="text-white hover:text-yellow-400 transition">
+                            <a href="https://www.instagram.com/ivea.sa" target="_blank" rel="noopener noreferrer" className="text-white hover:text-yellow-400 transition">
                                 <FaInstagram className="w-4 h-4 md:w-5 md:h-5" />
                             </a>
-                            <a href="#" className="text-white hover:text-yellow-400 transition">
+                            <a href="https://www.snapchat.com/add/ivea_sa?share_id=ws9Bef6xzOc&locale=ar-AE" target="_blank" rel="noopener noreferrer" className="text-white hover:text-yellow-400 transition">
                                 <FaSnapchatGhost className="w-4 h-4 md:w-5 md:h-5" />
                             </a>
-                            <a href="#" className="text-white hover:text-yellow-400 transition">
+                            <a href="https://www.tiktok.com/@ivea_sa" target="_blank" rel="noopener noreferrer" className="text-white hover:text-yellow-400 transition">
                                 <FaTiktok className="w-4 h-4 md:w-5 md:h-5" />
                             </a>
                         </div>

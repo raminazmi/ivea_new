@@ -123,10 +123,9 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                 subtitle="اكتشف إبداعاتنا في التصميم والتأثيث"
                 description="مجموعة متنوعة من المشاريع المنجزة"
                 socialLinks={{
-                    facebook: 'https://facebook.com',
-                    twitter: 'https://twitter.com',
-                    instagram: 'https://instagram.com',
-                    linkedin: 'https://linkedin.com',
+                    instagram: 'https://www.instagram.com/ivea.sa',
+                    snapchat: 'https://www.snapchat.com/add/ivea_sa?share_id=ws9Bef6xzOc&locale=ar-AE',
+                    tiktok: 'https://www.tiktok.com/@ivea_sa',
                 }}
             />
             <div className="container mx-auto px-2 sm:px-4 lg:px-8">

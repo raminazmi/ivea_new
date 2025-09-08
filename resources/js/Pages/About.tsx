@@ -14,10 +14,9 @@ const About: React.FC = () => {
                 imageUrl="/images/who_cover.png"
                 title="في إيفيا فنشتر، الجمال يبدأ من التفاصيل."
                 socialLinks={{
-                    facebook: 'https://facebook.com',
-                    twitter: 'https://twitter.com',
-                    instagram: 'https://instagram.com',
-                    linkedin: 'https://linkedin.com',
+                    instagram: 'https://www.instagram.com/ivea.sa',
+                    snapchat: 'https://www.snapchat.com/add/ivea_sa?share_id=ws9Bef6xzOc&locale=ar-AE',
+                    tiktok: 'https://www.tiktok.com/@ivea_sa',
                 }}
             />
             <div className="container mx-auto px-2 sm:px-4 lg:px-8">
@@ -27,9 +26,9 @@ const About: React.FC = () => {
                             <div className="flex justify-end">
                                 <div className="relative">
                                     <img
-                                        src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                        src="/images/hero_ivea.png"
                                         alt="ستائر أنيقة"
-                                        className="w-full max-h-80 md:max-h-96 rounded-lg shadow-lg object-cover"
+                                        className="w-full max-h-80 md:max-h-96 rounded-3xl shadow-lg object-cover"
                                     />
                                 </div>
                             </div>
@@ -63,7 +62,7 @@ const About: React.FC = () => {
                         <div className="">
                             <div className="mt-6 md:mt-8 flex justify-center">
                                 <img
-                                    src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                    src="/images/message.jpg"
                                     alt="فريق العمل"
                                     className="w-full h-64 rounded-lg object-cover"
                                 />

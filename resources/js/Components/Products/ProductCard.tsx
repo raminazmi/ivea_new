@@ -172,7 +172,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                             {product.name}
                         </h3>
                     </Link>
-                    <p className="text-xs sm:text-sm text-[#64748B] mt-1">{product.brand || 'Antartica'}</p>
 
                     {product.category && (
                         <p className="text-xs text-[#64748B] mt-1">{product.category.name}</p>
