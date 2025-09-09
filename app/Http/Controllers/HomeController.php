@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Article;
 use App\Models\Offer;
+use App\Models\OffersText;
 use App\Services\SeoService;
 use Inertia\Inertia;
 
@@ -29,8 +30,11 @@ class HomeController extends Controller
 
         $categories = Category::active()->whereNull('parent_id')->withCount('products')->ordered()->get();
 
-        // Get latest 2 offers for featured offers section
-        $featuredOffers = Offer::ordered()->take(2)->get();
+        // Get latest 2 offers for featured offers section with their texts
+        $featuredOffers = Offer::with('offersText')->ordered()->take(2)->get();
+
+        // Get offers texts
+        $offersTexts = OffersText::getTextsArray();
 
         $latestArticles = Article::published()->ordered()->take(6)->get()->map(function ($article) {
             return [
@@ -110,6 +114,7 @@ class HomeController extends Controller
             'featuredProducts' => $featuredProducts,
             'categories' => $categories,
             'featuredOffers' => $featuredOffers,
+            'offersTexts' => $offersTexts,
             'latestArticles' => $latestArticles,
             'seo' => $seoData,
             'structuredData' => $structuredData,

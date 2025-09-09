@@ -13,22 +13,35 @@ interface Offer {
     category_name: string;
 }
 
-interface FeaturedOffersProps {
-    offers?: Offer[];
+interface OffersText {
+    key: string;
+    title: string;
+    description: string;
 }
 
-const FeaturedOffers: React.FC<FeaturedOffersProps> = ({ offers = [] }) => {
+interface FeaturedOffersProps {
+    offers?: Offer[];
+    offersTexts?: OffersText[];
+}
+
+const FeaturedOffers: React.FC<FeaturedOffersProps> = ({ offers = [], offersTexts = [] }) => {
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const cardsRef = useRef<HTMLDivElement>(null);
 
+    const getOffersText = (key: string, type: 'title' | 'description' = 'title') => {
+        const text = offersTexts.find(t => t.key === key);
+        if (!text) return '';
+        return text[type] || '';
+    };
+
     const getCategoryImage = (categorySlug: string) => {
         const categoryImages = {
             curtains: '/images/curtain.png',
-            sofas: '/images/sofa3.png',
+            sofas: '/images/sofa.png',
             cabinets: '/images/treasury.png',
-            wooden: '/images/chair.png'
+            wooden: '/images/door.png'
         };
         return categoryImages[categorySlug as keyof typeof categoryImages] || '/images/default-offer.png';
     };
@@ -90,14 +103,15 @@ const FeaturedOffers: React.FC<FeaturedOffersProps> = ({ offers = [] }) => {
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-6 md:gap-8 lg:gap-12">
                     <div ref={contentRef} className="text-center lg:text-start w-full lg:w-1/2 mb-6 lg:mb-0">
                         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#0D1D25] mb-2 md:mb-3">
-                            عــــرض اليوم الوطـنـي                        </h2>
+                            {getOffersText('main_title', 'title') || 'عــــرض اليوم الوطـنـي'}
+                        </h2>
                         <p className="text-xs sm:text-sm md:text-base text-[#424242] max-w-2xl mx-auto lg:mx-0">
-                            اطلع على عروضنا اليومية التي تجمع بين خصومات كبيرة على منتجات المنزل. العروض قد تتغير يوميا، فلا تفوت الفرصة :)
+                            {getOffersText('main_title', 'description') || 'اطلع على عروضنا اليومية التي تجمع بين خصومات كبيرة على منتجات المنزل. العروض قد تتغير يوميا، فلا تفوت الفرصة :)'}
                         </p>
                         <div className='mt-4 flex justify-center lg:justify-start'>
                             <Link
-                                href="/products?tab=offers"
-                                className="bg-primary-yellow text-black border border-black border-[1px] py-1.5 px-4 rounded-full text-xs sm:text-sm md:text-base font-bold hover:bg-[#ffd54f] transition-all duration-700 hover:scale-105 hover:shadow-lg"
+                                href="/products"
+                                className="bg-primary-yellow text-black border border-black py-1.5 px-4 rounded-full text-xs sm:text-sm md:text-base font-bold hover:bg-[#ffd54f] transition-all duration-700 hover:scale-105 hover:shadow-lg"
                             >
                                 افتح المتجر
                             </Link>
@@ -108,8 +122,8 @@ const FeaturedOffers: React.FC<FeaturedOffersProps> = ({ offers = [] }) => {
                         {offers.slice(0, 2).map((offer, index) => (
                             <Link
                                 key={offer.id}
-                                href={`/products?category=${offer.category_slug}&tab=offers`}
-                                className={`relative rounded-2xl overflow-hidden shadow-lg flex transition-all duration-1000 hover:scale-105 hover:shadow-xl cursor-pointer block ${
+                                href={`/products?main_category=${offer.category_slug}`}
+                                className={`relative rounded-2xl overflow-hidden shadow-lg flex transition-all duration-1000 hover:scale-105 hover:shadow-xl cursor-pointer ${
                                     index === 0 ? 'bg-gray-50' : 'bg-peach'
                                 }`}
                             >

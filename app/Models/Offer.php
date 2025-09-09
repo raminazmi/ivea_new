@@ -13,7 +13,8 @@ class Offer extends Model
         'title',
         'discount_percentage',
         'category_slug',
-        'category_name'
+        'category_name',
+        'offers_text_id'
     ];
 
     protected $casts = [
@@ -24,6 +25,12 @@ class Offer extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('created_at', 'desc');
+    }
+
+    // العلاقة مع نصوص العروض
+    public function offersText()
+    {
+        return $this->belongsTo(OffersText::class);
     }
 
     // الحصول على صورة الفئة

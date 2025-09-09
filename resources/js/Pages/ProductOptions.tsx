@@ -89,10 +89,10 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     const categoryName = product.category?.name?.toLowerCase();
     const isCurtainsOrCabinets = categoryName?.includes('ستا') || categoryName?.includes('خزا');
     const isSofaOrWood = categoryName?.includes('كنب') || categoryName?.includes('خشب') || categoryName?.includes('مودرن') || categoryName?.includes('كلاسيك');
-        const priorityFields = ['quantity', 'dimensions', 'dimensions_3d']; // الحقول ذات الأولوية للستائر والخزائن
+    const priorityFields = ['quantity', 'dimensions', 'dimensions_3d']; // الحقول ذات الأولوية للستائر والخزائن
     const mainFields: Record<string, any> = {};
     const extraFields: Record<string, any> = {};
-    
+
     Object.entries(customizationFields).forEach(([fieldName, field]) => {
         if (isCurtainsOrCabinets && (priorityFields.includes((field as any)?.type) || fieldName === 'quantity' || (field as any)?.label?.includes('كمية') || (field as any)?.label?.includes('Quantity'))) {
             mainFields[fieldName] = field;
@@ -162,7 +162,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                 const fieldType = (field as any)?.type;
                 return ['dimensions', 'dimensions_3d'].includes(fieldType) && (field as any)?.units;
             });
-            
+
             // للكنب، استخدم السعر المحسوب إذا كان متوفراً (حتى لو لم تكن حقول الأبعاد موجودة في البيانات)
             if (calculatedPrice > 0 && (hasDimensions || isSofaOrWood)) {
                 return calculatedPrice;
@@ -176,12 +176,12 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
 
     const handleUnitChange = (unit: string) => {
         const currentUnit = formData.measurement_unit || 'م';
-        
+
         setFormData(prev => ({
             ...prev,
             measurement_unit: unit
         }));
-        
+
         if (unit === 'م' && currentUnit === 'سم') {
             const newWidth = dimensions.width / 100;
             const newHeight = dimensions.height / 100;
@@ -193,7 +193,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
             setDimensions({ width: newWidth, height: newHeight });
             handleDimensionsChange(newWidth, newHeight);
         }
-        
+
         setTimeout(() => {
             const finalPrice = calculateFinalPrice();
             setCalculatedPrice(finalPrice);
@@ -210,7 +210,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                 const fieldType = (field as any)?.type;
                 return ['dimensions', 'dimensions_3d'].includes(fieldType) && (field as any)?.units;
             });
-            
+
             // للكنب، استخدم السعر المحسوب إذا كان متوفراً
             const finalPrice = calculateFinalPrice();
             setCalculatedPrice(finalPrice);
@@ -222,7 +222,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
             ...prev,
             [fieldName]: value
         }));
-        
+
         if (fieldName === 'quantity') {
             const finalPrice = calculateFinalPrice();
             setCalculatedPrice(finalPrice);
@@ -300,12 +300,12 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
 
             // تجاهل حقول الألوان والمقاسات لأنها اختيارية
             if (fieldLabel && (
-                fieldLabel.includes('لون القماش') || 
-                fieldLabel.includes('لون') || 
+                fieldLabel.includes('لون القماش') ||
+                fieldLabel.includes('لون') ||
                 fieldLabel.includes('المقاس') ||
                 fieldLabel.includes('عرض × ارتفاع') ||
                 fieldLabel.includes('الأبعاد') ||
-                fieldName.includes('color') || 
+                fieldName.includes('color') ||
                 fieldName.includes('fabric_color') ||
                 fieldName.includes('dimensions') ||
                 fieldName.includes('size')
@@ -345,12 +345,12 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
 
     const handleAddToCart = () => {
         const missingOptions = validateRequiredOptions();
-        
+
         if (missingOptions.length > 0) {
             const hasExtraOptions = isCurtainsOrCabinets && Object.keys(extraFields).length > 0;
             setToastMessage(`يرجى ملء الخيارات التالية أولاً:\n${missingOptions.join('\n')}`);
             setShowToast(true);
-            
+
             // فتح قسم "المزيد من الخيارات" إذا كان هناك خيارات إضافية مطلوبة
             if (hasExtraOptions) {
                 setShowMoreOptions(true);
@@ -444,7 +444,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                 const fieldType = (field as any)?.type;
                 return ['dimensions', 'dimensions_3d'].includes(fieldType) && (field as any)?.units;
             });
-            
+
             // للكنب، استخدم السعر المحسوب إذا كان متوفراً
             if (calculatedPrice > 0 && (hasDimensions || isSofaOrWood)) {
                 baseItemPrice = calculatedPrice / (formData.quantity || quantity || 1);
@@ -487,12 +487,12 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
 
     const handleQuickOrder = () => {
         const missingOptions = validateRequiredOptions();
-        
+
         if (missingOptions.length > 0) {
             const hasExtraOptions = isCurtainsOrCabinets && Object.keys(extraFields).length > 0;
             setToastMessage(`يرجى ملء الخيارات التالية أولاً:\n${missingOptions.join('\n')}`);
             setShowToast(true);
-            
+
             // فتح قسم "المزيد من الخيارات" إذا كان هناك خيارات إضافية مطلوبة
             if (hasExtraOptions) {
                 setShowMoreOptions(true);
@@ -723,47 +723,47 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                     </div>
                 );
 
-                case 'dimensions':
-                 return (
-                     <div key={fieldName} className="space-y-4 md:space-y-6">
-                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
-                             {label} {required && <span className="text-red-500">*</span>}
-                         </h3>
- 
-                         <div className="grid grid-cols-2 gap-4 md:gap-6">
-                             <div>
-                                 <label className="block text-sm md:text-base font-medium text-gray-700 mb-2">
-                                     العرض
-                                 </label>
-                                 <input
-                                     type="number"
-                                     value={formData[`${fieldName}_width`] || product.defaultWidth || ''}
-                                     onChange={(e) => handleFieldChange(`${fieldName}_width`, parseFloat(e.target.value) || 0)}
-                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
-                                     title="أدخل العرض"
-                                     placeholder="أدخل العرض"
-                                     step="0.001"
-                                     required={required}
-                                 />
-                             </div>
-                             <div>
-                                 <label className="block text-sm md:text-base font-medium text-gray-700 mb-2">
-                                     الارتفاع
-                                 </label>
-                                 <input
-                                     type="number"
-                                     value={formData[`${fieldName}_height`] || product.defaultHeight || ''}
-                                     onChange={(e) => handleFieldChange(`${fieldName}_height`, parseFloat(e.target.value) || 0)}
-                                     className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
-                                     title="أدخل الارتفاع"
-                                     placeholder="أدخل الارتفاع"
-                                     step="0.001"
-                                     required={required}
-                                 />
-                             </div>
-                         </div>
-                     </div>
-                 );
+            case 'dimensions':
+                return (
+                    <div key={fieldName} className="space-y-4 md:space-y-6">
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                            {label} {required && <span className="text-red-500">*</span>}
+                        </h3>
+
+                        <div className="grid grid-cols-2 gap-4 md:gap-6">
+                            <div>
+                                <label className="block text-sm md:text-base font-medium text-gray-700 mb-2">
+                                    العرض
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData[`${fieldName}_width`] || product.defaultWidth || ''}
+                                    onChange={(e) => handleFieldChange(`${fieldName}_width`, parseFloat(e.target.value) || 0)}
+                                    className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                    title="أدخل العرض"
+                                    placeholder="أدخل العرض"
+                                    step="0.001"
+                                    required={required}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm md:text-base font-medium text-gray-700 mb-2">
+                                    الارتفاع
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData[`${fieldName}_height`] || product.defaultHeight || ''}
+                                    onChange={(e) => handleFieldChange(`${fieldName}_height`, parseFloat(e.target.value) || 0)}
+                                    className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                    title="أدخل الارتفاع"
+                                    placeholder="أدخل الارتفاع"
+                                    step="0.001"
+                                    required={required}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                );
 
             case 'dimensions_3d':
                 return (
@@ -885,8 +885,9 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         {product.name}
                                     </h1>
 
-                                    <div className="flex items-center justify-between gap-4">
+                                    <div className="flex items-start justify-start gap-12">
                                         <div className="flex items-center gap-3">
+                                            <div>
                                             {isCurtainsOrCabinets ? (
                                                 <div className="flex flex-col gap-2">
                                                     <PriceDisplay
@@ -924,16 +925,19 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                     />
                                                 </div>
                                             )}
-                                        </div>
-                                        
-                                        <div className="flex flex-col items-center gap-2">
-                                            <div className="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-sm font-medium">
+                                            <div className="w-fit bg-blue-50 text-blue-700 px-2 py-1 rounded-lg text-xs font-medium mt-4">
                                                 {product.brand || 'IVEA'}
-                                            </div>
-                                            <div className="text-xs text-gray-500 text-right">
-                                                قسط دفعاتك مع tabby
+                                                </div>
                                             </div>
                                         </div>
+                                            <div className="mt-8 text-xs text-gray-500 text-right flex justify-start items-center gap-1">
+                                                <span>قسط دفعاتك مع</span>
+                                                <img
+                                                    src="/images/tabby.png"
+                                                    alt="ريال"
+                                                    className="w-14 h-14"
+                                                />
+                                            </div>
                                     </div>
 
                                     <div className="text-sm md:text-base text-gray-600 leading-relaxed">
@@ -952,13 +956,13 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
                                             الخيارات الأساسية
                                         </h3>
-                                        
+
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                                             <div className="space-y-3">
                                                 <label className="block text-sm md:text-base font-medium text-gray-700">
                                                     اللون
                                                 </label>
-                                                
+
                                                 <div className="space-y-4">
                                                     <div className="flex flex-wrap items-center gap-3">
                                                         {product.colors.map((color, index) => (
@@ -968,11 +972,10 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                                 title={product.colorNames?.[index] || `اللون ${index + 1}`}
                                                             >
                                                                 <div
-                                                                    className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 ${
-                                                                        selectedColor === index && !useCustomColor
+                                                                    className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 ${selectedColor === index && !useCustomColor
                                                                             ? 'border-primary-yellow scale-110'
                                                                             : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
-                                                                    }`}
+                                                                        }`}
                                                                     style={{ backgroundColor: color }}
                                                                 >
                                                                     {selectedColor === index && !useCustomColor && (
@@ -992,17 +995,16 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                                 />
                                                             </label>
                                                         ))}
-                                                        
+
                                                         <label
                                                             className="relative cursor-pointer group"
                                                             title="لون مخصص"
                                                         >
                                                             <div
-                                                                className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 flex items-center justify-center ${
-                                                                    useCustomColor
+                                                                className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 flex items-center justify-center ${useCustomColor
                                                                         ? 'border-primary-yellow scale-110'
                                                                         : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
-                                                                }`}
+                                                                    }`}
                                                                 style={{ backgroundColor: customColor }}
                                                             >
                                                                 <HiPlus className="text-white text-sm font-bold" />
@@ -1021,7 +1023,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                             />
                                                         </label>
                                                     </div>
-                                                    
+
                                                     <div className="text-sm text-gray-600">
                                                         {useCustomColor ? (
                                                             <span>اللون المختار: <span className="font-medium">لون مخصص</span></span>
@@ -1033,7 +1035,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="space-y-3">
                                                 <label className="block text-sm md:text-base font-medium text-gray-700">
                                                     الكمية
@@ -1122,14 +1124,14 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
                                             الخيارات الأساسية
                                         </h3>
-                                        
+
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                                             {/* اختيار اللون */}
                                             <div className="space-y-3">
                                                 <label className="block text-sm md:text-base font-medium text-gray-700">
                                                     اللون
                                                 </label>
-                                                
+
                                                 <div className="space-y-4">
                                                     <div className="flex flex-wrap items-center gap-3">
                                                         {product.colors.map((color, index) => (
@@ -1139,11 +1141,10 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                                 title={product.colorNames?.[index] || `اللون ${index + 1}`}
                                                             >
                                                                 <div
-                                                                    className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 ${
-                                                                        selectedColor === index && !useCustomColor
+                                                                    className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 ${selectedColor === index && !useCustomColor
                                                                             ? 'border-primary-yellow scale-110'
                                                                             : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
-                                                                    }`}
+                                                                        }`}
                                                                     style={{ backgroundColor: color }}
                                                                 >
                                                                     {selectedColor === index && !useCustomColor && (
@@ -1163,17 +1164,16 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                                 />
                                                             </label>
                                                         ))}
-                                                        
+
                                                         <label
                                                             className="relative cursor-pointer group"
                                                             title="لون مخصص"
                                                         >
                                                             <div
-                                                                className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 flex items-center justify-center ${
-                                                                    useCustomColor
+                                                                className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 flex items-center justify-center ${useCustomColor
                                                                         ? 'border-primary-yellow scale-110'
                                                                         : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
-                                                                }`}
+                                                                    }`}
                                                                 style={{ backgroundColor: customColor }}
                                                             >
                                                                 <HiPlus className="text-white text-sm font-bold" />
@@ -1192,7 +1192,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                             />
                                                         </label>
                                                     </div>
-                                                    
+
                                                     <div className="text-sm text-gray-600">
                                                         {useCustomColor ? (
                                                             <span>اللون المختار: <span className="font-medium">لون مخصص</span></span>
@@ -1204,7 +1204,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="space-y-3">
                                                 <label className="block text-sm md:text-base font-medium text-gray-700">
                                                     الكمية
@@ -1256,7 +1256,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         {useCustomColor && (
                                             <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
                                                 <div className="space-y-2">
@@ -1286,6 +1286,51 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                 </div>
                                             </div>
                                         )}
+
+                                        {/* حاسبة الأبعاد والأسعار للكنب */}
+                                        <div className="space-y-4 md:space-y-6">
+                                            <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                                                حاسبة الأبعاد والأسعار
+                                            </h3>
+
+                                            <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
+                                                <div className="space-y-4">
+                                                    <div className="space-y-2">
+                                                        <label className="block text-sm md:text-base font-medium text-gray-700">
+                                                            وحدة القياس <span className="text-red-500">*</span>
+                                                        </label>
+                                                        <select
+                                                            value={formData['measurement_unit'] || 'م'}
+                                                            onChange={(e) => handleUnitChange(e.target.value)}
+                                                            className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                                            title="اختر وحدة القياس"
+                                                        >
+                                                            <option value="م">م</option>
+                                                            <option value="سم">سم</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div className="lg:col-span-2">
+                                                        <DimensionPriceCalculator
+                                                            key={`${product.id}-${formData.measurement_unit}-${formData.quantity || quantity}`}
+                                                            productId={product.id}
+                                                            defaultWidth={dimensions.width}
+                                                            defaultHeight={dimensions.height}
+                                                            minWidth={formData.measurement_unit === 'م' ? 1 : 100}
+                                                            maxWidth={formData.measurement_unit === 'م' ? 20 : 2000}
+                                                            minHeight={formData.measurement_unit === 'م' ? 1 : 100}
+                                                            maxHeight={formData.measurement_unit === 'م' ? 20 : 2000}
+                                                            basePrice={product.price}
+                                                            discount={product.discount}
+                                                            unit={formData.measurement_unit || 'م'}
+                                                            quantity={formData.quantity || quantity || 1}
+                                                            onPriceChange={handlePriceChange}
+                                                            onDimensionsChange={handleDimensionsChange}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
 
@@ -1310,37 +1355,37 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                 {Object.entries(mainFields).map(([fieldName, field]) => {
                                                     const fieldType = (field as any)?.type;
                                                     const isQuantity = fieldName === 'quantity' || (field as any)?.label?.includes('كمية');
-                                                    
+
                                                     if (isQuantity) {
                                                         return null;
                                                     }
-                                                    
+
                                                     return null;
                                                 })}
-                                                
+
                                                 {Object.entries(mainFields).some(([fieldName, field]) => {
                                                     const fieldType = (field as any)?.type;
                                                     return ['dimensions', 'dimensions_3d'].includes(fieldType) && (field as any)?.units;
                                                 }) && (
-                                                    <div className="lg:col-span-2">
-                                                        <div className="space-y-2">
-                                                            <label className="block text-sm md:text-base font-medium text-gray-700">
-                                                               وحدة القياس <span className="text-red-500">*</span>
-                                                            </label>
-                                                            <select
-                                                                value={formData['measurement_unit'] || 'م'}
-                                                                onChange={(e) => handleUnitChange(e.target.value)}
-                                                                className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
-                                                                title="اختر وحدة القياس"
-                                                            >
-                                                                <option value="م">م</option>
-                                                                <option value="سم">سم</option>
-                                                            </select>
+                                                        <div className="lg:col-span-2">
+                                                            <div className="space-y-2">
+                                                                <label className="block text-sm md:text-base font-medium text-gray-700">
+                                                                    وحدة القياس <span className="text-red-500">*</span>
+                                                                </label>
+                                                                <select
+                                                                    value={formData['measurement_unit'] || 'م'}
+                                                                    onChange={(e) => handleUnitChange(e.target.value)}
+                                                                    className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
+                                                                    title="اختر وحدة القياس"
+                                                                >
+                                                                    <option value="م">م</option>
+                                                                    <option value="سم">سم</option>
+                                                                </select>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                )}
+                                                    )}
                                             </div>
-                                            
+
                                             <div className="lg:col-span-2">
                                                 <DimensionPriceCalculator
                                                     key={`${product.id}-${formData.measurement_unit}-${formData.quantity || quantity}`}
@@ -1372,7 +1417,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         >
                                             <span className="flex items-center gap-1">
                                                 <HiCog className="w-4 h-4" />
-                                                {showMoreOptions ? 'إخفاء الخيارات' : 'عرض المزيد من الخيارات'}
+                                                {showMoreOptions ? 'إخفاء الخيارات' : 'خيارات المنتج'}
                                             </span>
                                             {showMoreOptions ? (
                                                 <HiChevronUp className="text-xl transition-transform duration-300 group-hover:-translate-y-1" />
@@ -1409,64 +1454,38 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                     {renderField(fieldName, field)}
                                                 </div>
                                             );
-                                        }                                        )}
-                                        
-                                        {/* حاسبة الأبعاد للكنب والخشب */}
-                                        {isSofaOrWood && (
-                                            <div className="space-y-4 md:space-y-6">
-                                                <h3 className="text-base md:text-lg font-semibold text-gray-900">
-                                                    حاسبة الأبعاد والأسعار
-                                                </h3>
-                                                
-                                                <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
-                                                    <div className="space-y-4">
-                                                        <div className="space-y-2">
-                                                            <label className="block text-sm md:text-base font-medium text-gray-700">
-                                                               وحدة القياس <span className="text-red-500">*</span>
-                                                            </label>
-                                                            <select
-                                                                value={formData['measurement_unit'] || 'م'}
-                                                                onChange={(e) => handleUnitChange(e.target.value)}
-                                                                className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base"
-                                                                title="اختر وحدة القياس"
-                                                            >
-                                                                <option value="م">م</option>
-                                                                <option value="سم">سم</option>
-                                                            </select>
+                                        })}
+
                                                         </div>
-                                                        
-                                                        <div className="lg:col-span-2">
-                                                            <DimensionPriceCalculator
-                                                                key={`${product.id}-${formData.measurement_unit}-${formData.quantity || quantity}`}
-                                                                productId={product.id}
-                                                                defaultWidth={dimensions.width}
-                                                                defaultHeight={dimensions.height}
-                                                                minWidth={formData.measurement_unit === 'م' ? 1 : 100}
-                                                                maxWidth={formData.measurement_unit === 'م' ? 20 : 2000}
-                                                                minHeight={formData.measurement_unit === 'م' ? 1 : 100}
-                                                                maxHeight={formData.measurement_unit === 'م' ? 20 : 2000}
-                                                                basePrice={product.price}
-                                                                discount={product.discount}
-                                                                unit={formData.measurement_unit || 'م'}
-                                                                quantity={formData.quantity || quantity || 1}
-                                                                onPriceChange={handlePriceChange}
-                                                                onDimensionsChange={handleDimensionsChange}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
                                 )}
 
 
                                 {isSofaOrWood && Object.keys(customizationFields).length > 0 && (
+                                    <div className="mb-4 flex justify-start">
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowMoreOptions((prev) => !prev)}
+                                            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50"
+                                        >
+                                            <span className="flex items-center gap-1">
+                                                <HiCog className="w-4 h-4" />
+                                                {showMoreOptions ? 'إخفاء الخيارات' : 'خيارات المنتج'}
+                                            </span>
+                                            {showMoreOptions ? (
+                                                <HiChevronUp className="text-xl transition-transform duration-300 group-hover:-translate-y-1" />
+                                            ) : (
+                                                <HiChevronDown className="text-xl transition-transform duration-300 group-hover:translate-y-1" />
+                                            )}
+                                        </button>
+                                    </div>
+                                )}
+
+                                {isSofaOrWood && showMoreOptions && Object.keys(customizationFields).length > 0 && (
                                     <div className="space-y-4 md:space-y-6">
                                         <h3 className="text-base md:text-lg font-semibold text-gray-900">
                                             خيارات التخصيص
                                         </h3>
-                                        
+
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                                             {(() => {
                                                 const fieldsArray = Object.entries(customizationFields).filter(([fieldName, field]) => {
@@ -1541,14 +1560,14 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
                                             <div className="flex items-center gap-2">
                                                 <span className="flex items-center justify-center gap-1 text-lg sm:text-xl md:text-2xl font-bold text-green-600">
-                                    <span className="text-xl font-bold text-green-600">
-                                                            {calculateFinalPrice().toFixed(2)}
-                                    </span>
-                                    <img
-                                        src="/images/sar-currency(black).svg"
-                                        alt="ريال"
-                                        className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
-                                    />
+                                                    <span className="text-xl font-bold text-green-600">
+                                                        {calculateFinalPrice().toFixed(2)}
+                                                    </span>
+                                                    <img
+                                                        src="/images/sar-currency(black).svg"
+                                                        alt="ريال"
+                                                        className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
+                                                    />
                                                 </span>
                                                 <span className="text-xs sm:text-sm text-gray-500">
                                                     (السعر الإجمالي)
@@ -1566,7 +1585,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         </div>
                                     </div>
 
-                                    
+
                                     <ActionButtons
                                         onAddToCart={handleAddToCart}
                                         onQuickOrder={handleQuickOrder}

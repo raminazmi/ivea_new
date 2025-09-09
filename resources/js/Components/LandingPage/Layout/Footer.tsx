@@ -43,7 +43,8 @@ const Footer: React.FC = () => {
                         <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4">تواصل معنا</h3>
                         <div className="space-y-2 md:space-y-3 text-gray-300 text-sm">
                             <p>info@ivea.sa</p>
-                            <p>+966 541444066</p>
+                            <p>541444066 (966+)</p>
+                            <p>المملكة العربية السعودية -الرياض -  شارع أنس بن مالك</p>
                         </div>
                     </div>
 
@@ -70,7 +71,7 @@ const Footer: React.FC = () => {
                             </Link>
                         </div>
                         <div className="text-gray-400 text-xs md:text-sm">
-                            2025 ايفيا. جميع الحقوق محفوظة.
+                            ايفيا. جميع الحقوق محفوظة {new Date().getFullYear()}
                         </div>
                     </div>
                 </div>

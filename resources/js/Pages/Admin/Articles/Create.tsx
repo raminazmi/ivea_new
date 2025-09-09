@@ -19,7 +19,8 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories = [] }) => {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         content: '',
-        category_id: '',
+        excerpt: '',
+        category_id: null as number | null,
         image: null as File | null,
         date: new Date().toISOString().split('T')[0],
         read_time: 5,
@@ -48,14 +49,37 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories = [] }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // التحقق من أن الفئة تم اختيارها
+        if (!data.category_id) {
+            alert('يرجى اختيار فئة للمقال');
+            return;
+        }
+        
         const slug = data.title
             .trim()
             .replace(/\s+/g, '-')
-            .replace(/[^\w\-]+/g, '')
+            .replace(/[^a-zA-Z0-9\u0600-\u06FF\-]+/g, '')
             .toLowerCase();
-        setData('slug', slug);
+        
+        // إنشاء كائن البيانات مع slug جديد
+        const dataToSend = {
+            ...data,
+            slug: slug
+        };
+        
+        // Debug: طباعة البيانات قبل الإرسال
+        console.log('Data being sent:', dataToSend);
+        
         post(route('admin.articles.store'), {
-            forceFormData: true
+            ...dataToSend,
+            forceFormData: true,
+            onSuccess: (page: any) => {
+                console.log('Create successful');
+            },
+            onError: (errors: any) => {
+                console.log('Create failed:', errors);
+            }
         });
     };
 
@@ -91,8 +115,8 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories = [] }) => {
                                             title="الفئة"
                                             id="category_id"
                                             className="mt-1 block w-full border-gray-300 focus:border-yellow-500 focus:ring-yellow-500 rounded-md shadow-sm"
-                                            value={data.category_id}
-                                            onChange={(e) => setData('category_id', e.target.value)}
+                                            value={data.category_id ? data.category_id.toString() : ''}
+                                            onChange={(e) => setData('category_id', e.target.value ? parseInt(e.target.value) : null)}
                                             required
                                         >
                                             <option value="">اختر الفئة</option>
@@ -161,6 +185,19 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories = [] }) => {
                                         />
                                         <InputError message={errors.sort_order} className="mt-2" />
                                     </div>
+                                </div>
+
+                                <div>
+                                    <InputLabel htmlFor="excerpt" value="ملخص المقالة" />
+                                    <textarea
+                                        title="excerpt"
+                                        id="excerpt"
+                                        className="mt-1 block w-full border-gray-300 focus:border-yellow-500 focus:ring-yellow-500 rounded-md shadow-sm"
+                                        rows={3}
+                                        value={data.excerpt}
+                                        onChange={(e) => setData('excerpt', e.target.value)}
+                                    />
+                                    <InputError message={errors.excerpt} className="mt-2" />
                                 </div>
 
                                 <div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
@@ -10,6 +10,7 @@ interface Article {
     id: number;
     title: string;
     content: string;
+    excerpt: string | null;
     category_id: number;
     image: string | null;
     date: string;
@@ -36,12 +37,13 @@ interface EditArticleProps {
 }
 
 const EditArticle: React.FC<EditArticleProps> = ({ article, categories = [] }) => {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, put, post, processing, errors } = useForm({
         title: article.title || '',
         content: article.content || '',
-        category_id: String(article.category_id) || '',
+        excerpt: article.excerpt || '',
+        category_id: article.category_id || null,
         image: null as File | null,
-        date: article.date || '',
+        date: article.date ? new Date(article.date).toISOString().split('T')[0] : '',
         read_time: article.read_time || 5,
         author: article.author || '',
         author_image: null as File | null,
@@ -60,7 +62,7 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories = [] }) =
         e.preventDefault();
         let errors: { [key: string]: string } = {};
         if (!data.title || data.title.trim() === '') errors.title = 'العنوان مطلوب';
-        if (!data.category_id || data.category_id === '') errors.category_id = 'الفئة مطلوبة';
+        if (!data.category_id) errors.category_id = 'الفئة مطلوبة';
         if (!data.content || data.content.trim() === '') errors.content = 'المحتوى مطلوب';
         if (!data.date || data.date === '') errors.date = 'تاريخ النشر مطلوب';
         if (!data.read_time || isNaN(Number(data.read_time))) errors.read_time = 'وقت القراءة مطلوب';
@@ -71,22 +73,62 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories = [] }) =
             setLocalErrors({});
         }
 
-        const slug = data.title
+        const generateSlug = (title: string) => {
+            // تحويل النص العربي إلى slug مناسب
+            return title
             .trim()
             .replace(/\s+/g, '-')
-            .replace(/[^\w\-]+/g, '')
+                .replace(/[^\u0600-\u06FF\w\-]+/g, '')
             .toLowerCase();
-        const generateSlug = (title: string) => {
-            return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         };
-        setData('slug', generateSlug(data.title));
-        post(route('admin.articles.update', article.id), {
-            forceFormData: true,
+        const newSlug = generateSlug(data.title);
+        
+        // إنشاء كائن البيانات مع slug جديد
+        const dataToSend = {
+            ...data,
+            slug: newSlug
+        };
+        
+        // Debug: طباعة البيانات قبل الإرسال
+        console.log('Data being sent:', dataToSend);
+        
+        // إنشاء FormData يدوياً
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
+        
+        // إضافة جميع البيانات للـ FormData
+        formData.append('title', dataToSend.title);
+        formData.append('content', dataToSend.content);
+        formData.append('excerpt', dataToSend.excerpt || '');
+        formData.append('slug', dataToSend.slug);
+        formData.append('category_id', dataToSend.category_id?.toString() || '');
+        formData.append('author', dataToSend.author || '');
+        formData.append('author_bio', dataToSend.author_bio || '');
+        formData.append('meta_description', dataToSend.meta_description || '');
+        formData.append('meta_keywords', dataToSend.meta_keywords || '');
+        formData.append('date', dataToSend.date || '');
+        formData.append('read_time', dataToSend.read_time?.toString() || '0');
+        formData.append('sort_order', dataToSend.sort_order?.toString() || '0');
+        formData.append('is_published', dataToSend.is_published ? '1' : '0');
+        formData.append('featured', dataToSend.featured ? '1' : '0');
+        
+        // إضافة الصور إذا كانت موجودة
+        if (dataToSend.image) {
+            formData.append('image', dataToSend.image);
+        }
+        if (dataToSend.author_image) {
+            formData.append('author_image', dataToSend.author_image);
+        }
+        
+        // إرسال البيانات باستخدام router.post مع _method
+        router.post(route('admin.articles.update', article.id), formData, {
             preserveState: true,
             preserveScroll: true,
-            onSuccess: (page) => {
+            onSuccess: (page: any) => {
+                console.log('Update successful');
             },
-            onError: (errors) => {
+            onError: (errors: any) => {
+                console.log('Update failed:', errors);
             }
         });
     };
@@ -134,8 +176,8 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories = [] }) =
                                         <select
                                             id="category_id"
                                             className="mt-1 block w-full border-gray-300 focus:border-yellow-500 focus:ring-yellow-500 rounded-md shadow-sm"
-                                            value={data.category_id}
-                                            onChange={(e) => setData('category_id', e.target.value)}
+                                            value={data.category_id ? data.category_id.toString() : ''}
+                                            onChange={(e) => setData('category_id', e.target.value ? parseInt(e.target.value) : null)}
                                             required
                                             title="الفئة"
                                         >
@@ -205,6 +247,19 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories = [] }) =
                                         />
                                         <InputError message={errors.sort_order} className="mt-2" />
                                     </div>
+                                </div>
+
+                                <div>
+                                    <InputLabel htmlFor="excerpt" value="ملخص المقالة" />
+                                    <textarea
+                                        id="excerpt"
+                                        className="mt-1 block w-full border-gray-300 focus:border-yellow-500 focus:ring-yellow-500 rounded-md shadow-sm resize-y"
+                                        rows={3}
+                                        value={data.excerpt}
+                                        onChange={(e) => setData('excerpt', e.target.value)}
+                                        title="ملخص المقالة"
+                                    />
+                                    <InputError message={errors.excerpt} className="mt-2" />
                                 </div>
 
                                 <div>

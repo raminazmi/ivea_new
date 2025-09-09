@@ -237,9 +237,8 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                                 slidesPerView={1}
                                 loop
                                 autoplay={{ delay: 5000, disableOnInteraction: false }}
-                                pagination={{ clickable: true, el: '.hero-swiper-pagination' }}
                                 navigation={{ nextEl: '.hero-swiper-next', prevEl: '.hero-swiper-prev' }}
-                                modules={[Pagination, Autoplay, Navigation]}
+                                modules={[ Autoplay, Navigation]}
                                 className="max-w-full max-h-full object-contain"
                             >
                                 {heroImages.map((image, index) => (
@@ -277,7 +276,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                         </div>
                     </div>
 
-                    <div ref={heroContentRef} className="md:pt-20 w-full lg:w-1/2 text-center lg:text-right pr-0 lg:pr-4">
+                    <div ref={heroContentRef} className="md:pt-20 w-full lg:w-1/2 text-center lg:text-right pr-0 lg:ps-16 -mt-6">
                         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-[#0D1D25] mb-2 md:mb-3 leading-tight">
                             الانسجام المثالي..
                         </h1>
@@ -308,7 +307,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                 <div
                     className="relative"
                 >
-                    <div className="relative mt-6 sm:mt-8 md:mt-12 lg:absolute lg:bottom-[30px] lg:right-[5%] lg:w-[80%] xl:w-[75%] bg-white shadow rounded-xl md:rounded-full py-2 px-3 sm:px-4 md:px-6 flex flex-col md:flex-row items-center gap-3 sm:gap-4">
+                    <div className="relative mt-6 sm:mt-8 md:mt-12 lg:absolute lg:bottom-[50px] lg:right-[5%] lg:w-[80%] xl:w-[75%] bg-white shadow rounded-xl md:rounded-full py-2 px-3 sm:px-4 md:px-6 flex flex-col md:flex-row items-center gap-3 sm:gap-4">
                         <div className='flex flex-wrap justify-center md:justify-start items-center gap-2 sm:gap-3 md:gap-4 w-full'>
                             {features.map((feature, index) => (
                                 <div
@@ -400,7 +399,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                                         <h3 className="font-bold text-sm sm:text-base md:text-lg text-[#0D1D25] transition-all duration-700 group-hover:text-[#0D1D25]/80">
                                             {category.name}
                                         </h3>
-                                        <p className="text-xs sm:text-sm text-[#616161] mt-1 bg-white rounded-full py-1.5 sm:py-2 px-3 sm:px-4 transition-all duration-700 group-hover:bg-gray-50 hover:bg-primary-yellow hover:text-white">
+                                        <p className="text-xs sm:text-sm text-[#616161] mt-1 bg-white rounded-full py-1.5 sm:py-2 px-3 sm:px-4 transition-all duration-700 group-hover:bg-gray-50 hover:bg-primary-yellow hover:text-black">
                                             {category.subtitle}
                                         </p>
                                     </div>

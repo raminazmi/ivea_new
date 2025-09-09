@@ -14,7 +14,8 @@ class Article extends Model
         'title',
         'slug',
         'content',
-        'category',
+        'excerpt',
+        'category_id',
         'image',
         'date',
         'read_time',
@@ -41,7 +42,7 @@ class Article extends Model
 
         static::creating(function ($article) {
             if (empty($article->slug)) {
-                $article->slug = Str::slug($article->title);
+                $article->slug = $article->generateSlug($article->title);
             }
         });
     }
@@ -79,6 +80,11 @@ class Article extends Model
     public function getExcerptAttribute()
     {
         return Str::limit(strip_tags($this->content), 150);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
     public static function getCategories()

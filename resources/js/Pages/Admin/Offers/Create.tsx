@@ -3,13 +3,25 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { FaArrowRight, FaImage, FaSave } from 'react-icons/fa';
 
-const CreateOffer: React.FC = () => {
+interface OffersText {
+    id: number;
+    key: string;
+    title_ar: string;
+    description_ar: string;
+}
+
+interface CreateOfferProps {
+    offersTexts: OffersText[];
+}
+
+const CreateOffer: React.FC<CreateOfferProps> = ({ offersTexts = [] }) => {
 
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         discount_percentage: 10,
         category_slug: 'curtains',
-        category_name: 'ستائر'
+        category_name: 'ستائر',
+        offers_text_id: null as number | null
     });
 
     const categories = [

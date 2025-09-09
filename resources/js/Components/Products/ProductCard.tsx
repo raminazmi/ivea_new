@@ -134,7 +134,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
         <div className="group transition-all duration-300 hover:-translate-y-1">
             <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group-hover:shadow-lg">
                 <Link href={`/products/${product.id}/options`} className="block">
-                    <div className="relative h-32 sm:h-36 md:h-40 bg-white rounded-t-xl overflow-hidden">
+                    <div className="relative h-36 sm:h-40 md:h-52 bg-white rounded-t-xl overflow-hidden">
                         <img
                             src={product.image}
                             alt={product.name}
@@ -168,7 +168,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
 
                 <div className="p-3 sm:p-4 text-start">
                     <Link href={`/products/${product.id}/options`} className="block">
-                        <h3 className="font-bold text-base sm:text-md text-[#0D1F40] hover:text-[#0D1D25] transition-colors">
+                        <h3 className="font-bold text-base sm:text-sm text-[#0D1F40] hover:text-[#0D1D25] transition-colors">
                             {product.name}
                         </h3>
                     </Link>
@@ -229,13 +229,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                                                 </div>
                                                 
                                                 <div className="flex items-center gap-1">
-                                                    <span className="text-xs sm:text-sm text-gray-500 line-through">
+                                                    <span className="text-[16px] sm:text-xs text-gray-500 line-through">
                                                         {originalPrice.toFixed(2)}
                                                     </span>
                                                     <img
                                                         src="/images/sar-currency(black).svg"
                                                         alt="ريال"
-                                                        className="w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 opacity-50"
+                                                        className="w-2 h-2 md:w-3 md:h-3 opacity-50"
                                                     />
                                                 </div>
                                             </div>

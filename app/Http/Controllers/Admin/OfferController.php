@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Offer;
+use App\Models\OffersText;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -15,7 +16,7 @@ class OfferController extends Controller
      */
     public function index()
     {
-        $offers = Offer::ordered()->paginate(10);
+        $offers = Offer::with('offersText')->ordered()->paginate(10);
 
         return Inertia::render('Admin/Offers/Index', [
             'offers' => $offers
@@ -27,7 +28,11 @@ class OfferController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Offers/Create');
+        $offersTexts = OffersText::where('is_active', true)->orderBy('sort_order')->get();
+
+        return Inertia::render('Admin/Offers/Create', [
+            'offersTexts' => $offersTexts
+        ]);
     }
 
     /**
@@ -40,6 +45,7 @@ class OfferController extends Controller
             'discount_percentage' => 'required|integer|min:1|max:100',
             'category_slug' => 'required|string|in:curtains,sofas,cabinets,wooden',
             'category_name' => 'required|string|max:255',
+            'offers_text_id' => 'nullable|exists:offers_texts,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -71,8 +77,11 @@ class OfferController extends Controller
      */
     public function edit(Offer $offer)
     {
+        $offersTexts = OffersText::where('is_active', true)->orderBy('sort_order')->get();
+
         return Inertia::render('Admin/Offers/Edit', [
-            'offer' => $offer
+            'offer' => $offer,
+            'offersTexts' => $offersTexts
         ]);
     }
 
@@ -86,6 +95,7 @@ class OfferController extends Controller
             'discount_percentage' => 'required|integer|min:1|max:100',
             'category_slug' => 'required|string|in:curtains,sofas,cabinets,wooden',
             'category_name' => 'required|string|max:255',
+            'offers_text_id' => 'nullable|exists:offers_texts,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 

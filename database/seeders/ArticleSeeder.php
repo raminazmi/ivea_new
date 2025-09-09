@@ -13,7 +13,8 @@ class ArticleSeeder extends Seeder
         // مقال 1: كيف تختار الستارة المثالية لمساحتك؟
         Article::create([
             'title' => 'كيف تختار الستارة المثالية لمساحتك؟',
-            'slug' => 'كيف-تختار-الستارة-المثالية-لمساحتك',
+            'slug' => 'كيف-تختار-الستارة-المثالية-لمساحتك؟',
+            'excerpt' => 'دليل شامل لاختيار الستائر المثالية: أنواع الستائر، اختيار القماش، الألوان المناسبة، ونصائح من خبراء إيفيا',
             'content' => '<div class="max-w-4xl mx-auto">
                 <div class="mb-8">
                     <p class="text-lg leading-relaxed text-gray-700 text-center">
@@ -110,11 +111,11 @@ class ArticleSeeder extends Seeder
                 </div>
             </div>',
             'category_id' => 1,
-            'image' => '/images/article4.jpg',
+            'image' => '/images/article1.jpg',
             'date' => Carbon::now(),
             'read_time' => 10,
             'author' => 'فريق إيفيا',
-            'author_image' => '/images/article4.jpg',
+            'author_image' => '/images/article1.jpg',
             'author_bio' => 'فريق متخصص في التصميم الداخلي والديكور، يقدم استشارات مجانية لمساعدة العملاء في اختيار أفضل الحلول لمساحاتهم.',
             'meta_description' => 'دليل شامل لاختيار الستائر المثالية: أنواع الستائر، اختيار القماش، الألوان المناسبة، ونصائح من خبراء إيفيا',
             'meta_keywords' => 'ستائر، ديكور، تصميم داخلي، إيفيا، نصائح تصميم',
@@ -127,6 +128,7 @@ class ArticleSeeder extends Seeder
         Article::create([
             'title' => 'دليل قياس المساحات للستائر والخزائن',
             'slug' => 'دليل-قياس-المساحات-للستائر-والخزائن',
+            'excerpt' => 'دليل شامل لقياس المساحات للستائر والخزائن: خطوات عملية، نصائح مفيدة، ومساعدة من خبراء إيفيا',
             'content' => '<div class="max-w-4xl mx-auto">
                 <div class="mb-8">
                     <p class="text-lg leading-relaxed text-gray-700 text-center">
@@ -205,11 +207,11 @@ class ArticleSeeder extends Seeder
                 </div>
             </div>',
             'category_id' => 2,
-            'image' => '/images/article3.jpg',
+            'image' => '/images/article2.jpg',
             'date' => Carbon::now()->subDays(1),
             'read_time' => 8,
             'author' => 'فريق إيفيا',
-            'author_image' => '/images/article3.jpg',
+            'author_image' => '/images/article2.jpg',
             'author_bio' => 'فريق متخصص في القياسات والتصميم، يقدم إرشادات دقيقة لضمان أفضل النتائج في مشاريع العملاء.',
             'meta_description' => 'دليل شامل لقياس المساحات للستائر والخزائن: خطوات عملية، نصائح مفيدة، ومساعدة من خبراء إيفيا',
             'meta_keywords' => 'قياسات، ستائر، خزائن، دليل، إيفيا، تصميم',
@@ -221,7 +223,8 @@ class ArticleSeeder extends Seeder
         // مقال 3: كيف تفرق بين المودرن والكلاسيك والنيوكلاسيك؟
         Article::create([
             'title' => 'كيف تفرق بين المودرن والكلاسيك والنيوكلاسيك؟',
-            'slug' => 'كيف-تفرق-بين-المودرن-والكلاسيك-والنيوكلاسيك',
+            'slug' => 'كيف-تفرق-بين-المودرن-والكلاسيك-والنيوكلاسيك؟',
+            'excerpt' => 'دليل شامل للتمييز بين أنماط الأثاث: المودرن، الكلاسيك، والنيوكلاسيك. تعرف على مميزات كل نمط وأفضل استخداماته',
             'content' => '<div class="max-w-4xl mx-auto">
                 <div class="mb-8">
                     <p class="text-lg leading-relaxed text-gray-700 text-center">
@@ -301,11 +304,11 @@ class ArticleSeeder extends Seeder
                 </div>
             </div>',
             'category_id' => 1,
-            'image' => '/images/article1.jpg',
+            'image' => '/images/article3.jpg',
             'date' => Carbon::now()->subDays(2),
             'read_time' => 7,
             'author' => 'فريق إيفيا',
-            'author_image' => '/images/article1.jpg',
+            'author_image' => '/images/article3.jpg',
             'author_bio' => 'فريق متخصص في التصميم الداخلي، يقدم إرشادات شاملة لمساعدة العملاء في اختيار أنماط الأثاث المناسبة لمساحاتهم.',
             'meta_description' => 'دليل شامل للتمييز بين أنماط الأثاث: المودرن، الكلاسيك، والنيوكلاسيك. تعرف على مميزات كل نمط وأفضل استخداماته',
             'meta_keywords' => 'أثاث، مودرن، كلاسيك، نيوكلاسيك، تصميم داخلي، إيفيا',
@@ -318,6 +321,7 @@ class ArticleSeeder extends Seeder
         Article::create([
             'title' => 'خطوات تجهيز مشروعك مع إيفيا',
             'slug' => 'خطوات-تجهيز-مشروعك-مع-إيفيا',
+            'excerpt' => 'خطوات واضحة ومنظمة لتجهيز مشروعك مع إيفيا: من تحديد المساحة إلى التنفيذ النهائي',
             'content' => '<div class="max-w-4xl mx-auto">
                 <div class="mb-8">
                     <p class="text-lg leading-relaxed text-gray-700 text-center">
@@ -373,11 +377,11 @@ class ArticleSeeder extends Seeder
                 </div>
             </div>',
             'category_id' => 2,
-            'image' => '/images/article2.jpg',
+            'image' => '/images/article4.jpg',
             'date' => Carbon::now()->subDays(3),
             'read_time' => 6,
             'author' => 'فريق إيفيا',
-            'author_image' => '/images/article2.jpg',
+            'author_image' => '/images/article4.jpg',
             'author_bio' => 'فريق متخصص في إدارة المشاريع والتصميم، يقدم خطوات واضحة ومنظمة لضمان نجاح كل مشروع.',
             'meta_description' => 'خطوات واضحة ومنظمة لتجهيز مشروعك مع إيفيا: من تحديد المساحة إلى التنفيذ النهائي',
             'meta_keywords' => 'مشاريع، تصميم، إيفيا، خطوات، استشارات',
@@ -389,7 +393,8 @@ class ArticleSeeder extends Seeder
         // مقال 5: لماذا إيفيا؟
         Article::create([
             'title' => 'لماذا إيفيا؟',
-            'slug' => 'لماذا-إيفيا',
+            'slug' => 'لماذا-إيفيا؟',
+            'excerpt' => 'اكتشف لماذا تختار إيفيا: خبرة، جودة، تشكيلات واسعة، استشارات مجانية، وخدمات شاملة في التصميم والديكور',
             'content' => '<div class="max-w-4xl mx-auto">
                 <div class="mb-8">
                     <p class="text-lg leading-relaxed text-gray-700">

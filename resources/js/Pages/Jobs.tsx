@@ -136,9 +136,6 @@ const Jobs: React.FC<JobsProps> = ({ jobs, categories }) => {
           ) : (
             <div className="col-span-full text-center py-8 md:py-12">
               <div className="text-gray-500">
-                <svg className="mx-auto h-12 w-12 md:h-16 md:w-16 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6" />
-                </svg>
                 <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2">لا توجد وظائف متاحة</h3>
                 <p className="text-sm md:text-base text-gray-500">لا توجد وظائف متاحة في هذه الفئة حالياً</p>
               </div>

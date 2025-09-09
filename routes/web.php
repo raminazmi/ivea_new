@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\AdminProjectController;
 use App\Http\Controllers\Admin\ApplicationController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\OffersTextController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ImageUploadController;
 use App\Http\Controllers\Admin\JobController as AdminJobController;
@@ -104,6 +105,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Articles
     Route::resource('articles', ArticleController::class);
+
+    // Offers Texts
+    Route::resource('offers-texts', OffersTextController::class);
 
     // Tools
     Route::resource('tools', ToolController::class);

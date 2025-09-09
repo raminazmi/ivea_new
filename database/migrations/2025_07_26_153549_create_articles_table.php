@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->longText('content');
+            $table->text('excerpt')->nullable();
             $table->unsignedBigInteger('category_id');
             $table->string('image')->nullable();
             $table->date('date');
