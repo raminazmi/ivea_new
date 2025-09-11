@@ -113,7 +113,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
                             <form onSubmit={handleSubmit} className="space-y-6" method="POST" encType="multipart/form-data">
                                 {/* العنوان */}
                                 <div>
-                                    <InputLabel htmlFor="title_ar" value="العنوان (عربي)" />
+                                    <InputLabel htmlFor="title_ar" value="العنوان" />
                                     <input
                                         type="text"
                                         id="title_ar"
@@ -127,7 +127,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
 
                                 {/* الوصف */}
                                 <div>
-                                    <InputLabel htmlFor="description_ar" value="الوصف (عربي)" />
+                                    <InputLabel htmlFor="description_ar" value="الوصف" />
                                     <textarea
                                         id="description_ar"
                                         value={data.description_ar}
@@ -141,7 +141,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
 
                                 {/* نص الزر */}
                                 <div>
-                                    <InputLabel htmlFor="button_text_ar" value="نص الزر (عربي)" />
+                                    <InputLabel htmlFor="button_text_ar" value="نص الزر" />
                                     <input
                                         type="text"
                                         id="button_text_ar"

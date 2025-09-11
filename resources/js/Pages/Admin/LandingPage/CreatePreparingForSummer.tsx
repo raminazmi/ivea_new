@@ -40,7 +40,7 @@ const CreatePreparingForSummer: React.FC = () => {
                                 {/* العنوان */}
                                 <div>
                                     <label htmlFor="title_ar" className="block text-sm font-medium text-gray-700 mb-2">
-                                        العنوان (عربي)
+                                        العنوان
                                     </label>
                                     <input
                                         type="text"
@@ -56,7 +56,7 @@ const CreatePreparingForSummer: React.FC = () => {
                                 {/* الوصف */}
                                 <div>
                                     <label htmlFor="description_ar" className="block text-sm font-medium text-gray-700 mb-2">
-                                        الوصف (عربي)
+                                        الوصف
                                     </label>
                                     <textarea
                                         id="description_ar"
@@ -72,7 +72,7 @@ const CreatePreparingForSummer: React.FC = () => {
                                 {/* نص الزر */}
                                 <div>
                                     <label htmlFor="button_text_ar" className="block text-sm font-medium text-gray-700 mb-2">
-                                        نص الزر (عربي)
+                                        نص الزر
                                     </label>
                                     <input
                                         type="text"

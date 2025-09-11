@@ -66,7 +66,7 @@ const Edit: React.FC<EditProps> = ({ text }) => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <InputLabel htmlFor="title_ar" value="العنوان (عربي)" />
+                                        <InputLabel htmlFor="title_ar" value="العنوان" />
                                         <TextInput
                                             id="title_ar"
                                             type="text"
@@ -79,7 +79,7 @@ const Edit: React.FC<EditProps> = ({ text }) => {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="title_en" value="العنوان (إنجليزي)" />
+                                        <InputLabel htmlFor="title_en" value="العنوان" />
                                         <TextInput
                                             id="title_en"
                                             type="text"
@@ -94,7 +94,7 @@ const Edit: React.FC<EditProps> = ({ text }) => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <InputLabel htmlFor="description_ar" value="الوصف (عربي)" />
+                                        <InputLabel htmlFor="description_ar" value="الوصف" />
                                         <textarea
                                             id="description_ar"
                                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
@@ -107,7 +107,7 @@ const Edit: React.FC<EditProps> = ({ text }) => {
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="description_en" value="الوصف (إنجليزي)" />
+                                        <InputLabel htmlFor="description_en" value="الوصف" />
                                         <textarea
                                             id="description_en"
                                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
