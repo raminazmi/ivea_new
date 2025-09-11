@@ -18,7 +18,7 @@ class LandingPageSeeder extends Seeder
             [
                 'title' => 'إيفيا # تشاركك_ذوقك',
                 'subtitle' => 'تفاصيل تلامس حواسك',
-                'image_path' => 'hero-slides/hero_banner2.jpg',
+                'image_path' => '/images/hero_banner2.jpg',
                 'alt_text' => 'إيفيا # تشاركك_ذوقك',
                 'link_url' => '/products',
                 'link_text' => 'استكشف منتجاتنا',
@@ -30,7 +30,7 @@ class LandingPageSeeder extends Seeder
             [
                 'title' => 'تفاصيل تلامس حواسك',
                 'subtitle' => 'جودة استثنائية في كل تفصيل',
-                'image_path' => 'hero-slides/hero_banner.jpg',
+                'image_path' => '/images/hero_banner.jpg',
                 'alt_text' => 'تفاصيل تلامس حواسك',
                 'link_url' => '/products',
                 'link_text' => 'اكتشف المجموعة',
@@ -42,7 +42,7 @@ class LandingPageSeeder extends Seeder
             [
                 'title' => 'عروض اليوم الوطني',
                 'subtitle' => 'خصومات حصرية لفترة محدودة',
-                'image_path' => 'hero-slides/hero_banner3.jpg',
+                'image_path' => '/images/hero_banner3.jpg',
                 'alt_text' => 'عروض اليوم الوطني بدأت',
                 'link_url' => '/products?tab=offers',
                 'link_text' => 'شاهد العروض',
