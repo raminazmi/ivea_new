@@ -9,6 +9,7 @@ use App\Models\Article;
 use App\Models\Job;
 use App\Models\JobApplication;
 use App\Models\Contact;
+use App\Models\Order;
 use Inertia\Inertia;
 
 class AdminController extends Controller
@@ -21,11 +22,32 @@ class AdminController extends Controller
             'totalArticles' => Article::count(),
             'totalJobs' => Job::count(),
             'totalApplications' => JobApplication::count(),
+            'totalOrders' => Order::count(),
             'totalContacts' => Contact::count(),
         ];
 
+        // إحصائيات الطلبات للـ notifications
+        $orderStatistics = [
+            'total' => Order::count(),
+            'pending' => Order::where('status', 'pending')->count(),
+            'confirmed' => Order::where('status', 'confirmed')->count(),
+            'processing' => Order::where('status', 'processing')->count(),
+            'shipped' => Order::where('status', 'shipped')->count(),
+            'delivered' => Order::where('status', 'delivered')->count(),
+            'cancelled' => Order::where('status', 'cancelled')->count(),
+            'total_amount' => Order::sum('total_amount'),
+        ];
+
+        // إحصائيات الرسائل للـ notifications
+        $unreadMessages = Contact::where('status', 'pending')->count();
+
         return Inertia::render('Admin/Dashboard', [
-            'stats' => $stats
+            'stats' => $stats,
+            'statistics' => $orderStatistics,
+            'notifications' => [
+                'unreadOrders' => $orderStatistics['pending'] > 0 ? $orderStatistics['pending'] : null,
+                'unreadMessages' => $unreadMessages > 0 ? $unreadMessages : null,
+            ]
         ]);
     }
 

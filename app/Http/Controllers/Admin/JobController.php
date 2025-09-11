@@ -7,6 +7,9 @@ use App\Models\Job;
 use App\Models\JobApplication;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class JobController extends Controller
@@ -120,5 +123,24 @@ class JobController extends Controller
 
         return redirect()->back()
             ->with('success', 'تم حذف التقديم بنجاح');
+    }
+
+    public function downloadCV($id): BinaryFileResponse
+    {
+        $application = JobApplication::findOrFail($id);
+
+        if (!$application->cv_file) {
+            abort(404, 'ملف السيرة الذاتية غير موجود');
+        }
+
+        $filePath = storage_path('app/public/' . $application->cv_file);
+
+        if (!file_exists($filePath)) {
+            abort(404, 'ملف السيرة الذاتية غير موجود على الخادم');
+        }
+
+        $fileName = $application->first_name . '_' . $application->last_name . '_CV.pdf';
+
+        return response()->download($filePath, $fileName);
     }
 }

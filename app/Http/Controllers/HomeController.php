@@ -7,6 +7,9 @@ use App\Models\Category;
 use App\Models\Article;
 use App\Models\Offer;
 use App\Models\OffersText;
+use App\Models\HeroSlide;
+use App\Models\LandingPageSection;
+use App\Models\PreparingForSummer;
 use App\Services\SeoService;
 use Inertia\Inertia;
 
@@ -29,6 +32,16 @@ class HomeController extends Controller
         });
 
         $categories = Category::active()->whereNull('parent_id')->withCount('products')->ordered()->get();
+
+        // Get hero slides from database
+        $heroSlides = HeroSlide::getActiveSlides();
+
+
+        // Get landing page sections
+        $landingPageSections = LandingPageSection::getActiveSections();
+
+        // Get preparing for summer section
+        $preparingForSummer = PreparingForSummer::getActive();
 
         // Get latest 2 offers for featured offers section with their texts
         $featuredOffers = Offer::with('offersText')->ordered()->take(2)->get();
@@ -72,7 +85,7 @@ class HomeController extends Controller
                     'id' => 3,
                     'title' => 'كيف تختار الخزائن المناسبة لمطبخك',
                     'category' => 'خزائن',
-                    'image' => '/images/treasury.png',
+                    'image' => '/images/treasury_new.png',
                     'date' => now()->subDays(5)->format('d M Y'),
                     'read_time' => 6,
                     'slug' => 'kitchen-cabinets-guide',
@@ -113,6 +126,9 @@ class HomeController extends Controller
         return Inertia::render('Home', [
             'featuredProducts' => $featuredProducts,
             'categories' => $categories,
+            'heroSlides' => $heroSlides,
+            'landingPageSections' => $landingPageSections,
+            'preparingForSummer' => $preparingForSummer,
             'featuredOffers' => $featuredOffers,
             'offersTexts' => $offersTexts,
             'latestArticles' => $latestArticles,

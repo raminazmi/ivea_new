@@ -77,23 +77,78 @@ interface Offer {
     category_name: string;
 }
 
+interface HeroSlide {
+    id: number;
+    title: string;
+    subtitle?: string;
+    image_path: string;
+    alt_text?: string;
+    link_url?: string;
+    link_text?: string;
+    button_text?: string;
+    button_url?: string;
+    is_active: boolean;
+    sort_order: number;
+}
+
+interface LandingPageSection {
+    id: number;
+    section_key: string;
+    title_ar: string;
+    subtitle_ar?: string;
+    description_ar?: string;
+    button_text_ar?: string;
+    button_url?: string;
+    image_path?: string;
+    background_image_path?: string;
+    is_active: boolean;
+    sort_order: number;
+    settings?: any;
+}
+
+interface PreparingForSummerData {
+    id: number;
+    title_ar: string;
+    description_ar: string;
+    button_text_ar: string;
+    button_url: string;
+    image_1_path?: string;
+    image_1_alt?: string;
+    image_1_url?: string;
+    image_2_path?: string;
+    image_2_alt?: string;
+    image_2_url?: string;
+    is_active: boolean;
+}
+
 interface HomeProps extends PageProps {
     featuredProducts: Product[];
     categories: Category[];
+    heroSlides?: HeroSlide[];
+    landingPageSections?: LandingPageSection[];
+    preparingForSummer?: PreparingForSummerData;
     featuredOffers?: Offer[];
     latestArticles?: Article[];
 }
 
-const Home: React.FC<HomeProps> = ({ featuredProducts, categories, featuredOffers = [], latestArticles = [] }) => {
+const Home: React.FC<HomeProps> = ({ 
+    featuredProducts, 
+    categories, 
+    heroSlides = [], 
+    landingPageSections = [], 
+    preparingForSummer,
+    featuredOffers = [], 
+    latestArticles = [] 
+}) => {
     useSEO();
 
     return (
         <AppLayout>
             <div className="container mx-auto px-2 sm:px-4 lg:px-8">
-                <Hero categories={categories} />
+                <Hero categories={categories} heroSlides={heroSlides} />
             </div>
             <FeaturedOffers offers={featuredOffers} />
-            <PreparingForSummer />
+            <PreparingForSummer data={preparingForSummer} />
             <CategoryShowcase featuredProducts={featuredProducts} categories={categories} />
             <div className="container mx-auto px-2 sm:px-4 lg:px-8 xl:px-24">
                 <SectionTitle text="قائمة المشاريع" />

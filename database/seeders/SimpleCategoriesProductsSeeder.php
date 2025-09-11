@@ -49,7 +49,7 @@ class SimpleCategoriesProductsSeeder extends Seeder
                 'name' => 'الخزائن',
                 'slug' => 'cabinets',
                 'description' => 'خزائن ووحدات التخزين',
-                'image' => '/images/treasury.png',
+                'image' => '/images/treasury_new.png',
                 'status' => 'active',
                 'sort_order' => 4,
                 'color' => '#F0FFF0',

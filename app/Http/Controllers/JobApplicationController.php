@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Job;
 use App\Models\JobApplication;
+use App\Http\Requests\JobApplicationRequest;
 use Inertia\Inertia;
 
 class JobApplicationController extends Controller
@@ -17,17 +18,10 @@ class JobApplicationController extends Controller
         ]);
     }
 
-    public function store(Request $request, $id)
+    public function store(JobApplicationRequest $request, $id)
     {
         $job = Job::findOrFail($id);
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'required|string|max:20',
-            'cover_letter' => 'nullable|string|max:1000',
-            'cv_file' => 'required|file|mimes:pdf,doc,docx|max:2048',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('cv_file')) {
             $cvPath = $request->file('cv_file')->store('cvs', 'public');
@@ -46,6 +40,6 @@ class JobApplicationController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('jobs')->with('success', 'تم إرسال طلبك بنجاح!');
+        return back()->with('success', 'تم إرسال طلبك بنجاح! سنتواصل معك قريباً.');
     }
 }

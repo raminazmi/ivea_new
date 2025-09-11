@@ -135,20 +135,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     </div>
                 </div>
 
-                <div className="flex gap-2">
-                    <input
-                        type="text"
-                        placeholder="أو أدخل رابط الصورة"
-                        className="flex-1 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                        value={newImageUrl}
-                        onChange={(e) => setNewImageUrl(e.target.value)}
-                        title="أدخل رابط الصورة"
-                    />
-                    <SecondaryButton type="button" onClick={addImageUrl}>
-                        إضافة
-                    </SecondaryButton>
-                </div>
-
                 {images.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {images.map((image, index) => (

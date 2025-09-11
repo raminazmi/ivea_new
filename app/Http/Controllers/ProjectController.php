@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\ProjectQuiz;
 use App\Models\ProjectSubmission;
+use App\Http\Requests\ProjectQuizRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -30,26 +31,10 @@ class ProjectController extends Controller
         return response()->json(['projects' => $projects]);
     }
 
-    public function submitQuiz(Request $request): RedirectResponse
+    public function submitQuiz(ProjectQuizRequest $request): RedirectResponse
     {
         try {
-            $validated = $request->validate([
-                'name' => 'nullable|string|max:255',
-                'email' => 'nullable|email|max:255',
-                'phone' => 'nullable|string|max:20',
-                'space_types' => 'required|array|min:1',
-                'space_types.*' => 'string|in:' . implode(',', array_keys(ProjectQuiz::SPACE_TYPES)),
-                'product_needs' => 'required|array|min:1',
-                'product_needs.*' => 'string|in:' . implode(',', array_keys(ProjectQuiz::PRODUCT_NEEDS)),
-                'preferred_styles' => 'required|array|min:1',
-                'preferred_styles.*' => 'string|in:' . implode(',', array_keys(ProjectQuiz::PREFERRED_STYLES)),
-                'space_type_other' => 'nullable|string|max:500',
-                'product_other' => 'nullable|string|max:500',
-                'style_other' => 'nullable|string|max:500',
-                'additional_notes' => 'nullable|string|max:1000',
-                'images' => 'nullable|array|max:5',
-                'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120'
-            ]);
+            $validated = $request->validated();
 
             $imagePaths = [];
             if ($request->hasFile('images')) {
@@ -62,9 +47,9 @@ class ProjectController extends Controller
             $validated['images'] = $imagePaths;
 
             $quiz = ProjectQuiz::create($validated);
-            return redirect()->back()->with('success', 'تم إرسال بياناتك بنجاح. سيتواصل معك فريقنا قريباً!');
+            return back()->with('success', 'تم إرسال بياناتك بنجاح. سيتواصل معك فريقنا قريباً!');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'حدث خطأ أثناء إرسال البيانات. يرجى المحاولة مرة أخرى.');
+            return back()->with('error', 'حدث خطأ أثناء إرسال البيانات. يرجى المحاولة مرة أخرى.');
         }
     }
 

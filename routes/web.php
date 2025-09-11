@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\AdminProjectController;
 use App\Http\Controllers\Admin\ApplicationController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\LandingPageController;
 use App\Http\Controllers\Admin\OffersTextController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ImageUploadController;
@@ -122,11 +123,40 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('applications/{id}', [ApplicationController::class, 'show'])->name('applications.show');
     Route::put('applications/{id}/status', [AdminJobController::class, 'updateApplicationStatus'])->name('applications.update-status');
     Route::delete('applications/{id}', [AdminJobController::class, 'deleteApplication'])->name('applications.destroy');
+    Route::get('applications/{id}/download-cv', [AdminJobController::class, 'downloadCV'])->name('applications.download-cv');
 
     // Contacts
     Route::get('contacts', [AdminContactController::class, 'index'])->name('contacts.index');
     Route::put('contacts/{id}/status', [AdminContactController::class, 'updateStatus'])->name('contacts.update-status');
     Route::delete('contacts/{id}', [AdminContactController::class, 'destroy'])->name('contacts.destroy');
+
+    // Landing Page Management
+    Route::get('landing-page', [LandingPageController::class, 'index'])->name('landing-page.index');
+
+    // Hero Slides
+    Route::get('landing-page/slides/create', [LandingPageController::class, 'createSlide'])->name('landing-page.slides.create');
+    Route::post('landing-page/slides', [LandingPageController::class, 'storeSlide'])->name('landing-page.slides.store');
+    Route::get('landing-page/slides/{heroSlide}/edit', [LandingPageController::class, 'editSlide'])->name('landing-page.slides.edit');
+    Route::put('landing-page/slides/{heroSlide}', [LandingPageController::class, 'updateSlide'])->name('landing-page.slides.update');
+    Route::post('landing-page/slides/{heroSlide}', [LandingPageController::class, 'updateSlide'])->name('landing-page.slides.update.post');
+    Route::delete('landing-page/slides/{heroSlide}', [LandingPageController::class, 'destroySlide'])->name('landing-page.slides.destroy');
+    Route::post('landing-page/slides/update-order', [LandingPageController::class, 'updateSlidesOrder'])->name('landing-page.slides.update-order');
+
+    // Landing Page Sections
+    Route::get('landing-page/sections/create', [LandingPageController::class, 'createSection'])->name('landing-page.sections.create');
+    Route::post('landing-page/sections', [LandingPageController::class, 'storeSection'])->name('landing-page.sections.store');
+    Route::get('landing-page/sections/{section}/edit', [LandingPageController::class, 'editSection'])->name('landing-page.sections.edit');
+    Route::put('landing-page/sections/{section}', [LandingPageController::class, 'updateSection'])->name('landing-page.sections.update');
+    Route::delete('landing-page/sections/{section}', [LandingPageController::class, 'destroySection'])->name('landing-page.sections.destroy');
+    Route::post('landing-page/sections/update-order', [LandingPageController::class, 'updateSectionsOrder'])->name('landing-page.sections.update-order');
+
+    // Preparing For Summer
+    Route::get('landing-page/preparing-for-summer/create', [LandingPageController::class, 'createPreparingForSummer'])->name('landing-page.preparing-for-summer.create');
+    Route::post('landing-page/preparing-for-summer', [LandingPageController::class, 'storePreparingForSummer'])->name('landing-page.preparing-for-summer.store');
+    Route::get('landing-page/preparing-for-summer/{preparingForSummer}/edit', [LandingPageController::class, 'editPreparingForSummer'])->name('landing-page.preparing-for-summer.edit');
+    Route::put('landing-page/preparing-for-summer/{preparingForSummer}', [LandingPageController::class, 'updatePreparingForSummer'])->name('landing-page.preparing-for-summer.update');
+    Route::post('landing-page/preparing-for-summer/{preparingForSummer}', [LandingPageController::class, 'updatePreparingForSummer'])->name('landing-page.preparing-for-summer.update.post');
+    Route::delete('landing-page/preparing-for-summer/{preparingForSummer}', [LandingPageController::class, 'destroyPreparingForSummer'])->name('landing-page.preparing-for-summer.destroy');
 
     // Projects
     Route::get('projects', [AdminProjectController::class, 'index'])->name('projects.index');

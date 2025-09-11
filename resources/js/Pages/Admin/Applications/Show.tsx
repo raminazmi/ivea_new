@@ -49,7 +49,7 @@ const ApplicationShow: React.FC = () => {
                 <div className="mb-4">
                     <span className="font-medium text-gray-700">السيرة الذاتية:</span>
                     {application.cv_file ? (
-                        <a href={`/storage/job-applications/${application.cv_file}`} download className="ml-2 text-green-600 hover:text-green-900 font-bold inline-flex items-center">
+                        <a href={route('admin.applications.download-cv', application.id)} className="ml-2 text-green-600 hover:text-green-900 font-bold inline-flex items-center">
                             <FaDownload className="w-4 h-4 mx-1.5" /> تحميل
                         </a>
                     ) : (

@@ -40,7 +40,7 @@ const FeaturedOffers: React.FC<FeaturedOffersProps> = ({ offers = [], offersText
         const categoryImages = {
             curtains: '/images/curtain.png',
             sofas: '/images/sofa.png',
-            cabinets: '/images/treasury.png',
+            cabinets: '/images/treasury_new.png',
             wooden: '/images/door.png'
         };
         return categoryImages[categorySlug as keyof typeof categoryImages] || '/images/default-offer.png';

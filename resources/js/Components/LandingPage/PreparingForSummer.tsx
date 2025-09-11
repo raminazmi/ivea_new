@@ -5,7 +5,26 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const PreparingForSummer: React.FC = () => {
+interface PreparingForSummerData {
+    id: number;
+    title_ar: string;
+    description_ar: string;
+    button_text_ar: string;
+    button_url: string;
+    image_1_path?: string;
+    image_1_alt?: string;
+    image_1_url?: string;
+    image_2_path?: string;
+    image_2_alt?: string;
+    image_2_url?: string;
+    is_active: boolean;
+}
+
+interface PreparingForSummerProps {
+    data?: PreparingForSummerData;
+}
+
+const PreparingForSummer: React.FC<PreparingForSummerProps> = ({ data }) => {
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -54,6 +73,11 @@ const PreparingForSummer: React.FC = () => {
         };
     }, []);
 
+    // إذا لم تكن هناك بيانات، لا تعرض السكشن
+    if (!data || !data.is_active) {
+        return null;
+    }
+
     return (
         <section
             ref={sectionRef}
@@ -65,45 +89,49 @@ const PreparingForSummer: React.FC = () => {
                 <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-6 md:gap-8 lg:gap-12">
                     <div ref={contentRef} className="w-full md:w-[45%] text-center md:text-right">
                         <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-primary-black mb-2 md:mb-4 leading-tight">
-استمتع بالصيف بأناقة
+                            {data.title_ar}
                         </h2>
                         <p className="text-xs sm:text-sm md:text-base text-[#424242] mb-4 md:mb-6 max-w-xl mx-auto md:mx-0">
-من أقمشة عازلة الى تصاميم عصرية .. صممناها لتناسب حرارة الصيف تمنحك راحة طوال اليوم.
+                            {data.description_ar}
                         </p>
                         <Link
-                            href="/products"
+                            href={data.button_url}
                             className="inline-block bg-primary-yellow text-black border border-black border-[1px] py-1 px-4 md:px-6 rounded-full text-xs sm:text-sm md:text-base font-bold hover:bg-[#ffd54f] transition-all duration-700 hover:scale-105 hover:shadow-lg"
                         >
-                            تسوق الآن
+                            {data.button_text_ar}
                         </Link>
                     </div>
                     <div ref={imagesRef} className="w-full md:w-[45%] relative mt-6 md:mt-0">
                         <div className="absolute left-0 md:left-2 bottom-[-16px] md:bottom-0 w-[60px] h-[60px] md:w-[80px] md:h-[80px] bg-primary-yellow -z-10 rounded-2xl transition-all duration-1000 hover:scale-110"></div>
                         <div className="gap-3 md:gap-4 relative z-10 flex justify-center">
-                            <Link
-                                href="/products?category=knb-wraayk"
-                                className="w-[120px] md:w-[140px] relative group overflow-hidden bg-white rounded-2xl shadow-lg h-32 md:h-48 flex items-center justify-center md:mt-6 transition-all duration-1000 hover:scale-105 hover:shadow-xl block cursor-pointer flex-shrink-0"
-                            >
-                                <div className="relative z-10 flex items-center justify-center w-full h-full">
-                                    <img
-                                        src="https://plus.unsplash.com/premium_photo-1668073437337-5734dc7ef812?q=80&w=687&auto=format&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                        alt="كنب صيفي أنيق"
-                                        className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                                    />
-                                </div>
-                            </Link>
-                            <Link
-                                href="/products?category=knb-wraayk"
-                                className="w-[140px] md:w-[280px] relative group overflow-hidden bg-white rounded-2xl shadow-lg h-32 md:h-48 flex items-center justify-center transition-all duration-1000 hover:scale-105 hover:shadow-xl block cursor-pointer flex-shrink-0"
-                            >
-                                <div className="relative z-10 w-full h-full flex items-center justify-center">
-                                    <img
-                                        src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400"
-                                        alt="أثاث خارجي صيفي"
-                                        className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                                    />
-                                </div>
-                            </Link>
+                            {data.image_1_path && (
+                                <Link
+                                    href={data.image_1_url || "/products"}
+                                    className="w-[120px] md:w-[140px] relative group overflow-hidden bg-white rounded-2xl shadow-lg h-32 md:h-48 flex items-center justify-center md:mt-6 transition-all duration-1000 hover:scale-105 hover:shadow-xl block cursor-pointer flex-shrink-0"
+                                >
+                                    <div className="relative z-10 flex items-center justify-center w-full h-full">
+                                        <img
+                                            src={`/storage/${data.image_1_path}`}
+                                            alt={data.image_1_alt || "صورة صيفية"}
+                                            className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                        />
+                                    </div>
+                                </Link>
+                            )}
+                            {data.image_2_path && (
+                                <Link
+                                    href={data.image_2_url || "/products"}
+                                    className="w-[140px] md:w-[280px] relative group overflow-hidden bg-white rounded-2xl shadow-lg h-32 md:h-48 flex items-center justify-center transition-all duration-1000 hover:scale-105 hover:shadow-xl block cursor-pointer flex-shrink-0"
+                                >
+                                    <div className="relative z-10 w-full h-full flex items-center justify-center">
+                                        <img
+                                            src={`/storage/${data.image_2_path}`}
+                                            alt={data.image_2_alt || "صورة صيفية"}
+                                            className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                        />
+                                    </div>
+                                </Link>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { HiUsers, HiShoppingBag, HiDocumentText, HiBriefcase, HiStar, HiTag, HiFire, HiClock, HiPlus, HiEye } from 'react-icons/hi';
+import { HiUsers, HiShoppingBag, HiDocumentText, HiBriefcase, HiStar, HiTag, HiFire, HiClock, HiPlus, HiEye, HiHome } from 'react-icons/hi';
 
 interface DashboardProps {
     stats: {
@@ -10,11 +10,16 @@ interface DashboardProps {
         totalArticles: number;
         totalJobs: number;
         totalApplications: number;
+        totalOrders: number;
         totalContacts: number;
+    };
+    notifications?: {
+        unreadOrders?: number;
+        unreadMessages?: number;
     };
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
+const Dashboard: React.FC<DashboardProps> = ({ stats, notifications }) => {
     const [tabStats, setTabStats] = useState<any>(null);
 
     useEffect(() => {
@@ -41,16 +46,16 @@ const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
     };
 
     return (
-        <AdminLayout>
-            <Head title="لوحة الإدارة" />
+        <AdminLayout notifications={notifications}>
+            <Head title="لوحة التحكم" />
 
             <div className="py-6">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-4 sm:p-6 bg-white border-b border-gray-200">
-                            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">لوحة الإدارة</h2>
+                            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">لوحة التحكم</h2>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
                                 <div className="bg-blue-50 p-4 sm:p-6 rounded-lg">
                                     <div className="flex items-center">
                                         <HiShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
@@ -95,8 +100,18 @@ const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
                                     <div className="flex items-center">
                                         <HiUsers className="w-6 h-6 sm:w-8 sm:h-8 text-red-600" />
                                         <div className="mr-3 sm:mr-4">
-                                            <p className="text-xs sm:text-sm font-medium text-red-600">الطلبات</p>
+                                            <p className="text-xs sm:text-sm font-medium text-red-600">التقديمات</p>
                                             <p className="text-lg sm:text-2xl font-bold text-red-900">{stats.totalApplications}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-purple-50 p-4 sm:p-6 rounded-lg">
+                                    <div className="flex items-center">
+                                        <HiShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 text-purple-600" />
+                                        <div className="mr-3 sm:mr-4">
+                                            <p className="text-xs sm:text-sm font-medium text-purple-600">الطلبات</p>
+                                            <p className="text-lg sm:text-2xl font-bold text-purple-900">{stats.totalOrders}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -148,7 +163,7 @@ const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
                                 </div>
                             )}
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <Link
                                     href={route('admin.products.create')}
                                     className="bg-primary-yellow text-white p-4 rounded-lg hover:bg-yellow-600 transition-colors text-center flex flex-col items-center gap-2"
@@ -179,6 +194,14 @@ const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
                                 >
                                     <HiEye className="w-6 h-6" />
                                     <span className="font-medium text-sm sm:text-base">عرض المنتجات</span>
+                                </Link>
+
+                                <Link
+                                    href={route('admin.landing-page.index')}
+                                    className="bg-indigo-500 text-white p-4 rounded-lg hover:bg-indigo-600 transition-colors text-center flex flex-col items-center gap-2"
+                                >
+                                    <HiHome className="w-6 h-6" />
+                                    <span className="font-medium text-sm sm:text-base">إدارة الصفحة الرئيسية</span>
                                 </Link>
 
                                 <Link

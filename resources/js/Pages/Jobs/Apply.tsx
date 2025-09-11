@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePage, router, useForm } from '@inertiajs/react';
 import AppLayout from '@/Components/LandingPage/Layout/AppLayout';
+import Toast from '@/Components/Common/Toast';
 
 interface Job {
     id: number;
@@ -16,6 +17,7 @@ interface Job {
 const ApplyJob: React.FC = () => {
     const page = usePage<any>();
     const job: Job | undefined = page.props.job;
+    const flash = page.props.flash;
     const { data, setData, post, processing, errors, reset } = useForm({
         first_name: '',
         last_name: '',
@@ -25,18 +27,58 @@ const ApplyJob: React.FC = () => {
         cv_file: null as File | null,
     });
     const [loading, setLoading] = useState(false);
+    const [toast, setToast] = useState<{
+        message: string;
+        type: 'success' | 'error' | 'warning' | 'info';
+        isVisible: boolean;
+    }>({
+        message: '',
+        type: 'success',
+        isVisible: false,
+    });
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setData(e.target.name as keyof typeof data, e.target.value);
     };
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setData('cv_file', e.target.files ? e.target.files[0] : null);
     };
+
+    // عرض flash messages
+    useEffect(() => {
+        if (flash?.success) {
+            setToast({
+                message: flash.success,
+                type: 'success',
+                isVisible: true,
+            });
+        } else if (flash?.error) {
+            setToast({
+                message: flash.error,
+                type: 'error',
+                isVisible: true,
+            });
+        }
+    }, [flash]);
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!job || !job.id) return;
+        
         post(route('jobs.apply.submit', { id: job.id }), {
             preserveScroll: true,
-            onFinish: () => reset('cv_file'),
+            onSuccess: () => {
+                // إعادة تعيين النموذج بالكامل
+                reset();
+            },
+            onError: (errors) => {
+                if (Object.keys(errors).length > 0) {
+                    // عرض رسالة خطأ عامة
+                    setToast({
+                        message: 'حدث خطأ أثناء إرسال الطلب. يرجى التحقق من البيانات المدخلة.',
+                        type: 'error',
+                        isVisible: true,
+                    });
+                }
+            },
         });
     };
     if (!job) {
@@ -47,7 +89,7 @@ const ApplyJob: React.FC = () => {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 lg:py-10">
                 <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
                     <div className="text-center mb-6 md:mb-8">
-                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary-black mb-2 md:mb-4">
+                        <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-primary-black mb-2 md:mb-4">
                             التقديم على وظيفة: {job.title}
                         </h2>
                     </div>
@@ -79,10 +121,13 @@ const ApplyJob: React.FC = () => {
                                     value={data.first_name}
                                     onChange={handleChange}
                                     className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.first_name ? 'border-red-500' : 'border-gray-300'}`}
-                                    required
+                                    placeholder="أدخل اسمك الأول"
+                                    
                                 />
                                 {errors.first_name && (
-                                    <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.first_name}</p>
+                                    <div className="mt-1 text-right">
+                                        <p className="text-red-500 text-xs md:text-sm">{errors.first_name}</p>
+                                    </div>
                                 )}
                             </div>
 
@@ -97,10 +142,13 @@ const ApplyJob: React.FC = () => {
                                     value={data.last_name}
                                     onChange={handleChange}
                                     className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.last_name ? 'border-red-500' : 'border-gray-300'}`}
-                                    required
+                                    placeholder="أدخل اسم العائلة"
+                                    
                                 />
                                 {errors.last_name && (
-                                    <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.last_name}</p>
+                                    <div className="mt-1 text-right">
+                                        <p className="text-red-500 text-xs md:text-sm">{errors.last_name}</p>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -117,10 +165,13 @@ const ApplyJob: React.FC = () => {
                                     value={data.email}
                                     onChange={handleChange}
                                     className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
-                                    required
+                                    placeholder="example@email.com"
+                                    
                                 />
                                 {errors.email && (
-                                    <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.email}</p>
+                                    <div className="mt-1 text-right">
+                                        <p className="text-red-500 text-xs md:text-sm">{errors.email}</p>
+                                    </div>
                                 )}
                             </div>
 
@@ -135,10 +186,13 @@ const ApplyJob: React.FC = () => {
                                     value={data.phone}
                                     onChange={handleChange}
                                     className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
-                                    required
+                                    placeholder="+97xxxxxxxx"
+                                    
                                 />
                                 {errors.phone && (
-                                    <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.phone}</p>
+                                    <div className="mt-1 text-right">
+                                        <p className="text-red-500 text-xs md:text-sm">{errors.phone}</p>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -154,9 +208,12 @@ const ApplyJob: React.FC = () => {
                                 onChange={handleChange}
                                 rows={4}
                                 className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.cover_letter ? 'border-red-500' : 'border-gray-300'}`}
+                                placeholder="اكتب رسالة تعريفية عن نفسك وخبراتك (اختياري)"
                             />
                             {errors.cover_letter && (
-                                <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.cover_letter}</p>
+                                <div className="mt-1 text-right">
+                                    <p className="text-red-500 text-xs md:text-sm">{errors.cover_letter}</p>
+                                </div>
                             )}
                         </div>
 
@@ -164,10 +221,10 @@ const ApplyJob: React.FC = () => {
                             <label htmlFor="cv_file" className="block text-right text-primary-black mb-2 text-sm md:text-base">
                                 السيرة الذاتية
                             </label>
-                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 text-center hover:border-primary-yellow transition-colors">
+                            <div className={`border-2 border-dashed rounded-lg p-4 md:p-6 text-center transition-colors border-gray-300 hover:border-primary-yellow ${errors.cv_file ? 'border-red-500' : ''}`}>
                                 <div className="mb-3 md:mb-4">
                                     <svg
-                                        className="mx-auto h-8 w-8 md:h-12 md:w-12 text-gray-400"
+                                        className={`mx-auto h-8 w-8 md:h-12 md:w-12 ${errors.cv_file ? 'text-red-400' : 'text-gray-400'}`}
                                         stroke="currentColor"
                                         fill="none"
                                         viewBox="0 0 48 48"
@@ -188,11 +245,11 @@ const ApplyJob: React.FC = () => {
                                     accept=".pdf,.doc,.docx"
                                     onChange={handleFileChange}
                                     className="hidden"
-                                    required
+                                    
                                     title="اختر ملف السيرة الذاتية بصيغة PDF أو DOC"
                                 />
                                 <label htmlFor="cv_file" className="cursor-pointer">
-                                    <span className="text-primary-yellow font-medium">اختر الملف</span>
+                                    <span className={`font-medium ${errors.cv_file ? 'text-red-600' : 'text-primary-yellow'}`}>اختر الملف</span>
                                     <p className="text-sm text-gray-500 mt-2">PDF, DOC, DOCX حتى 2MB</p>
                                 </label>
                                 {data.cv_file && (
@@ -202,7 +259,9 @@ const ApplyJob: React.FC = () => {
                                 )}
                             </div>
                             {errors.cv_file && (
-                                <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.cv_file}</p>
+                                <div className="mt-1 text-right">
+                                    <p className="text-red-500 text-xs md:text-sm">{errors.cv_file}</p>
+                                </div>
                             )}
                         </div>
 
@@ -216,6 +275,17 @@ const ApplyJob: React.FC = () => {
                 </form>
                 </div>
             </div>
+            
+            {/* Toast Notification */}
+            {toast.isVisible && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    show={toast.isVisible}
+                    onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+                    duration={5000}
+                />
+            )}
         </AppLayout>
     );
 };

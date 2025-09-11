@@ -41,9 +41,9 @@ class ContactController extends Controller
                 'status' => 'pending'
             ]);
 
-            return redirect()->back()->with('success', 'تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.');
+            return back()->with('success', 'تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.');
+            return back()->with('error', 'حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.');
         }
     }
 

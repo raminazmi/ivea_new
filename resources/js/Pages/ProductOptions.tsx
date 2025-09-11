@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HiMinus, HiPlus, HiUpload, HiCheck, HiCog, HiChevronDown, HiChevronUp, HiAdjustments } from 'react-icons/hi';
 import { useDispatch } from 'react-redux';
+import { ChromePicker } from 'react-color';
 import Breadcrumb from '@/Components/Common/Breadcrumb';
 import ColorSelector from '@/Components/Common/ColorSelector';
 import PriceDisplay from '@/Components/Common/PriceDisplay';
@@ -117,6 +118,12 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
 
     const handleCustomColorChange = (color: string) => {
         setCustomColor(color);
+        setUseCustomColor(true);
+        setSelectedColor(-1);
+    };
+
+    const handleColorPickerChange = (color: any) => {
+        setCustomColor(color.hex);
         setUseCustomColor(true);
         setSelectedColor(-1);
     };
@@ -976,7 +983,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                                             ? 'border-primary-yellow scale-110'
                                                                             : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
                                                                         }`}
-                                                                    style={{ backgroundColor: color }}
+                                                                    style={{ backgroundColor: color } as React.CSSProperties}
                                                                 >
                                                                     {selectedColor === index && !useCustomColor && (
                                                                         <div className="absolute inset-0 flex items-center justify-center">
@@ -1005,7 +1012,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                                         ? 'border-primary-yellow scale-110'
                                                                         : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
                                                                     }`}
-                                                                style={{ backgroundColor: customColor }}
+                                                                style={{ backgroundColor: customColor } as React.CSSProperties}
                                                             >
                                                                 <HiPlus className="text-white text-sm font-bold" />
                                                             </div>
@@ -1088,30 +1095,30 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                             </div>
                                         </div>
                                         {useCustomColor && (
-                                            <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                                <div className="space-y-2">
+                                            <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                                <div className="space-y-4">
                                                     <div className="flex justify-between items-center">
                                                         <label className="text-sm font-medium text-gray-700">
                                                             اختر اللون المخصص
                                                         </label>
-                                                        <span className="text-xs text-gray-500">
-                                                            {customColor}
-                                                        </span>
+                                                        <div className="flex items-center gap-2">
+                                                            <div 
+                                                                className="w-6 h-6 rounded border border-gray-300 shadow-sm"
+                                                                style={{ backgroundColor: customColor } as React.CSSProperties}
+                                                            ></div>
+                                                            <span className="text-xs text-gray-500 font-mono">
+                                                                {customColor}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="relative">
-                                                            <input
-                                                                type="color"
-                                                                value={customColor}
-                                                                onChange={(e) => handleCustomColorChange(e.target.value)}
-                                                                className="w-10 h-10 rounded-lg border-2 border-gray-300 cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-200"
-                                                                title="اختر اللون"
+                                                    
+                                                    <div className="flex justify-center items-center gap-4 w-full">
+                                                            <ChromePicker
+                                                                color={customColor}
+                                                                onChange={handleColorPickerChange}
+                                                                disableAlpha={true}
+                                                                width="200px"
                                                             />
-                                                            <div className="absolute inset-0 rounded-lg border-2 border-transparent pointer-events-none"></div>
-                                                        </div>
-                                                        <div className="text-xs text-gray-500">
-                                                            انقر لاختيار لون مخصص
-                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1145,7 +1152,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                                             ? 'border-primary-yellow scale-110'
                                                                             : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
                                                                         }`}
-                                                                    style={{ backgroundColor: color }}
+                                                                    style={{ backgroundColor: color } as React.CSSProperties}
                                                                 >
                                                                     {selectedColor === index && !useCustomColor && (
                                                                         <div className="absolute inset-0 flex items-center justify-center">
@@ -1174,7 +1181,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                                         ? 'border-primary-yellow scale-110'
                                                                         : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
                                                                     }`}
-                                                                style={{ backgroundColor: customColor }}
+                                                                style={{ backgroundColor: customColor } as React.CSSProperties}
                                                             >
                                                                 <HiPlus className="text-white text-sm font-bold" />
                                                             </div>
@@ -1258,29 +1265,31 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                         </div>
 
                                         {useCustomColor && (
-                                            <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                                <div className="space-y-2">
+                                            <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                                <div className="space-y-4">
                                                     <div className="flex justify-between items-center">
                                                         <label className="text-sm font-medium text-gray-700">
                                                             اختر اللون المخصص
                                                         </label>
-                                                        <span className="text-xs text-gray-500">
-                                                            {customColor}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="relative">
-                                                            <input
-                                                                type="color"
-                                                                value={customColor}
-                                                                onChange={(e) => handleCustomColorChange(e.target.value)}
-                                                                className="w-10 h-10 rounded-lg border-2 border-gray-300 cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-200"
-                                                                title="اختر اللون"
-                                                            />
-                                                            <div className="absolute inset-0 rounded-lg border-2 border-transparent pointer-events-none"></div>
+                                                        <div className="flex items-center gap-2">
+                                                            <div 
+                                                                className="w-6 h-6 rounded border border-gray-300 shadow-sm"
+                                                                style={{ backgroundColor: customColor } as React.CSSProperties}
+                                                            ></div>
+                                                            <span className="text-xs text-gray-500 font-mono">
+                                                                {customColor}
+                                                            </span>
                                                         </div>
-                                                        <div className="text-xs text-gray-500">
-                                                            انقر لاختيار لون مخصص
+                                                    </div>
+                                                    
+                                                    <div className="flex flex-col lg:flex-row gap-4">
+                                                        <div className="flex-1">
+                                                            <ChromePicker
+                                                                color={customColor}
+                                                                onChange={handleColorPickerChange}
+                                                                disableAlpha={true}
+                                                                width="100%"
+                                                            />
                                                         </div>
                                                     </div>
                                                 </div>

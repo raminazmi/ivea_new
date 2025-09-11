@@ -38,6 +38,8 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
         type: 'success',
     });
 
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
     useEffect(() => {
         const successMessage = flashMessages?.success || flash?.success;
         const errorMessage = flashMessages?.error || flash?.error;
@@ -48,6 +50,11 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                 message: successMessage,
                 type: 'success'
             });
+            // إعادة تعيين النموذج عند النجاح
+            quizForm.reset();
+            setShowQuizResult(true);
+            setQuizStep(1);
+            setErrors({});
         } else if (errorMessage) {
             setToast({
                 isVisible: true,
@@ -97,13 +104,11 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
             forceFormData: true,
             onSuccess: () => {
                 setShowQuizResult(true);
-                setToast({
-                    isVisible: true,
-                    message: 'تم إرسال بياناتك بنجاح. سيتواصل معك فريقنا قريباً!',
-                    type: 'success',
-                });
+                setErrors({});
+                // سيتم عرض toast في useEffect
             },
-            onError: () => {
+            onError: (errors) => {
+                setErrors(errors);
                 setToast({
                     isVisible: true,
                     message: 'حدث خطأ أثناء إرسال البيانات. يرجى المحاولة مرة أخرى.',
@@ -191,12 +196,22 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                                                 type="checkbox"
                                                                                 className="ml-3 h-4 w-4 text-primary-yellow"
                                                                                 checked={quizForm.data.space_types.includes(key)}
-                                                                                onChange={(e) => handleCheckboxChange('space_types', key, e.target.checked)}
+                                                                                onChange={(e) => {
+                                                                                    handleCheckboxChange('space_types', key, e.target.checked);
+                                                                                    if (errors.space_types) {
+                                                                                        setErrors(prev => ({ ...prev, space_types: '' }));
+                                                                                    }
+                                                                                }}
                                                                             />
                                                                             <span>{value}</span>
                                                                         </label>
                                                                     ))}
                                                                 </div>
+                                                                {errors.space_types && (
+                                                                    <div className="mt-2 text-right">
+                                                                        <p className="text-red-500 text-sm">{errors.space_types}</p>
+                                                                    </div>
+                                                                )}
                                                                 {quizForm.data.space_types.includes('other') && (
                                                                     <input
                                                                         type="text"
@@ -219,12 +234,22 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                                                 type="checkbox"
                                                                                 className="ml-3 h-4 w-4 text-primary-yellow"
                                                                                 checked={quizForm.data.product_needs.includes(key)}
-                                                                                onChange={(e) => handleCheckboxChange('product_needs', key, e.target.checked)}
+                                                                                onChange={(e) => {
+                                                                                    handleCheckboxChange('product_needs', key, e.target.checked);
+                                                                                    if (errors.product_needs) {
+                                                                                        setErrors(prev => ({ ...prev, product_needs: '' }));
+                                                                                    }
+                                                                                }}
                                                                             />
                                                                             <span>{value}</span>
                                                                         </label>
                                                                     ))}
                                                                 </div>
+                                                                {errors.product_needs && (
+                                                                    <div className="mt-2 text-right">
+                                                                        <p className="text-red-500 text-sm">{errors.product_needs}</p>
+                                                                </div>
+                                                                )}
                                                                 {quizForm.data.product_needs.includes('other') && (
                                                                     <input
                                                                         type="text"
@@ -247,12 +272,22 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                                                 type="checkbox"
                                                                                 className="ml-3 h-4 w-4 text-primary-yellow"
                                                                                 checked={quizForm.data.preferred_styles.includes(key)}
-                                                                                onChange={(e) => handleCheckboxChange('preferred_styles', key, e.target.checked)}
+                                                                                onChange={(e) => {
+                                                                                    handleCheckboxChange('preferred_styles', key, e.target.checked);
+                                                                                    if (errors.preferred_styles) {
+                                                                                        setErrors(prev => ({ ...prev, preferred_styles: '' }));
+                                                                                    }
+                                                                                }}
                                                                             />
                                                                             <span>{value}</span>
                                                                         </label>
                                                                     ))}
                                                                 </div>
+                                                                {errors.preferred_styles && (
+                                                                    <div className="mt-2 text-right">
+                                                                        <p className="text-red-500 text-sm">{errors.preferred_styles}</p>
+                                                                </div>
+                                                                )}
                                                                 {quizForm.data.preferred_styles.includes('other') && (
                                                                     <input
                                                                         type="text"
@@ -269,39 +304,87 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                             <div>
                                                                 <h3 className="text-xl font-semibold mb-6">معلومات التواصل ورفع الصور</h3>
                                                                 <div className="grid md:grid-cols-2 gap-6">
+                                                            <div>
                                                                     <input
                                                                         type="text"
-                                                                        placeholder="الاسم"
-                                                                        className="w-full p-3 border rounded-lg"
+                                                                            placeholder="الاسم"
+                                                                            className={`w-full p-3 border rounded-lg ${errors.name ? 'border-red-500' : ''}`}
                                                                         value={quizForm.data.name}
-                                                                        onChange={(e) => quizForm.setData('name', e.target.value)}
+                                                                            onChange={(e) => {
+                                                                                quizForm.setData('name', e.target.value);
+                                                                                if (errors.name) {
+                                                                                    setErrors(prev => ({ ...prev, name: '' }));
+                                                                                }
+                                                                            }}
                                                                         title="أدخل اسمك الكامل"
                                                                     />
+                                                                        {errors.name && (
+                                                                            <div className="mt-1 text-right">
+                                                                                <p className="text-red-500 text-sm">{errors.name}</p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                    <div>
                                                                     <input
                                                                         type="email"
-                                                                        placeholder="البريد الإلكتروني"
-                                                                        className="w-full p-3 border rounded-lg"
+                                                                            placeholder="البريد الإلكتروني"
+                                                                            className={`w-full p-3 border rounded-lg ${errors.email ? 'border-red-500' : ''}`}
                                                                         value={quizForm.data.email}
-                                                                        onChange={(e) => quizForm.setData('email', e.target.value)}
+                                                                            onChange={(e) => {
+                                                                                quizForm.setData('email', e.target.value);
+                                                                                if (errors.email) {
+                                                                                    setErrors(prev => ({ ...prev, email: '' }));
+                                                                                }
+                                                                            }}
                                                                         title="أدخل بريدك الإلكتروني"
                                                                     />
+                                                                        {errors.email && (
+                                                                            <div className="mt-1 text-right">
+                                                                                <p className="text-red-500 text-sm">{errors.email}</p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="md:col-span-2">
                                                                     <input
                                                                         type="tel"
-                                                                        placeholder="رقم الهاتف"
-                                                                        className="w-full p-3 border rounded-lg"
+                                                                            placeholder="رقم الهاتف"
+                                                                            className={`w-full p-3 border rounded-lg ${errors.phone ? 'border-red-500' : ''}`}
                                                                         value={quizForm.data.phone}
-                                                                        onChange={(e) => quizForm.setData('phone', e.target.value)}
+                                                                            onChange={(e) => {
+                                                                                quizForm.setData('phone', e.target.value);
+                                                                                if (errors.phone) {
+                                                                                    setErrors(prev => ({ ...prev, phone: '' }));
+                                                                                }
+                                                                            }}
                                                                         title="أدخل رقم هاتفك"
                                                                     />
+                                                                        {errors.phone && (
+                                                                            <div className="mt-1 text-right">
+                                                                                <p className="text-red-500 text-sm">{errors.phone}</p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
+                                                                <div className="mt-4">
                                                                 <textarea
-                                                                    placeholder="ملاحظات إضافية"
+                                                                        placeholder="ملاحظات إضافية"
                                                                     rows={4}
-                                                                    className="mt-4 w-full p-3 border rounded-lg"
+                                                                        className={`w-full p-3 border rounded-lg ${errors.additional_notes ? 'border-red-500' : ''}`}
                                                                     value={quizForm.data.additional_notes}
-                                                                    onChange={(e) => quizForm.setData('additional_notes', e.target.value)}
+                                                                        onChange={(e) => {
+                                                                            quizForm.setData('additional_notes', e.target.value);
+                                                                            if (errors.additional_notes) {
+                                                                                setErrors(prev => ({ ...prev, additional_notes: '' }));
+                                                                            }
+                                                                        }}
                                                                     title="أضف أي ملاحظات إضافية حول مشروعك"
                                                                 />
+                                                                    {errors.additional_notes && (
+                                                                        <div className="mt-1 text-right">
+                                                                            <p className="text-red-500 text-sm">{errors.additional_notes}</p>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                                 
                                                                 <div className="mt-6">
                                                                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -322,11 +405,19 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                                                                             onChange={(e) => {
                                                                                 const files = Array.from(e.target.files || []);
                                                                                 quizForm.setData('images', files.slice(0, 5) as File[]);
+                                                                                if (errors.images) {
+                                                                                    setErrors(prev => ({ ...prev, images: '' }));
+                                                                                }
                                                                             }}
                                                                                 className="hidden"
                                                                                 title="اختر الملفات"
                                                                         />
                                                                         </label>
+                                                                        {errors.images && (
+                                                                            <div className="mt-2 text-right">
+                                                                                <p className="text-red-500 text-sm">{errors.images}</p>
+                                                                            </div>
+                                                                        )}
                                                                         <p className="text-xs md:text-sm text-gray-500 mt-2">
                                                                             حتى 10MB (حد أقصى 5 ملفات) صورة/PDF
                                                                         </p>
@@ -523,7 +614,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                 <Toast
                     message={toast.message}
                     type={toast.type}
-                    isVisible={toast.isVisible}
+                    show={toast.isVisible}
                     onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
                 />
             )}

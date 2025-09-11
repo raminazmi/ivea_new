@@ -39,7 +39,7 @@ class Offer extends Model
         $categoryImages = [
             'curtains' => '/images/curtain.png',
             'sofas' => '/images/sofa3.png',
-            'cabinets' => '/images/treasury.png',
+            'cabinets' => '/images/treasury_new.png',
             'wooden' => '/images/chair.png'
         ];
 

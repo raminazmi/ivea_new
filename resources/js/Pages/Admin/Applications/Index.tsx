@@ -340,8 +340,7 @@ const ApplicationsIndex: React.FC<ApplicationsIndexProps> = ({ applications, use
                                                         <FaEye className="w-4 h-4" />
                                                     </Link>
                                                     <a
-                                                        href={`/storage/job-applications/${application.cv_file}`}
-                                                        download
+                                                        href={route('admin.applications.download-cv', application.id)}
                                                         className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
                                                         title="تحميل السيرة الذاتية"
                                                     >
@@ -414,7 +413,7 @@ const ApplicationsIndex: React.FC<ApplicationsIndexProps> = ({ applications, use
                 <Toast
                     message={toast.message}
                     type={toast.type}
-                    isVisible={toast.isVisible}
+                    show={toast.isVisible}
                     onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
                 />
             )}

@@ -8,7 +8,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import ColorSwatch from '@/Components/Common/ColorSwatch';
 import ImageUpload from '@/Components/Admin/ImageUpload';
-
+import { ChromePicker } from 'react-color';
 interface CreateProductProps {
     categories: {
         id: number;
@@ -42,6 +42,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
 
     const [newColor, setNewColor] = useState('');
     const [newFeature, setNewFeature] = useState('');
+    const [selectedColor, setSelectedColor] = useState('#FF0000');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -55,6 +56,18 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
     const addColor = () => {
         if (newColor.trim()) {
             setData('colors', [...data.colors, newColor.trim()]);
+            setNewColor('');
+        }
+    };
+
+    const handleColorPickerChange = (color: any) => {
+        setSelectedColor(color.hex);
+        setNewColor(color.hex);
+    };
+
+    const addColorFromPicker = () => {
+        if (selectedColor && !data.colors.includes(selectedColor)) {
+            setData('colors', [...data.colors, selectedColor]);
             setNewColor('');
         }
     };
@@ -214,7 +227,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                             ))}
                                         </select>
                                         <InputError message={errors.category_id} className="mt-2" />
-                                        <p className="mt-1 text-sm text-gray-500">يمكن ربط المنتجات بالفئات الفرعية أو فئة الخشبيات</p>
                                     </div>
 
                                     <div>
@@ -246,35 +258,61 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
 
                                 <div>
                                     <InputLabel value="الألوان المتوفرة" />
-                                    <div className="mt-2 space-y-2">
-                                        <div className="flex gap-2">
-                                            <TextInput
-                                                type="text"
-                                                placeholder="كود اللون (مثال: #FF0000)"
-                                                className="flex-1"
-                                                value={newColor}
-                                                onChange={(e) => setNewColor(e.target.value)}
-                                                title="أدخل كود اللون"
-                                            />
-                                            <SecondaryButton type="button" onClick={addColor}>
-                                                إضافة
-                                            </SecondaryButton>
+                                    <div className="mt-2 space-y-4">
+                                        {/* Color Picker Section */}
+                                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                            <h4 className="text-sm font-medium text-gray-700 mb-3">اختيار اللون</h4>
+                                            
+                                            <div className="space-y-3">
+                                                <div className="flex justify-center">
+                                                    <ChromePicker
+                                                        color={selectedColor}
+                                                        onChange={handleColorPickerChange}
+                                                        disableAlpha={true}
+                                                    />
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <div 
+                                                            className="w-8 h-8 rounded border border-gray-300"
+                                                            style={{ backgroundColor: selectedColor } as React.CSSProperties}
+                                                        ></div>
+                                                        <span className="text-sm text-gray-600 font-mono">{selectedColor}</span>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={addColorFromPicker}
+                                                        className="px-4 py-2 bg-primary-yellow text-gray-900 rounded-md text-sm font-medium hover:bg-yellow-400 transition-colors"
+                                                    >
+                                                        إضافة اللون
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
+                                        {/* Selected Colors Display */}
                                         {data.colors.length > 0 && (
-                                            <div className="flex gap-2 flex-wrap">
+                                            <div className="border border-gray-200 rounded-lg p-4 bg-white">
+                                                <h4 className="text-sm font-medium text-gray-700 mb-3">
+                                                    الألوان المختارة ({data.colors.length})
+                                                </h4>
+                                                <div className="flex gap-3 flex-wrap">
                                                 {data.colors.map((color: string, index: number) => (
-                                                    <div key={index} className="flex items-center gap-1">
+                                                        <div key={index} className="flex items-center gap-2 bg-gray-50 rounded-lg p-2 border border-gray-200">
                                                         <ColorSwatch color={color} size="md" />
+                                                            <span className="text-xs text-gray-600 font-mono">{color}</span>
                                                         <button
                                                             type="button"
                                                             onClick={() => removeColor(index)}
-                                                            className="text-red-500 text-sm"
+                                                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded-full transition-colors"
                                                             title={`حذف اللون ${index + 1}`}
                                                         >
-                                                            ×
+                                                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                                </svg>
                                                         </button>
                                                     </div>
                                                 ))}
+                                                </div>
                                             </div>
                                         )}
                                     </div>
@@ -282,23 +320,29 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                 </div>
 
                                 <div>
-                                    <InputLabel value="المميزات (اختياري)" />
-                                    <p className="text-sm text-gray-600 mt-1 mb-3">
-                                        يمكنك إضافة مميزات للمنتج أو تركه فارغاً. إذا لم تقم بإضافة مميزات، سيتم عرض المميزات الافتراضية.
-                                    </p>
+                                    <InputLabel value="المميزات" />
                                     <div className="mt-2 space-y-2">
                                         <div className="flex gap-2">
                                             <TextInput
                                                 type="text"
-                                                placeholder="أضف ميزة جديدة (مثال: مقاومة للحريق، عازلة للحرارة)"
+                                                placeholder="أضف ميزة جديدة للمنتج"
                                                 className="flex-1"
                                                 value={newFeature}
                                                 onChange={(e) => setNewFeature(e.target.value)}
                                                 title="أدخل ميزة جديدة"
                                             />
-                                            <SecondaryButton type="button" onClick={addFeature}>
+                                            <button
+                                                type="button"
+                                                onClick={addFeature}
+                                                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                                                    newFeature.trim() 
+                                                        ? 'bg-primary-yellow text-gray-900 hover:bg-yellow-400' 
+                                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                }`}
+                                                disabled={!newFeature.trim()}
+                                            >
                                                 إضافة
-                                            </SecondaryButton>
+                                            </button>
                                         </div>
                                         {data.features.length > 0 && (
                                             <ul className="list-disc list-inside space-y-1">
@@ -317,11 +361,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                                 ))}
                                             </ul>
                                         )}
-                                        {data.features.length === 0 && (
-                                            <p className="text-sm text-gray-500 italic">
-                                                لم يتم إضافة مميزات بعد. سيتم عرض المميزات الافتراضية للمنتج.
-                                            </p>
-                                        )}
                                     </div>
                                 </div>
 
@@ -329,12 +368,12 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                     <input
                                         id="featured"
                                         type="checkbox"
-                                        className="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                                        className="cursor-pointer rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
                                         checked={data.featured}
                                         onChange={(e) => setData('featured', e.target.checked)}
                                         title="تحديد المنتج كمميز"
                                     />
-                                    <InputLabel htmlFor="featured" value="منتج مميز" className="ml-2" />
+                                    <InputLabel htmlFor="featured" value="منتج مميز" className="ms-2 cursor-pointer" />
                                 </div>
 
 

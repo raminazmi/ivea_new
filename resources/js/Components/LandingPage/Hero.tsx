@@ -29,11 +29,26 @@ interface HeroCategoryItem {
     slug: string;
 }
 
-interface HeroProps {
-    categories?: Category[];
+interface HeroSlide {
+    id: number;
+    title: string;
+    subtitle?: string;
+    image_path: string;
+    alt_text?: string;
+    link_url?: string;
+    link_text?: string;
+    button_text?: string;
+    button_url?: string;
+    is_active: boolean;
+    sort_order: number;
 }
 
-const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
+interface HeroProps {
+    categories?: Category[];
+    heroSlides?: HeroSlide[];
+}
+
+const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [], heroSlides = [] }) => {
     // Removed local slider state, using Swiper instead
 
     const heroRef = useRef<HTMLDivElement>(null);
@@ -123,20 +138,50 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
         };
     }, []);
 
-    const heroImages = [
-        {
-            src: '/images/hero_banner2.jpg',
-            alt: 'إيفيا # تشاركك_ذوقك'
-        },
-        {
-            src: '/images/hero_banner.jpg',
-            alt: 'تفاصيل تلامس حواسك'
-        },
-        {
-            src: '/images/hero_banner3.jpg',
-            alt: 'عروض اليوم الوطني بدأت'
-        }
-    ];
+    // Use hero slides from database or fallback to default images
+    const heroImages = heroSlides.length > 0 
+        ? heroSlides.map(slide => ({
+            src: slide.image_path ? `/storage/${slide.image_path}` : '/images/hero_banner.jpg',
+            alt: slide.alt_text || slide.title,
+            title: slide.title,
+            subtitle: slide.subtitle,
+            link_url: slide.link_url,
+            link_text: slide.link_text,
+            button_text: slide.button_text,
+            button_url: slide.button_url
+        }))
+        : [
+            {
+                src: '/images/hero_banner2.jpg',
+                alt: 'إيفيا # تشاركك_ذوقك',
+                title: 'إيفيا # تشاركك_ذوقك',
+                subtitle: '',
+                link_url: '',
+                link_text: '',
+                button_text: '',
+                button_url: ''
+            },
+            {
+                src: '/images/hero_banner.jpg',
+                alt: 'تفاصيل تلامس حواسك',
+                title: 'تفاصيل تلامس حواسك',
+                subtitle: '',
+                link_url: '',
+                link_text: '',
+                button_text: '',
+                button_url: ''
+            },
+            {
+                src: '/images/hero_banner3.jpg',
+                alt: 'عروض اليوم الوطني بدأت',
+                title: 'عروض اليوم الوطني بدأت',
+                subtitle: '',
+                link_url: '',
+                link_text: '',
+                button_text: '',
+                button_url: ''
+            }
+        ];
 
     const features = [
         {
@@ -156,7 +201,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
         {
             icon: <FaComments className="text-primary-yellow text-lg sm:text-xl md:text-2xl" />,
             title: 'استشارات مجانية',
-            description: 'استشارات مجانية',
+            description: 'رأي هندسي متخصص',
             containerBg: 'bg-white',
             borderColor: 'border-0'
         }
@@ -207,7 +252,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
         },
         {
             name: 'خــزائن',
-            image: '/images/treasury.png',
+            image: '/images/treasury_new.png',
             subtitle: 'عرض المزيد',
             bgColor: 'bg-[#F5F5F5]',
             slug: 'cabinets'
@@ -281,7 +326,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                             الانسجام المثالي..
                         </h1>
                         <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-[#424242] mb-3 sm:mb-4 md:mb-6 font-medium">
-                            راحة وأناقة في كل تفاصيل التصميم
+                            راحة وأناقة في كل تصميم
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-2 sm:gap-3 mb-4 sm:mb-6">
@@ -407,7 +452,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [] }) => {
                                         <img
                                             src={category.image}
                                             alt={category.name}
-                                            className={`h-[160px] sm:h-[180px] md:h-[200px] ${category.image == '/images/treasury.png' ? 'w-32 sm:w-36 md:w-48' : 'w-28 sm:w-32 md:w-36'} object-contain transition-all duration-1000 group-hover:scale-110 transform -rotate-12 group-hover:rotate-1`}
+                                            className={`h-[160px] sm:h-[180px] md:h-[200px] ${category.image == '/images/treasury_new.png' ? 'w-32 sm:w-36 md:w-48' : 'w-28 sm:w-32 md:w-36'} object-contain transition-all duration-1000 group-hover:scale-110 transform -rotate-12 group-hover:rotate-1`}
                                             style={{ zIndex: 10 }}
                                         />
                                     </div>

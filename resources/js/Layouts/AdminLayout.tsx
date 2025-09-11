@@ -1,7 +1,7 @@
 import React, { useState, ReactNode } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
-import { FaHome, FaBox, FaTags, FaNewspaper, FaEnvelope, FaCog, FaSignOutAlt, FaBars, FaTimes, FaUser, FaTools, FaPaintBrush, FaBriefcase, FaFileAlt, FaUsers, FaShoppingCart, FaGift } from 'react-icons/fa';
+import { FaHome, FaBox, FaTags, FaNewspaper, FaEnvelope, FaCog, FaSignOutAlt, FaBars, FaTimes, FaUser, FaTools, FaPaintBrush, FaBriefcase, FaFileAlt, FaUsers, FaShoppingCart, FaGift, FaTachometerAlt } from 'react-icons/fa';
 
 interface User {
     id: number;
@@ -15,6 +15,12 @@ interface PageProps {
         user: User;
     };
     user?: User;
+    adminNotifications?: {
+        unreadOrders?: number;
+        unreadMessages?: number;
+        newApplications?: number;
+        pendingProjects?: number;
+    };
     [key: string]: any;
 }
 
@@ -25,24 +31,31 @@ interface AdminLayoutProps {
     notifications?: {
         unreadOrders?: number;
         unreadMessages?: number;
+        newApplications?: number;
+        pendingProjects?: number;
     };
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة التحكم', user, notifications }) => {
-    const { auth, user: pageUser } = usePage<PageProps>().props;
+    const { auth, user: pageUser, adminNotifications } = usePage<PageProps>().props;
     const currentUser = user || pageUser || auth.user;
+    
+    // استخدام notifications من props أو من البيانات المشتركة
+    const finalNotifications = notifications || adminNotifications;
+    
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const menuItems = [
-        { name: 'الرئيسية', icon: FaHome, href: route('admin.dashboard'), active: route().current('admin.dashboard') },
+        { name: 'لوحة التحكم', icon: FaTachometerAlt, href: route('admin.dashboard'), active: route().current('admin.dashboard') },
+        { name: 'إدارة الرئيسية', icon: FaHome, href: route('admin.landing-page.index'), active: route().current('admin.landing-page.*') },
         { name: 'المنتجات', icon: FaBox, href: route('admin.products.index'), active: route().current('admin.products.*') },
-        { name: 'الطلبات', icon: FaShoppingCart, href: route('admin.orders.index'), active: route().current('admin.orders.*'), badge: notifications?.unreadOrders },
+        { name: 'الطلبات', icon: FaShoppingCart, href: route('admin.orders.index'), active: route().current('admin.orders.*'), badge: finalNotifications?.unreadOrders },
+        { name: 'الرسائل', icon: FaEnvelope, href: route('admin.contacts.index'), active: route().current('admin.contacts.*'), badge: finalNotifications?.unreadMessages },
+        { name: 'المشاريع', icon: FaPaintBrush, href: route('admin.projects.index'), active: route().current('admin.projects.*'), badge: finalNotifications?.pendingProjects },
+        { name: 'التقديمات', icon: FaFileAlt, href: route('admin.applications.index'), active: route().current('admin.applications.*'), badge: finalNotifications?.newApplications },
         { name: 'الفئات', icon: FaTags, href: route('admin.categories.index'), active: route().current('admin.categories.*') },
         { name: 'العروض', icon: FaGift, href: route('admin.offers.index'), active: route().current('admin.offers.*') },
         { name: 'المقالات', icon: FaNewspaper, href: route('admin.articles.index'), active: route().current('admin.articles.*') },
-        { name: 'المشاريع', icon: FaPaintBrush, href: route('admin.projects.index'), active: route().current('admin.projects.*') },
         { name: 'الوظائف', icon: FaBriefcase, href: route('admin.jobs.index'), active: route().current('admin.jobs.*') },
-        { name: 'التقديمات', icon: FaFileAlt, href: route('admin.applications.index'), active: route().current('admin.applications.*') },
-        { name: 'الرسائل', icon: FaEnvelope, href: route('admin.contacts.index'), active: route().current('admin.contacts.*'), badge: notifications?.unreadMessages },
     ];
 
     return (
@@ -87,7 +100,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
                                     </div>
                                     {item.badge && item.badge > 0 && (
                                         <div className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center min-w-[20px]">
-                                            {item.badge > 99 ? '99+' : item.badge}
+                                            {item.badge > 10 ? '10+' : item.badge}
                                         </div>
                                     )}
                                 </Link>

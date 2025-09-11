@@ -142,7 +142,7 @@ const CreateOffer: React.FC<CreateOfferProps> = ({ offersTexts = [] }) => {
                                             <img
                                                 src={`/images/${data.category_slug === 'curtains' ? 'curtain.png' : 
                                                        data.category_slug === 'sofas' ? 'sofa.png' :
-                                                       data.category_slug === 'cabinets' ? 'treasury.png' :
+                                                        data.category_slug === 'cabinets' ? 'treasury_new.png' :
                                                             data.category_slug === 'wooden' ? 'door.png' : 'curtain.png'}`}
                                                 alt={data.category_name}
                                                 className="h-24 w-24 object-contain"

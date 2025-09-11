@@ -82,6 +82,8 @@ const Toast: React.FC<ToastProps> = ({
                             setTimeout(onClose, 300);
                         }}
                         className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-200"
+                        title="إغلاق"
+                        aria-label="إغلاق الإشعار"
                     >
                         <HiX className="w-4 h-4" />
                     </button>

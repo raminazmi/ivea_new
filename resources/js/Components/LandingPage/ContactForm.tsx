@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { router } from '@inertiajs/react';
+import React, { useState, useEffect } from 'react';
+import { router, usePage } from '@inertiajs/react';
 import Toast from '@/Components/Common/Toast';
 
 const ContactForm = () => {
+  const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
+  
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -34,6 +36,28 @@ const ContactForm = () => {
   const hideToast = () => {
     setToast(prev => ({ ...prev, isVisible: false }));
   };
+
+  // الاستماع إلى flash messages
+  useEffect(() => {
+    if (flash?.success) {
+      showToast(flash.success, 'success');
+      // إعادة تعيين النموذج عند النجاح
+      setFormData({
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone_country_code: '+966',
+        phone_number: '',
+        subject: '',
+        category: '',
+        message: '',
+        attachments: []
+      });
+    }
+    if (flash?.error) {
+      showToast(flash.error, 'error');
+    }
+  }, [flash]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -85,19 +109,8 @@ const ContactForm = () => {
 
     router.post('/contact', submitData, {
       onSuccess: () => {
-        setFormData({
-          first_name: '',
-          last_name: '',
-          email: '',
-          phone_country_code: '+966',
-          phone_number: '',
-          subject: '',
-          category: '',
-          message: '',
-          attachments: []
-        });
         setIsSubmitting(false);
-        showToast('تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.', 'success');
+        // سيتم عرض toast وإعادة تعيين النموذج في useEffect
       },
       onError: (errors) => {
         setErrors(errors);
@@ -134,12 +147,15 @@ const ContactForm = () => {
                   name="first_name"
                   value={formData.first_name}
                   onChange={handleChange}
-                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.first_name ? 'border-red-500' : 'border-gray-300'
+                  placeholder="أدخل اسمك الأول"
+                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.first_name ? 'border-red-500 ' : 'border-gray-300'
                     }`}
-                  required
+
                 />
                 {errors.first_name && (
-                  <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.first_name}</p>
+                  <div className="mt-1 text-right">
+                    <p className="text-red-500 text-xs md:text-sm">{errors.first_name}</p>
+                  </div>
                 )}
               </div>
 
@@ -153,12 +169,14 @@ const ContactForm = () => {
                   name="last_name"
                   value={formData.last_name}
                   onChange={handleChange}
-                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.last_name ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                  required
+                  placeholder="أدخل اسم العائلة"
+                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.last_name ? 'border-red-500 ' : 'border-gray-300'
+                    }`} 
                 />
                 {errors.last_name && (
-                  <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.last_name}</p>
+                  <div className="mt-1 text-right">
+                    <p className="text-red-500 text-xs md:text-sm">{errors.last_name}</p>
+                  </div>
                 )}
               </div>
             </div>
@@ -174,12 +192,14 @@ const ContactForm = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.email ? 'border-red-500' : 'border-gray-300'
+                  placeholder="أدخل بريدك الإلكتروني"
+                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.email ? 'border-red-500 ' : 'border-gray-300'
                     }`}
-                  required
                 />
                 {errors.email && (
-                  <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.email}</p>
+                  <div className="mt-1 text-right">
+                    <p className="text-red-500 text-xs md:text-sm">{errors.email}</p>
+                  </div>
                 )}
               </div>
 
@@ -207,13 +227,15 @@ const ContactForm = () => {
                     name="phone_number"
                     value={formData.phone_number}
                     onChange={handleChange}
-                    className={`bg-primary-gray flex-1 p-2.5 md:p-3 border border-r-0 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.phone_number ? 'border-red-500' : 'border-gray-300'
+                    placeholder="أدخل رقم الهاتف"
+                    className={`bg-primary-gray flex-1 p-2.5 md:p-3 border border-r-0 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.phone_number ? 'border-red-500 ' : 'border-gray-300'
                       }`}
-                    required
                   />
                 </div>
                 {errors.phone_number && (
-                  <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.phone_number}</p>
+                  <div className="mt-1 text-right">
+                    <p className="text-red-500 text-xs md:text-sm">{errors.phone_number}</p>
+                  </div>
                 )}
               </div>
             </div>
@@ -229,12 +251,14 @@ const ContactForm = () => {
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.subject ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                  required
+                  placeholder="أدخل موضوع الرسالة"
+                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.subject ? 'border-red-500 ' : 'border-gray-300'
+                    }`} 
                 />
                 {errors.subject && (
-                  <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.subject}</p>
+                  <div className="mt-1 text-right">
+                    <p className="text-red-500 text-xs md:text-sm">{errors.subject}</p>
+                  </div>
                 )}
               </div>
 
@@ -247,9 +271,8 @@ const ContactForm = () => {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.category ? 'border-red-500' : 'border-gray-300'
+                  className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.category ? 'border-red-500 ' : 'border-gray-300'
                     }`}
-                  required
                 >
                   <option value="">اختر الفئة</option>
                   <option value="اقتراحات">اقتراحات</option>
@@ -257,7 +280,9 @@ const ContactForm = () => {
                   <option value="دعم فني">دعم فني</option>
                 </select>
                 {errors.category && (
-                  <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.category}</p>
+                  <div className="mt-1 text-right">
+                    <p className="text-red-500 text-xs md:text-sm">{errors.category}</p>
+                  </div>
                 )}
               </div>
             </div>
@@ -272,12 +297,14 @@ const ContactForm = () => {
                 value={formData.message}
                 onChange={handleChange}
                 rows={4}
-                className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.message ? 'border-red-500' : 'border-gray-300'
+                placeholder="اكتب رسالتك هنا..."
+                className={`bg-primary-gray w-full p-2.5 md:p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-yellow focus:border-transparent text-sm md:text-base ${errors.message ? 'border-red-500 ' : 'border-gray-300'
                   }`}
-                required
               />
               {errors.message && (
-                <p className="text-red-500 text-xs md:text-sm mt-1 text-right">{errors.message}</p>
+                <div className="mt-1 text-right">
+                  <p className="text-red-500 text-xs md:text-sm">{errors.message}</p>
+                </div>
               )}
             </div>
 
@@ -334,7 +361,7 @@ const ContactForm = () => {
         <Toast
           message={toast.message}
           type={toast.type}
-          isVisible={toast.isVisible}
+          show={toast.isVisible}
           onClose={hideToast}
         />
       )}
