@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
             ToolSeeder::class,
             JobSeeder::class,
             ProjectSeeder::class,
-            LandingPageSeeder::class,
             PreparingForSummerSeeder::class,
         ]);
     }
