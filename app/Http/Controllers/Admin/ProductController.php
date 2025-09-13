@@ -87,6 +87,7 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
             'sku' => 'nullable|string|max:255|unique:products,sku',
             'featured' => 'boolean',
+            'is_new' => 'boolean',
             'features' => 'nullable|array',
             'features.*' => 'string',
         ]);
@@ -115,7 +116,28 @@ class ProductController extends Controller
             $validated['image'] = $validated['images'][0];
         }
 
-        Product::create($validated);
+        // تحديث الحقول بناءً على قيمة التبويب
+        $tabUpdates = [];
+        switch ($validated['tab']) {
+            case 'featured':
+                $tabUpdates = ['featured' => true, 'is_offer' => false, 'is_bestseller' => false, 'is_new' => false];
+                break;
+            case 'new':
+                $tabUpdates = ['featured' => false, 'is_offer' => false, 'is_bestseller' => false, 'is_new' => true];
+                break;
+            case 'bestsellers':
+                $tabUpdates = ['featured' => false, 'is_offer' => false, 'is_bestseller' => true, 'is_new' => false];
+                break;
+            case 'offers':
+                $tabUpdates = ['featured' => false, 'is_offer' => true, 'is_bestseller' => false, 'is_new' => false];
+                break;
+            case 'all':
+            default:
+                $tabUpdates = ['featured' => false, 'is_offer' => false, 'is_bestseller' => false, 'is_new' => false];
+                break;
+        }
+
+        Product::create(array_merge($validated, $tabUpdates));
 
         return redirect()->route('admin.products.index')
             ->with('success', 'تم إنشاء المنتج بنجاح');
@@ -166,6 +188,7 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
             'sku' => 'nullable|string|max:255|unique:products,sku,' . $product->id,
             'featured' => 'boolean',
+            'is_new' => 'boolean',
             'features' => 'nullable|array',
             'features.*' => 'string',
         ]);
@@ -184,7 +207,28 @@ class ProductController extends Controller
                 ->withInput();
         }
 
-        $product->update($validated);
+        // تحديث الحقول بناءً على قيمة التبويب
+        $tabUpdates = [];
+        switch ($validated['tab']) {
+            case 'featured':
+                $tabUpdates = ['featured' => true, 'is_offer' => false, 'is_bestseller' => false, 'is_new' => false];
+                break;
+            case 'new':
+                $tabUpdates = ['featured' => false, 'is_offer' => false, 'is_bestseller' => false, 'is_new' => true];
+                break;
+            case 'bestsellers':
+                $tabUpdates = ['featured' => false, 'is_offer' => false, 'is_bestseller' => true, 'is_new' => false];
+                break;
+            case 'offers':
+                $tabUpdates = ['featured' => false, 'is_offer' => true, 'is_bestseller' => false, 'is_new' => false];
+                break;
+            case 'all':
+            default:
+                $tabUpdates = ['featured' => false, 'is_offer' => false, 'is_bestseller' => false, 'is_new' => false];
+                break;
+        }
+
+        $product->update(array_merge($validated, $tabUpdates));
 
         return redirect()->route('admin.products.index')
             ->with('success', 'تم تحديث المنتج بنجاح');
@@ -233,6 +277,7 @@ class ProductController extends Controller
             'featured' => 'boolean',
             'is_offer' => 'boolean',
             'is_bestseller' => 'boolean',
+            'is_new' => 'boolean',
             'sales_count' => 'integer|min:0',
             'published_at' => 'nullable|date',
         ]);
@@ -241,6 +286,7 @@ class ProductController extends Controller
             'featured' => $request->featured ?? false,
             'is_offer' => $request->is_offer ?? false,
             'is_bestseller' => $request->is_bestseller ?? false,
+            'is_new' => $request->is_new ?? false,
             'sales_count' => $request->sales_count ?? 0,
             'published_at' => $request->published_at,
         ]);
@@ -256,6 +302,7 @@ class ProductController extends Controller
             'featured' => 'boolean',
             'is_offer' => 'boolean',
             'is_bestseller' => 'boolean',
+            'is_new' => 'boolean',
             'action' => 'required|in:set,unset',
         ]);
 
@@ -274,6 +321,9 @@ class ProductController extends Controller
         if ($request->has('is_bestseller')) {
             $updates['is_bestseller'] = $value;
         }
+        if ($request->has('is_new')) {
+            $updates['is_new'] = $value;
+        }
 
         Product::whereIn('id', $productIds)->update($updates);
 
@@ -284,9 +334,7 @@ class ProductController extends Controller
     {
         $stats = [
             'featured' => Product::where('featured', true)->count(),
-            'new' => Product::whereNotNull('published_at')
-                ->where('published_at', '>=', now()->subDays(30))
-                ->count(),
+            'new' => Product::where('is_new', true)->count(),
             'offers' => Product::where('is_offer', true)
                 ->whereNotNull('discount')
                 ->where('discount', '>', 0)

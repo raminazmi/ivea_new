@@ -51,7 +51,7 @@ class SimpleCategoriesProductsSeeder extends Seeder
                 'description' => 'خزائن ووحدات التخزين',
                 'image' => '/images/treasury_new.png',
                 'status' => 'active',
-                'sort_order' => 4,
+                'sort_order' => 3,
                 'color' => '#F0FFF0',
                 'subcategories' => [
                     ['name' => 'خزائن ملابس', 'slug' => 'wardrobe-cabinets', 'description' => 'خزائن الملابس والأزياء'],
@@ -66,7 +66,7 @@ class SimpleCategoriesProductsSeeder extends Seeder
                 'description' => 'منتجات خشبية متنوعة وديكورات',
                 'image' => '/images/door.png',
                 'status' => 'active',
-                'sort_order' => 3,
+                'sort_order' => 4,
                 'color' => '#FFF8DC',
                 'subcategories' => []
             ]

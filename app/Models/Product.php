@@ -29,6 +29,7 @@ class Product extends Model
         'featured',
         'is_offer',
         'is_bestseller',
+        'is_new',
         'sales_count',
         'customization_options',
         'measurement_units',
@@ -49,6 +50,7 @@ class Product extends Model
         'featured' => 'boolean',
         'is_offer' => 'boolean',
         'is_bestseller' => 'boolean',
+        'is_new' => 'boolean',
         'sales_count' => 'integer',
         'customization_options' => 'array',
         'measurement_units' => 'array',
@@ -95,11 +97,6 @@ class Product extends Model
         return $query->where('featured', true);
     }
 
-    public function scopeNew($query)
-    {
-        return $query->where('created_at', '>=', now()->subWeek())
-            ->orderBy('created_at', 'desc');
-    }
 
     public function scopeOffers($query)
     {
@@ -112,6 +109,12 @@ class Product extends Model
     {
         return $query->where('is_bestseller', true)
             ->orderBy('sales_count', 'desc');
+    }
+
+    public function scopeNew($query)
+    {
+        return $query->where('is_new', true)
+            ->orderBy('created_at', 'desc');
     }
 
     public function getFinalPriceAttribute()

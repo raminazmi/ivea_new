@@ -505,17 +505,6 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
-    public function getFeatured(): JsonResponse
-    {
-        $products = Product::with('category')
-            ->active()
-            ->withDiscount()
-            ->limit(6)
-            ->get();
-
-        return ResponseFacade::json($products);
-    }
-
     public function getNew(): JsonResponse
     {
         $products = Product::with('category')
@@ -543,6 +532,17 @@ class ProductController extends Controller
         $products = Product::with('category')
             ->active()
             ->bestsellers()
+            ->take(8)
+            ->get();
+
+        return response()->json($products);
+    }
+
+    public function getFeatured(): JsonResponse
+    {
+        $products = Product::with('category')
+            ->active()
+            ->featured()
             ->take(8)
             ->get();
 

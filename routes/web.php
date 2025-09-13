@@ -73,6 +73,7 @@ Route::get('/tools-and-guidelines/{slug}', [ToolsAndGuidelinesController::class,
 
 Route::get('/api/products', [ProductController::class, 'getAll'])->name('api.products.all');
 Route::get('/api/products/tab/{tab}', [ProductController::class, 'getByTab'])->name('api.products.by-tab');
+Route::get('/api/products/featured', [ProductController::class, 'getFeatured'])->name('api.products.featured');
 Route::get('/api/products/new', [ProductController::class, 'getNew'])->name('api.products.new');
 Route::get('/api/products/offers', [ProductController::class, 'getOffers'])->name('api.products.offers');
 Route::get('/api/products/bestsellers', [ProductController::class, 'getBestsellers'])->name('api.products.bestsellers');

@@ -17,6 +17,7 @@ interface Product {
     featured: boolean;
     is_offer: boolean;
     is_bestseller: boolean;
+    is_new: boolean;
     sales_count: number;
     published_at?: string;
     category?: {
@@ -533,6 +534,13 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
                                                             title="مميزة"
                                                         >
                                                             <HiStar className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleTabSettings(product.id, 'is_new', !product.is_new)}
+                                                            className={`p-1 rounded flex-shrink-0 ${product.is_new ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'}`}
+                                                            title="جديد"
+                                                        >
+                                                            <HiClock className="w-4 h-4" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleTabSettings(product.id, 'is_offer', !product.is_offer)}

@@ -63,6 +63,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts, c
     
     const tabs = [
         { id: 'all', label: 'الكل' },
+        { id: 'featured', label: 'المميزة' },
         { id: 'new', label: 'جديد' },
         { id: 'offers', label: 'عروض' },
         { id: 'bestsellers', label: 'الأكثر مبيعاً' },
@@ -79,6 +80,9 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts, c
                     let url = '';
 
                     switch (activeTab) {
+                        case 'featured':
+                            url = '/api/products/featured';
+                            break;
                         case 'new':
                             url = '/api/products/new';
                             break;
