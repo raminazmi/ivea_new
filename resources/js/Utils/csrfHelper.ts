@@ -3,9 +3,15 @@
  */
 
 /**
- * Get the current CSRF token from the meta tag
+ * Get the current CSRF token from Inertia page props
  */
 export const getCsrfToken = (): string | null => {
+  // Try to get from Inertia page props first
+  if (typeof window !== 'undefined' && (window as any).__INERTIA_PROPS__) {
+    return (window as any).__INERTIA_PROPS__.csrf_token || null;
+  }
+  
+  // Fallback to meta tag if available
   const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   return token || null;
 };
@@ -24,18 +30,15 @@ export const isCsrfError = (error: any): boolean => {
  * Handle CSRF errors with appropriate user feedback
  */
 export const handleCsrfError = (error: any, customMessage?: string): void => {
-  const message = customMessage || 'انتهت صلاحية الجلسة. يرجى تحديث الصفحة والمحاولة مرة أخرى.';
-  
   // Log the error for debugging
   console.warn('CSRF Error detected:', error);
   
+  // With the new exception handler, CSRF errors should be handled server-side
+  // This function is kept for backward compatibility
+  const message = customMessage || 'انتهت صلاحية الصفحة، يرجى المحاولة مرة أخرى.';
+  
   // Show user-friendly error message
   alert(message);
-  
-  // Reload the page to get a fresh CSRF token
-  setTimeout(() => {
-    window.location.reload();
-  }, 1000);
 };
 
 /**
