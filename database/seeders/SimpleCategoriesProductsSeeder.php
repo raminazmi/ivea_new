@@ -10,11 +10,6 @@ class SimpleCategoriesProductsSeeder extends Seeder
 {
     public function run(): void
     {
-        // For SQLite, we don't need to disable foreign key checks
-        // Just truncate the tables
-        Product::truncate();
-        Category::truncate();
-
         $mainCategories = [
             [
                 'name' => 'الستائر',
