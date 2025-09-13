@@ -14,26 +14,37 @@ class Offer extends Model
         'discount_percentage',
         'category_slug',
         'category_name',
-        'offers_text_id'
+        'offers_text_id',
+        'featured_offers_setting_id',
+        'image_path',
+        'is_active'
     ];
 
     protected $casts = [
-        'discount_percentage' => 'integer'
+        'discount_percentage' => 'integer',
+        'is_active' => 'boolean'
     ];
 
-    // Scope للترتيب حسب تاريخ الإنشاء (الأحدث أولاً)
     public function scopeOrdered($query)
     {
         return $query->orderBy('created_at', 'desc');
     }
 
-    // العلاقة مع نصوص العروض
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
     public function offersText()
     {
         return $this->belongsTo(OffersText::class);
     }
 
-    // الحصول على صورة الفئة
+    public function featuredOffersSetting()
+    {
+        return $this->belongsTo(FeaturedOffersSetting::class);
+    }
+
     public function getCategoryImageAttribute()
     {
         $categoryImages = [

@@ -34,8 +34,6 @@ const CreateSection: React.FC = () => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             setData('image', file);
-            
-            // إنشاء معاينة للصورة
             const reader = new FileReader();
             reader.onload = (e) => {
                 setImagePreview(e.target?.result as string);
@@ -48,8 +46,6 @@ const CreateSection: React.FC = () => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             setData('background_image', file);
-            
-            // إنشاء معاينة لصورة الخلفية
             const reader = new FileReader();
             reader.onload = (e) => {
                 setBackgroundImagePreview(e.target?.result as string);

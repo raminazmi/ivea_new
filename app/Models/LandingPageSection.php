@@ -20,7 +20,7 @@ class LandingPageSection extends Model
         'background_image_path',
         'is_active',
         'sort_order',
-        'settings' // JSON field for additional settings
+        'settings'
     ];
 
     protected $casts = [
@@ -29,25 +29,16 @@ class LandingPageSection extends Model
         'settings' => 'array'
     ];
 
-    /**
-     * Scope للحصول على الأقسام النشطة فقط
-     */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
 
-    /**
-     * Scope للترتيب حسب ترتيب العرض
-     */
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order', 'asc');
     }
 
-    /**
-     * الحصول على قسم معين بالمفتاح
-     */
     public static function getSection($key)
     {
         return self::where('section_key', $key)
@@ -55,41 +46,26 @@ class LandingPageSection extends Model
             ->first();
     }
 
-    /**
-     * الحصول على جميع الأقسام النشطة
-     */
     public static function getActiveSections()
     {
         return self::active()->ordered()->get();
     }
 
-    /**
-     * الحصول على رابط الصورة
-     */
     public function getImageUrlAttribute()
     {
         return $this->image_path ? asset('storage/' . $this->image_path) : null;
     }
 
-    /**
-     * الحصول على رابط صورة الخلفية
-     */
     public function getBackgroundImageUrlAttribute()
     {
         return $this->background_image_path ? asset('storage/' . $this->background_image_path) : null;
     }
 
-    /**
-     * الحصول على إعدادات إضافية
-     */
     public function getSetting($key, $default = null)
     {
         return $this->settings[$key] ?? $default;
     }
 
-    /**
-     * تحديث إعداد إضافي
-     */
     public function setSetting($key, $value)
     {
         $settings = $this->settings ?? [];

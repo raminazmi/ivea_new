@@ -49,8 +49,6 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [], heroSlides = [] }) => {
-    // Removed local slider state, using Swiper instead
-
     const heroRef = useRef<HTMLDivElement>(null);
     const brandsRef = useRef<HTMLDivElement>(null);
     const categoriesRef = useRef<HTMLDivElement>(null);
@@ -138,7 +136,6 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [], heroSlides =
         };
     }, []);
 
-    // Use hero slides from database or fallback to default images
     const heroImages = heroSlides.length > 0 
         ? heroSlides.map(slide => ({
             src: slide.image_path ? `/storage/${slide.image_path}` : '/images/hero_banner.jpg',
@@ -208,11 +205,6 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [], heroSlides =
     ];
 
     const brands = [
-        // { name: '3M', image: '/images/3m.png' },
-        // { name: 'ARMANI/CASA', image: '/images/armani.png' },
-        // { name: 'York Weave', image: '/images/york.png' },
-        // { name: 'SOMFY', image: '/images/somfy.png' },
-        // { name: 'MISSONI HOME', image: '/images/missoni.png' },
         { name: 'Classen', image: '/images/brans/classen.png' },
         { name: 'Kronospan', image: '/images/brans/kronospan.png' },
         { name: 'Guangdong A-OK', image: '/images/brans/guangdong_a_ok_technology_grand_development_co_ltd_logo.png' },

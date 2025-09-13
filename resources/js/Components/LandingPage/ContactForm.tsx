@@ -37,11 +37,9 @@ const ContactForm = () => {
     setToast(prev => ({ ...prev, isVisible: false }));
   };
 
-  // الاستماع إلى flash messages
   useEffect(() => {
     if (flash?.success) {
       showToast(flash.success, 'success');
-      // إعادة تعيين النموذج عند النجاح
       setFormData({
         first_name: '',
         last_name: '',
@@ -110,7 +108,6 @@ const ContactForm = () => {
     router.post('/contact', submitData, {
       onSuccess: () => {
         setIsSubmitting(false);
-        // سيتم عرض toast وإعادة تعيين النموذج في useEffect
       },
       onError: (errors) => {
         setErrors(errors);

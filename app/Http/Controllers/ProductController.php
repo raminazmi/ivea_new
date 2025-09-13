@@ -273,7 +273,6 @@ class ProductController extends Controller
             ->limit(6)
             ->get();
 
-        // تنظيف البيانات المرتبطة
         $cleanRelatedProducts = $relatedProducts->map(function ($relatedProduct) {
             return [
                 'id' => (int) ($relatedProduct->id ?? 0),
@@ -301,7 +300,6 @@ class ProductController extends Controller
             ];
         })->toArray();
 
-        // تنظيف البيانات للتأكد من عدم وجود أحرف غير صالحة
         $cleanFeatures = [];
         if ($product->features && is_array($product->features)) {
             foreach ($product->features as $feature) {
@@ -343,39 +341,32 @@ class ProductController extends Controller
         try {
             $seoData = $this->seoService->getProductSeo($product);
 
-            // تنظيف بيانات SEO
             if (is_array($seoData)) {
                 foreach ($seoData as $key => $value) {
                     if (is_string($value)) {
                         $seoData[$key] = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
-                        // إزالة الأحرف غير الصالحة
                         $seoData[$key] = preg_replace('/[\x00-\x1F\x7F]/', '', $seoData[$key]);
                     }
                 }
             }
         } catch (\Exception $e) {
-            \Log::error('Error getting SEO data: ' . $e->getMessage());
             $seoData = [];
         }
 
         try {
             $structuredData = $this->seoService->generateStructuredData($seoData, 'product');
 
-            // تنظيف البيانات المنظمة
             if (is_array($structuredData)) {
                 $this->cleanArrayRecursively($structuredData);
             }
         } catch (\Exception $e) {
-            \Log::error('Error generating structured data: ' . $e->getMessage());
             $structuredData = [];
         }
 
         try {
-            // تنظيف إضافي للبيانات
             $this->cleanArrayRecursively($formattedProduct);
             $this->cleanArrayRecursively($cleanRelatedProducts);
 
-            // التأكد من أن جميع البيانات صالحة للـ JSON
             $data = [
                 'product' => $formattedProduct,
                 'relatedProducts' => $cleanRelatedProducts,
@@ -383,18 +374,13 @@ class ProductController extends Controller
                 'structuredData' => $structuredData,
             ];
 
-            // اختبار JSON encoding
             $jsonTest = json_encode($data);
             if (json_last_error() !== JSON_ERROR_NONE) {
-                \Log::error('JSON encoding error: ' . json_last_error_msg());
-                \Log::error('Data that caused error: ' . print_r($data, true));
                 return redirect()->route('products')->with('error', 'حدث خطأ في ترميز البيانات');
             }
 
             return Inertia::render('ProductDetail', $data);
         } catch (\Exception $e) {
-            \Log::error('Error rendering ProductDetail: ' . $e->getMessage());
-            \Log::error('Stack trace: ' . $e->getTraceAsString());
             return redirect()->route('products')->with('error', 'حدث خطأ في عرض تفاصيل المنتج');
         }
     }
@@ -403,7 +389,6 @@ class ProductController extends Controller
     {
         $product = Product::with('category')->active()->findOrFail($id);
 
-        // تنظيف البيانات للتأكد من عدم وجود أحرف غير صالحة
         $cleanFeatures = [];
         if ($product->features && is_array($product->features)) {
             foreach ($product->features as $feature) {
@@ -440,14 +425,9 @@ class ProductController extends Controller
         ];
 
         try {
-            // تنظيف إضافي للبيانات
             $this->cleanArrayRecursively($formattedProduct);
-
-            // اختبار JSON encoding
             $jsonTest = json_encode($formattedProduct);
             if (json_last_error() !== JSON_ERROR_NONE) {
-                \Log::error('JSON encoding error in options: ' . json_last_error_msg());
-                \Log::error('Product data that caused error: ' . print_r($formattedProduct, true));
                 return redirect()->route('products')->with('error', 'حدث خطأ في ترميز بيانات المنتج');
             }
 
@@ -455,8 +435,6 @@ class ProductController extends Controller
                 'product' => $formattedProduct
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error rendering ProductOptions: ' . $e->getMessage());
-            \Log::error('Stack trace: ' . $e->getTraceAsString());
             return redirect()->route('products')->with('error', 'حدث خطأ في عرض خيارات المنتج');
         }
     }
@@ -661,15 +639,11 @@ class ProductController extends Controller
         return response()->json($this->getFilterOptions());
     }
 
-    /**
-     * تنظيف المصفوفة بشكل متكرر من الأحرف غير الصالحة
-     */
     private function cleanArrayRecursively(&$array)
     {
         foreach ($array as $key => &$value) {
             if (is_string($value)) {
                 $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
-                // إزالة الأحرف غير الصالحة
                 $value = preg_replace('/[\x00-\x1F\x7F]/', '', $value);
             } elseif (is_array($value)) {
                 $this->cleanArrayRecursively($value);

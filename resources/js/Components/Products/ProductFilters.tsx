@@ -116,7 +116,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
         };
 
         if (searchTerm) filters.search = searchTerm;
-        if (selectedCategories.length > 0) filters.category = selectedCategories[0]; // Use slug instead of ID
+        if (selectedCategories.length > 0) filters.category = selectedCategories[0];
         if (selectedColors.length > 0) filters.colors = selectedColors;
         if (selectedSizes.length > 0) filters.size = selectedSizes;
         if (selectedOpeningMethods.length > 0) filters.opening_method = selectedOpeningMethods;

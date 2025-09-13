@@ -14,9 +14,7 @@ class AdminNotificationsServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        // مشاركة notifications مع جميع صفحات الإدارة
         View::composer('*', function ($view) {
-            // التحقق من أننا في صفحات الإدارة
             if (request()->is('admin*')) {
                 $unreadOrders = Order::where('status', 'pending')->count();
                 $unreadMessages = Contact::where('status', 'pending')->count();
@@ -34,7 +32,6 @@ class AdminNotificationsServiceProvider extends ServiceProvider
             }
         });
 
-        // مشاركة notifications مع Inertia.js
         \Inertia\Inertia::share('adminNotifications', function () {
             if (request()->is('admin*')) {
                 $unreadOrders = Order::where('status', 'pending')->count();
@@ -53,8 +50,5 @@ class AdminNotificationsServiceProvider extends ServiceProvider
         });
     }
 
-    public function register()
-    {
-        //
-    }
+    public function register() {}
 }

@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             ProjectSeeder::class,
             LandingPageSeeder::class,
             PreparingForSummerSeeder::class,
+            FeaturedOffersSeeder::class,
+            NationalDayOfferSeeder::class,
         ]);
     }
 }

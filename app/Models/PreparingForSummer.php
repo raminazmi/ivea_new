@@ -29,33 +29,21 @@ class PreparingForSummer extends Model
         'is_active' => 'boolean'
     ];
 
-    /**
-     * Scope للحصول على السكشن النشط فقط
-     */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
 
-    /**
-     * الحصول على رابط الصورة الأولى
-     */
     public function getImage1UrlAttribute()
     {
         return $this->image_1_path ? asset('storage/' . $this->image_1_path) : null;
     }
 
-    /**
-     * الحصول على رابط الصورة الثانية
-     */
     public function getImage2UrlAttribute()
     {
         return $this->image_2_path ? asset('storage/' . $this->image_2_path) : null;
     }
 
-    /**
-     * الحصول على السكشن النشط
-     */
     public static function getActive()
     {
         return self::active()->first();

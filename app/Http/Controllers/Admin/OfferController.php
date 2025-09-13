@@ -11,9 +11,6 @@ use Inertia\Inertia;
 
 class OfferController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $offers = Offer::with('offersText')->ordered()->paginate(10);
@@ -23,9 +20,6 @@ class OfferController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $offersTexts = OffersText::where('is_active', true)->orderBy('sort_order')->get();
@@ -35,9 +29,6 @@ class OfferController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -62,9 +53,6 @@ class OfferController extends Controller
             ->with('success', 'تم إنشاء العرض بنجاح');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Offer $offer)
     {
         return Inertia::render('Admin/Offers/Show', [
@@ -72,9 +60,6 @@ class OfferController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Offer $offer)
     {
         $offersTexts = OffersText::where('is_active', true)->orderBy('sort_order')->get();
@@ -85,9 +70,6 @@ class OfferController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Offer $offer)
     {
         $request->validate([
@@ -101,9 +83,7 @@ class OfferController extends Controller
 
         $data = $request->except('image');
 
-        // رفع صورة جديدة إذا تم إرسالها
         if ($request->hasFile('image')) {
-            // حذف الصورة القديمة
             if ($offer->image_path) {
                 Storage::disk('public')->delete($offer->image_path);
             }
@@ -118,12 +98,8 @@ class OfferController extends Controller
             ->with('success', 'تم تحديث العرض بنجاح');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Offer $offer)
     {
-        // حذف الصورة من التخزين
         if ($offer->image_path) {
             Storage::disk('public')->delete($offer->image_path);
         }

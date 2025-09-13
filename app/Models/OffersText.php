@@ -19,9 +19,6 @@ class OffersText extends Model
         'sort_order' => 'integer'
     ];
 
-    /**
-     * الحصول على النص حسب المفتاح
-     */
     public static function getText($key, $type = 'title')
     {
         $text = self::where('key', $key)
@@ -36,9 +33,6 @@ class OffersText extends Model
         return $text->$field ?? '';
     }
 
-    /**
-     * الحصول على جميع النصوص النشطة
-     */
     public static function getActiveTexts()
     {
         return self::where('is_active', true)
@@ -46,9 +40,6 @@ class OffersText extends Model
             ->get();
     }
 
-    /**
-     * الحصول على النصوص كـ array
-     */
     public static function getTextsArray()
     {
         $texts = self::getActiveTexts();
@@ -64,9 +55,6 @@ class OffersText extends Model
         return $result;
     }
 
-    /**
-     * العلاقة مع العروض
-     */
     public function offers()
     {
         return $this->hasMany(Offer::class);

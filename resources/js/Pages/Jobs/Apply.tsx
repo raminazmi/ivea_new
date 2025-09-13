@@ -43,7 +43,6 @@ const ApplyJob: React.FC = () => {
         setData('cv_file', e.target.files ? e.target.files[0] : null);
     };
 
-    // عرض flash messages
     useEffect(() => {
         if (flash?.success) {
             setToast({
@@ -66,12 +65,10 @@ const ApplyJob: React.FC = () => {
         post(route('jobs.apply.submit', { id: job.id }), {
             preserveScroll: true,
             onSuccess: () => {
-                // إعادة تعيين النموذج بالكامل
                 reset();
             },
             onError: (errors) => {
                 if (Object.keys(errors).length > 0) {
-                    // عرض رسالة خطأ عامة
                     setToast({
                         message: 'حدث خطأ أثناء إرسال الطلب. يرجى التحقق من البيانات المدخلة.',
                         type: 'error',

@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\HeroSlide;
 use App\Models\LandingPageSection;
 use App\Models\PreparingForSummer;
+use App\Models\Offer;
+use App\Models\OffersText;
+use App\Models\FeaturedOffersSetting;
+use App\Models\NationalDayOffer;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
@@ -14,54 +18,38 @@ use Inertia\Response;
 
 class LandingPageController extends Controller
 {
-    /**
-     * عرض صفحة إدارة الصفحة الرئيسية
-     */
     public function index(): Response
     {
         $heroSlides = HeroSlide::ordered()->get();
         $preparingForSummer = PreparingForSummer::first();
+        $featuredOffers = Offer::with('offersText')->ordered()->get();
+        $offersTexts = OffersText::getActiveTexts();
+        $featuredOffersSettings = FeaturedOffersSetting::first();
+        $nationalDayOffer = NationalDayOffer::first();
 
         return Inertia::render('Admin/LandingPage/Index', [
             'heroSlides' => $heroSlides,
-            'preparingForSummer' => $preparingForSummer
+            'preparingForSummer' => $preparingForSummer,
+            'featuredOffers' => $featuredOffers,
+            'offersTexts' => $offersTexts,
+            'featuredOffersSettings' => $featuredOffersSettings,
+            'nationalDayOffer' => $nationalDayOffer
         ]);
     }
 
-    // ========== Hero Slides Management ==========
-
-    /**
-     * عرض صفحة إنشاء شريحة جديدة
-     */
     public function createSlide(): Response
     {
         return Inertia::render('Admin/LandingPage/CreateSlide');
     }
 
-    /**
-     * حفظ شريحة جديدة
-     */
     public function storeSlide(Request $request): RedirectResponse
     {
-        \Log::info('StoreSlide: Starting validation', [
-            'request_data' => $request->all(),
-            'has_file' => $request->hasFile('image')
-        ]);
-
         $validated = $request->validate([
             'title' => 'nullable|string|max:255',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'boolean'
         ]);
-
-        \Log::info('StoreSlide: Validation passed', [
-            'validated_data' => $validated
-        ]);
-
-        // حساب ترتيب العرض تلقائياً
         $nextOrder = HeroSlide::max('sort_order') + 1;
-
-        // قيم افتراضية للنصوص
         $defaultTitles = [
             'إيفيا # تشاركك_ذوقك',
             'تفاصيل تلامس حواسك',
@@ -97,20 +85,13 @@ class LandingPageController extends Controller
             '/products?tab=bestsellers',
             '/products'
         ];
-
-        // اختيار النصوص بناءً على ترتيب الشريحة
         $titleIndex = ($nextOrder - 1) % count($defaultTitles);
         $subtitleIndex = ($nextOrder - 1) % count($defaultSubtitles);
         $buttonTextIndex = ($nextOrder - 1) % count($defaultButtonTexts);
         $buttonUrlIndex = ($nextOrder - 1) % count($defaultButtonUrls);
 
         if ($request->hasFile('image')) {
-            \Log::info('StoreSlide: Processing image upload');
-
             $imagePath = $request->file('image')->store('hero-slides', 'public');
-            \Log::info('StoreSlide: Image stored', ['image_path' => $imagePath]);
-
-            // استخراج اسم الملف للاستخدام كنص بديل
             $originalName = $request->file('image')->getClientOriginalName();
             $fileName = pathinfo($originalName, PATHINFO_FILENAME);
 
@@ -126,21 +107,14 @@ class LandingPageController extends Controller
                 'is_active' => isset($validated['is_active']) ? (bool)$validated['is_active'] : true,
                 'sort_order' => $nextOrder
             ];
-
-            \Log::info('StoreSlide: Creating slide with data', ['slide_data' => $slideData]);
             HeroSlide::create($slideData);
-            \Log::info('StoreSlide: Slide created successfully');
         } else {
-            \Log::error('StoreSlide: No image file found');
         }
 
         return redirect()->route('admin.landing-page.index')
             ->with('success', 'تم إنشاء الشريحة بنجاح');
     }
 
-    /**
-     * عرض صفحة تعديل شريحة
-     */
     public function editSlide(HeroSlide $heroSlide): Response
     {
         return Inertia::render('Admin/LandingPage/EditSlide', [
@@ -148,40 +122,18 @@ class LandingPageController extends Controller
         ]);
     }
 
-    /**
-     * تحديث شريحة
-     */
     public function updateSlide(Request $request, HeroSlide $heroSlide): RedirectResponse
     {
         try {
-            \Log::info('UpdateSlide: Starting validation', [
-                'slide_id' => $heroSlide->id,
-                'request_data' => $request->all(),
-                'request_method' => $request->method(),
-                'content_type' => $request->header('Content-Type'),
-                'has_file' => $request->hasFile('image'),
-                'input_data' => $request->input(),
-                'files_data' => $request->allFiles()
-            ]);
-
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'is_active' => 'nullable|boolean'
             ]);
         } catch (\Exception $e) {
-            \Log::error('UpdateSlide: Validation failed', [
-                'error' => $e->getMessage(),
-                'request_data' => $request->all()
-            ]);
             throw $e;
         }
 
-        \Log::info('UpdateSlide: Validation passed', [
-            'validated_data' => $validated
-        ]);
-
-        // قيم افتراضية للنصوص
         $defaultTitles = [
             'إيفيا # تشاركك_ذوقك',
             'تفاصيل تلامس حواسك',
@@ -218,7 +170,6 @@ class LandingPageController extends Controller
             '/products'
         ];
 
-        // اختيار النصوص بناءً على ترتيب الشريحة الحالي
         $titleIndex = ($heroSlide->sort_order - 1) % count($defaultTitles);
         $subtitleIndex = ($heroSlide->sort_order - 1) % count($defaultSubtitles);
         $buttonTextIndex = ($heroSlide->sort_order - 1) % count($defaultButtonTexts);
@@ -235,28 +186,21 @@ class LandingPageController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            // حذف الصورة القديمة
             if ($heroSlide->image_path) {
                 Storage::disk('public')->delete($heroSlide->image_path);
             }
             $imagePath = $request->file('image')->store('hero-slides', 'public');
             $updateData['image_path'] = $imagePath;
-
-            // استخراج اسم الملف للاستخدام كنص بديل
             $originalName = $request->file('image')->getClientOriginalName();
             $fileName = pathinfo($originalName, PATHINFO_FILENAME);
             $updateData['alt_text'] = $fileName;
         }
 
         $heroSlide->update($updateData);
-
         return redirect()->route('admin.landing-page.index')
             ->with('success', 'تم تحديث الشريحة بنجاح');
     }
 
-    /**
-     * حذف شريحة
-     */
     public function destroySlide(HeroSlide $heroSlide): RedirectResponse
     {
         if ($heroSlide->image_path) {
@@ -269,19 +213,11 @@ class LandingPageController extends Controller
             ->with('success', 'تم حذف الشريحة بنجاح');
     }
 
-    // ========== Landing Page Sections Management ==========
-
-    /**
-     * عرض صفحة إنشاء قسم جديد
-     */
     public function createSection(): Response
     {
         return Inertia::render('Admin/LandingPage/CreateSection');
     }
 
-    /**
-     * حفظ قسم جديد
-     */
     public function storeSection(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -314,9 +250,6 @@ class LandingPageController extends Controller
             ->with('success', 'تم إنشاء القسم بنجاح');
     }
 
-    /**
-     * عرض صفحة تعديل قسم
-     */
     public function editSection(LandingPageSection $section): Response
     {
         return Inertia::render('Admin/LandingPage/EditSection', [
@@ -324,9 +257,6 @@ class LandingPageController extends Controller
         ]);
     }
 
-    /**
-     * تحديث قسم
-     */
     public function updateSection(Request $request, LandingPageSection $section): RedirectResponse
     {
         $validated = $request->validate([
@@ -344,7 +274,6 @@ class LandingPageController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // حذف الصورة القديمة
             if ($section->image_path) {
                 Storage::disk('public')->delete($section->image_path);
             }
@@ -353,7 +282,6 @@ class LandingPageController extends Controller
         }
 
         if ($request->hasFile('background_image')) {
-            // حذف صورة الخلفية القديمة
             if ($section->background_image_path) {
                 Storage::disk('public')->delete($section->background_image_path);
             }
@@ -367,9 +295,6 @@ class LandingPageController extends Controller
             ->with('success', 'تم تحديث القسم بنجاح');
     }
 
-    /**
-     * حذف قسم
-     */
     public function destroySection(LandingPageSection $section): RedirectResponse
     {
         if ($section->image_path) {
@@ -386,9 +311,6 @@ class LandingPageController extends Controller
             ->with('success', 'تم حذف القسم بنجاح');
     }
 
-    /**
-     * تحديث ترتيب الشرائح
-     */
     public function updateSlidesOrder(Request $request): RedirectResponse
     {
         $request->validate([
@@ -406,9 +328,6 @@ class LandingPageController extends Controller
             ->with('success', 'تم تحديث ترتيب الشرائح بنجاح');
     }
 
-    /**
-     * تحديث ترتيب الأقسام
-     */
     public function updateSectionsOrder(Request $request): RedirectResponse
     {
         $request->validate([
@@ -426,19 +345,11 @@ class LandingPageController extends Controller
             ->with('success', 'تم تحديث ترتيب الأقسام بنجاح');
     }
 
-    // ========== Preparing For Summer Management ==========
-
-    /**
-     * عرض صفحة إنشاء سكشن Preparing For Summer
-     */
     public function createPreparingForSummer(): Response
     {
         return Inertia::render('Admin/LandingPage/CreatePreparingForSummer');
     }
 
-    /**
-     * حفظ سكشن Preparing For Summer جديد
-     */
     public function storePreparingForSummer(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -455,7 +366,6 @@ class LandingPageController extends Controller
             'is_active' => 'boolean'
         ]);
 
-        // رفع الصور
         if ($request->hasFile('image_1')) {
             $image1Path = $request->file('image_1')->store('preparing-for-summer', 'public');
             $validated['image_1_path'] = $image1Path;
@@ -472,9 +382,6 @@ class LandingPageController extends Controller
             ->with('success', 'تم إنشاء سكشن Preparing For Summer بنجاح');
     }
 
-    /**
-     * عرض صفحة تعديل سكشن Preparing For Summer
-     */
     public function editPreparingForSummer(PreparingForSummer $preparingForSummer): Response
     {
         return Inertia::render('Admin/LandingPage/EditPreparingForSummer', [
@@ -482,9 +389,6 @@ class LandingPageController extends Controller
         ]);
     }
 
-    /**
-     * تحديث سكشن Preparing For Summer
-     */
     public function updatePreparingForSummer(Request $request, PreparingForSummer $preparingForSummer): RedirectResponse
     {
         $validated = $request->validate([
@@ -501,7 +405,6 @@ class LandingPageController extends Controller
             'is_active' => 'boolean'
         ]);
 
-        // رفع الصور الجديدة وحذف القديمة
         if ($request->hasFile('image_1')) {
             if ($preparingForSummer->image_1_path) {
                 Storage::disk('public')->delete($preparingForSummer->image_1_path);
@@ -524,9 +427,6 @@ class LandingPageController extends Controller
             ->with('success', 'تم تحديث سكشن Preparing For Summer بنجاح');
     }
 
-    /**
-     * حذف سكشن Preparing For Summer
-     */
     public function destroyPreparingForSummer(PreparingForSummer $preparingForSummer): RedirectResponse
     {
         if ($preparingForSummer->image_1_path) {
@@ -541,5 +441,376 @@ class LandingPageController extends Controller
 
         return redirect()->route('admin.landing-page.index')
             ->with('success', 'تم حذف سكشن Preparing For Summer بنجاح');
+    }
+
+    public function createFeaturedOffer(): Response
+    {
+        $offersTexts = OffersText::where('is_active', true)->orderBy('sort_order')->get();
+        $featuredOffersSettings = FeaturedOffersSetting::where('is_active', true)->get();
+        $categories = [
+            ['slug' => 'curtains', 'name' => 'ستائر'],
+            ['slug' => 'sofas', 'name' => 'أرائك'],
+            ['slug' => 'cabinets', 'name' => 'خزائن'],
+            ['slug' => 'wooden', 'name' => 'خشبي']
+        ];
+
+        return Inertia::render('Admin/LandingPage/CreateFeaturedOffer', [
+            'offersTexts' => $offersTexts,
+            'featuredOffersSettings' => $featuredOffersSettings,
+            'categories' => $categories
+        ]);
+    }
+
+    public function storeFeaturedOffer(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'discount_percentage' => 'required|integer|min:1|max:100',
+            'category_slug' => 'required|string|in:curtains,sofas,cabinets,wooden',
+            'category_name' => 'required|string|max:255',
+            'offers_text_id' => 'nullable|exists:offers_texts,id',
+            'featured_offers_setting_id' => 'nullable|exists:featured_offers_settings,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_active' => 'boolean'
+        ]);
+
+        $data = $validated;
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('featured-offers', 'public');
+            $data['image_path'] = $imagePath;
+        }
+
+        Offer::create($data);
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', 'تم إنشاء العرض المميز بنجاح');
+    }
+
+    public function editFeaturedOffer(Offer $offer): Response
+    {
+        $offersTexts = OffersText::where('is_active', true)->orderBy('sort_order')->get();
+        $featuredOffersSettings = FeaturedOffersSetting::where('is_active', true)->get();
+        $categories = [
+            ['slug' => 'curtains', 'name' => 'ستائر'],
+            ['slug' => 'sofas', 'name' => 'أرائك'],
+            ['slug' => 'cabinets', 'name' => 'خزائن'],
+            ['slug' => 'wooden', 'name' => 'خشبي']
+        ];
+
+        return Inertia::render('Admin/LandingPage/EditFeaturedOffer', [
+            'offer' => $offer,
+            'offersTexts' => $offersTexts,
+            'featuredOffersSettings' => $featuredOffersSettings,
+            'categories' => $categories
+        ]);
+    }
+
+    public function updateFeaturedOffer(Request $request, Offer $offer): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'discount_percentage' => 'required|integer|min:1|max:100',
+            'category_slug' => 'required|string|in:curtains,sofas,cabinets,wooden',
+            'category_name' => 'required|string|max:255',
+            'offers_text_id' => 'nullable|exists:offers_texts,id',
+            'featured_offers_setting_id' => 'nullable|exists:featured_offers_settings,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_active' => 'boolean'
+        ]);
+
+        $data = $validated;
+
+        if ($request->hasFile('image')) {
+            if ($offer->image_path) {
+                Storage::disk('public')->delete($offer->image_path);
+            }
+
+            $imagePath = $request->file('image')->store('featured-offers', 'public');
+            $data['image_path'] = $imagePath;
+        }
+
+        $offer->update($data);
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', 'تم تحديث العرض المميز بنجاح');
+    }
+
+    public function destroyFeaturedOffer(Offer $offer): RedirectResponse
+    {
+        if ($offer->image_path) {
+            Storage::disk('public')->delete($offer->image_path);
+        }
+
+        $offer->delete();
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', 'تم حذف العرض المميز بنجاح');
+    }
+
+    public function updateFeaturedOfferStatus(Request $request, Offer $offer): RedirectResponse
+    {
+        $validated = $request->validate([
+            'is_active' => 'required|boolean'
+        ]);
+
+        $offer->update($validated);
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', 'تم تحديث حالة العرض بنجاح');
+    }
+
+    public function createFeaturedOffersSettings(): Response
+    {
+        return Inertia::render('Admin/LandingPage/CreateFeaturedOffersSettings');
+    }
+
+    public function storeFeaturedOffersSettings(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title_ar' => 'required|string|max:255',
+            'description_ar' => 'required|string',
+            'button_text_ar' => 'required|string|max:255',
+            'button_url' => 'required|string|max:255',
+            'is_active' => 'boolean'
+        ]);
+
+        FeaturedOffersSetting::create($validated);
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', 'تم إنشاء إعدادات العروض المميزة بنجاح');
+    }
+
+    public function editFeaturedOffersSettings(FeaturedOffersSetting $featuredOffersSetting): Response
+    {
+        return Inertia::render('Admin/LandingPage/EditFeaturedOffersSettings', [
+            'featuredOffersSetting' => $featuredOffersSetting
+        ]);
+    }
+
+    public function updateFeaturedOffersSettings(Request $request, FeaturedOffersSetting $featuredOffersSetting): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title_ar' => 'required|string|max:255',
+            'description_ar' => 'required|string',
+            'button_text_ar' => 'required|string|max:255',
+            'button_url' => 'required|string|max:255',
+            'is_active' => 'boolean'
+        ]);
+
+        $featuredOffersSetting->update($validated);
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', 'تم تحديث إعدادات العروض المميزة بنجاح');
+    }
+
+    public function destroyFeaturedOffersSettings(FeaturedOffersSetting $featuredOffersSetting): RedirectResponse
+    {
+        $featuredOffersSetting->delete();
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', 'تم حذف إعدادات العروض المميزة بنجاح');
+    }
+
+    public function createOffersText(): Response
+    {
+        return Inertia::render('Admin/LandingPage/CreateOffersText');
+    }
+
+    public function storeOffersText(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'key' => 'required|string|max:255|unique:offers_texts,key',
+            'title_ar' => 'required|string|max:255',
+            'description_ar' => 'required|string',
+            'is_active' => 'boolean',
+            'sort_order' => 'integer|min:0'
+        ]);
+
+        OffersText::create($validated);
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', 'تم إنشاء نص العرض بنجاح');
+    }
+
+    public function editOffersText(OffersText $offersText): Response
+    {
+        return Inertia::render('Admin/LandingPage/EditOffersText', [
+            'offersText' => $offersText
+        ]);
+    }
+
+    public function updateOffersText(Request $request, OffersText $offersText): RedirectResponse
+    {
+        $validated = $request->validate([
+            'key' => 'required|string|max:255|unique:offers_texts,key,' . $offersText->id,
+            'title_ar' => 'required|string|max:255',
+            'description_ar' => 'required|string',
+            'is_active' => 'boolean',
+            'sort_order' => 'integer|min:0'
+        ]);
+
+        $offersText->update($validated);
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', 'تم تحديث نص العرض بنجاح');
+    }
+
+    public function destroyOffersText(OffersText $offersText): RedirectResponse
+    {
+        $relatedOffers = Offer::where('offers_text_id', $offersText->id)->count();
+
+        if ($relatedOffers > 0) {
+            return redirect()->route('admin.landing-page.index')
+                ->with('error', 'لا يمكن حذف هذا النص لأنه مرتبط بعروض موجودة');
+        }
+
+        $offersText->delete();
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', 'تم حذف نص العرض بنجاح');
+    }
+
+    public function toggleOffersTextStatus(OffersText $offersText): RedirectResponse
+    {
+        $offersText->update(['is_active' => !$offersText->is_active]);
+
+        $status = $offersText->is_active ? 'تفعيل' : 'إلغاء تفعيل';
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', "تم {$status} نص العرض بنجاح");
+    }
+
+    public function toggleFeaturedOffersSettingStatus(FeaturedOffersSetting $featuredOffersSetting): RedirectResponse
+    {
+        FeaturedOffersSetting::where('id', '!=', $featuredOffersSetting->id)->update(['is_active' => false]);
+        $featuredOffersSetting->update(['is_active' => !$featuredOffersSetting->is_active]);
+        $status = $featuredOffersSetting->is_active ? 'تفعيل' : 'إلغاء تفعيل';
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', "تم {$status} إعدادات العروض المميزة بنجاح");
+    }
+
+    public function createNationalDayOffer(): Response
+    {
+        return Inertia::render('Admin/LandingPage/CreateNationalDayOffer');
+    }
+
+    public function storeNationalDayOffer(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title_ar' => 'required|string|max:255',
+            'description_ar' => 'required|string',
+            'button_text_ar' => 'required|string|max:255',
+            'button_url' => 'required|string|max:255',
+            'offer1_title' => 'required|string|max:255',
+            'offer1_discount_percentage' => 'required|integer|min:1|max:100',
+            'offer1_category_slug' => 'required|string|in:curtains,sofas,cabinets,wooden',
+            'offer1_category_name' => 'required|string|max:255',
+            'offer1_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'offer1_link' => 'required|string|max:255',
+            'offer2_title' => 'required|string|max:255',
+            'offer2_discount_percentage' => 'required|integer|min:1|max:100',
+            'offer2_category_slug' => 'required|string|in:curtains,sofas,cabinets,wooden',
+            'offer2_category_name' => 'required|string|max:255',
+            'offer2_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'offer2_link' => 'required|string|max:255',
+            'is_active' => 'boolean'
+        ]);
+
+        $data = $validated;
+
+        if ($request->hasFile('offer1_image')) {
+            $imagePath = $request->file('offer1_image')->store('national-day-offers', 'public');
+            $data['offer1_image_path'] = $imagePath;
+        }
+
+        if ($request->hasFile('offer2_image')) {
+            $imagePath = $request->file('offer2_image')->store('national-day-offers', 'public');
+            $data['offer2_image_path'] = $imagePath;
+        }
+
+        NationalDayOffer::create($data);
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', 'تم إنشاء سكشن عرض اليوم الوطني بنجاح');
+    }
+
+    public function editNationalDayOffer(NationalDayOffer $nationalDayOffer): Response
+    {
+        return Inertia::render('Admin/LandingPage/EditNationalDayOffer', [
+            'nationalDayOffer' => $nationalDayOffer
+        ]);
+    }
+
+    public function updateNationalDayOffer(Request $request, NationalDayOffer $nationalDayOffer): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title_ar' => 'required|string|max:255',
+            'description_ar' => 'required|string',
+            'button_text_ar' => 'required|string|max:255',
+            'button_url' => 'required|string|max:255',
+            'offer1_title' => 'required|string|max:255',
+            'offer1_discount_percentage' => 'required|integer|min:1|max:100',
+            'offer1_category_slug' => 'required|string|in:curtains,sofas,cabinets,wooden',
+            'offer1_category_name' => 'required|string|max:255',
+            'offer1_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'offer1_link' => 'required|string|max:255',
+            'offer2_title' => 'required|string|max:255',
+            'offer2_discount_percentage' => 'required|integer|min:1|max:100',
+            'offer2_category_slug' => 'required|string|in:curtains,sofas,cabinets,wooden',
+            'offer2_category_name' => 'required|string|max:255',
+            'offer2_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'offer2_link' => 'required|string|max:255',
+            'is_active' => 'boolean'
+        ]);
+
+        $data = $validated;
+
+        if ($request->hasFile('offer1_image')) {
+            if ($nationalDayOffer->offer1_image_path) {
+                Storage::disk('public')->delete($nationalDayOffer->offer1_image_path);
+            }
+            $imagePath = $request->file('offer1_image')->store('national-day-offers', 'public');
+            $data['offer1_image_path'] = $imagePath;
+        }
+
+        if ($request->hasFile('offer2_image')) {
+            if ($nationalDayOffer->offer2_image_path) {
+                Storage::disk('public')->delete($nationalDayOffer->offer2_image_path);
+            }
+            $imagePath = $request->file('offer2_image')->store('national-day-offers', 'public');
+            $data['offer2_image_path'] = $imagePath;
+        }
+
+        $nationalDayOffer->update($data);
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', 'تم تحديث سكشن عرض اليوم الوطني بنجاح');
+    }
+
+    public function destroyNationalDayOffer(NationalDayOffer $nationalDayOffer): RedirectResponse
+    {
+        if ($nationalDayOffer->offer1_image_path) {
+            Storage::disk('public')->delete($nationalDayOffer->offer1_image_path);
+        }
+        if ($nationalDayOffer->offer2_image_path) {
+            Storage::disk('public')->delete($nationalDayOffer->offer2_image_path);
+        }
+
+        $nationalDayOffer->delete();
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', 'تم حذف سكشن عرض اليوم الوطني بنجاح');
+    }
+
+    public function toggleNationalDayOfferStatus(NationalDayOffer $nationalDayOffer): RedirectResponse
+    {
+        $nationalDayOffer->update(['is_active' => !$nationalDayOffer->is_active]);
+
+        $status = $nationalDayOffer->is_active ? 'تفعيل' : 'إلغاء تفعيل';
+
+        return redirect()->route('admin.landing-page.index')
+            ->with('success', "تم {$status} سكشن عرض اليوم الوطني بنجاح");
     }
 }

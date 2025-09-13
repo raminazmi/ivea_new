@@ -49,9 +49,7 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories = [] }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
-        // التحقق من أن الفئة تم اختيارها
-        if (!data.category_id) {
+                if (!data.category_id) {
             alert('يرجى اختيار فئة للمقال');
             return;
         }
@@ -62,24 +60,14 @@ const CreateArticle: React.FC<CreateArticleProps> = ({ categories = [] }) => {
             .replace(/[^a-zA-Z0-9\u0600-\u06FF\-]+/g, '')
             .toLowerCase();
         
-        // إنشاء كائن البيانات مع slug جديد
         const dataToSend = {
             ...data,
             slug: slug
         };
-        
-        // Debug: طباعة البيانات قبل الإرسال
-        console.log('Data being sent:', dataToSend);
-        
+                
         post(route('admin.articles.store'), {
             ...dataToSend,
             forceFormData: true,
-            onSuccess: (page: any) => {
-                console.log('Create successful');
-            },
-            onError: (errors: any) => {
-                console.log('Create failed:', errors);
-            }
         });
     };
 

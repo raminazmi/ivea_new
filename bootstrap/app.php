@@ -26,6 +26,4 @@ return Application::configure(basePath: dirname(__DIR__))
             'seo' => \App\Http\Middleware\SEOMiddleware::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
+    ->withExceptions(function (Exceptions $exceptions): void {})->create();

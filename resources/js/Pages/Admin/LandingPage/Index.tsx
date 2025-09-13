@@ -38,12 +38,59 @@ interface PreparingForSummer {
     updated_at: string;
 }
 
+interface Offer {
+    id: number;
+    title: string;
+    discount_percentage: number;
+    category_slug: string;
+    category_name: string;
+    image_path?: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+interface OffersText {
+    id: number;
+    key: string;
+    title_ar: string;
+    description_ar: string;
+    is_active: boolean;
+    sort_order: number;
+}
+
+interface NationalDayOffer {
+    id: number;
+    title_ar: string;
+    description_ar: string;
+    button_text_ar: string;
+    button_url: string;
+    offer1_title: string;
+    offer1_discount_percentage: number;
+    offer1_category_slug: string;
+    offer1_category_name: string;
+    offer1_image_path?: string;
+    offer1_link: string;
+    offer2_title: string;
+    offer2_discount_percentage: number;
+    offer2_category_slug: string;
+    offer2_category_name: string;
+    offer2_image_path?: string;
+    offer2_link: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
 interface LandingPageIndexProps {
     heroSlides: HeroSlide[];
     preparingForSummer?: PreparingForSummer;
+    featuredOffers: Offer[];
+    offersTexts: OffersText[];
+    nationalDayOffer?: NationalDayOffer;
 }
 
-const LandingPageIndex: React.FC<LandingPageIndexProps> = ({ heroSlides, preparingForSummer }) => {
+const LandingPageIndex: React.FC<LandingPageIndexProps> = ({ heroSlides, preparingForSummer, featuredOffers, offersTexts, nationalDayOffer }) => {
 
     const handleDeleteSlide = (id: number) => {
         if (confirm('هل أنت متأكد من حذف هذه الشريحة؟')) {
@@ -71,6 +118,28 @@ const LandingPageIndex: React.FC<LandingPageIndexProps> = ({ heroSlides, prepari
         });
     };
 
+    const handleDeleteFeaturedOffer = (id: number) => {
+        if (confirm('هل أنت متأكد من حذف هذا العرض المميز؟')) {
+            router.delete(route('admin.landing-page.featured-offers.destroy', id));
+        }
+    };
+
+    const toggleFeaturedOfferStatus = (offer: Offer) => {
+        router.patch(route('admin.landing-page.featured-offers.update-status', offer.id), {
+            is_active: !offer.is_active
+        });
+    };
+
+    const handleDeleteNationalDayOffer = (id: number) => {
+        if (confirm('هل أنت متأكد من حذف سكشن عرض اليوم الوطني؟')) {
+            router.delete(route('admin.landing-page.national-day-offer.destroy', id));
+        }
+    };
+
+    const toggleNationalDayOfferStatus = (nationalDayOffer: NationalDayOffer) => {
+        router.patch(route('admin.landing-page.national-day-offer.toggle-status', nationalDayOffer.id));
+    };
+
     return (
         <AdminLayout>
             <Head title="إدارة الصفحة الرئيسية" />
@@ -88,6 +157,11 @@ const LandingPageIndex: React.FC<LandingPageIndexProps> = ({ heroSlides, prepari
                                     {!preparingForSummer && (
                                         <Link href={route('admin.landing-page.preparing-for-summer.create')}>
                                             <PrimaryButton>إضافة سكشن الصيف</PrimaryButton>
+                                        </Link>
+                                    )}
+                                    {!nationalDayOffer && (
+                                        <Link href={route('admin.landing-page.national-day-offer.create')}>
+                                            <PrimaryButton>إضافة سكشن عرض اليوم الوطني</PrimaryButton>
                                         </Link>
                                     )}
                                 </div>
@@ -158,6 +232,86 @@ const LandingPageIndex: React.FC<LandingPageIndexProps> = ({ heroSlides, prepari
                                         </div>
                                     )}
                                 </div>
+
+                            {/* National Day Offer Section */}
+                            <div className="mt-8">
+                                <div className="mb-4">
+                                    <h3 className="text-lg font-semibold">سكشن عرض اليوم الوطني</h3>
+                                </div>
+
+                                {!nationalDayOffer ? (
+                                    <div className="text-center py-8">
+                                        <p className="text-gray-500 mb-4">لا يوجد سكشن عرض اليوم الوطني حالياً</p>
+                                        <Link href={route('admin.landing-page.national-day-offer.create')}>
+                                            <PrimaryButton>إضافة سكشن عرض اليوم الوطني</PrimaryButton>
+                                        </Link>
+                                    </div>
+                                ) : (
+                                    <div className="border border-gray-200 rounded-lg overflow-hidden">
+                                        <div className="p-4">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <h4 className="font-semibold text-lg">{nationalDayOffer.title_ar}</h4>
+                                                <span className={`px-2 py-1 rounded-full text-xs ${
+                                                    nationalDayOffer.is_active 
+                                                        ? 'bg-green-100 text-green-800' 
+                                                        : 'bg-red-100 text-red-800'
+                                                }`}>
+                                                    {nationalDayOffer.is_active ? 'نشط' : 'غير نشط'}
+                                                </span>
+                                            </div>
+                                            
+                                            <p className="text-gray-600 mb-4">{nationalDayOffer.description_ar}</p>
+                                            
+                                            <div className="flex gap-2 mb-4">
+                                                <span className="text-sm text-gray-500">الزر:</span>
+                                                <span className="text-sm font-medium">{nationalDayOffer.button_text_ar}</span>
+                                                <span className="text-sm text-gray-500">الرابط:</span>
+                                                <span className="text-sm font-medium">{nationalDayOffer.button_url}</span>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div className="bg-blue-50 p-3 rounded">
+                                                    <h5 className="font-medium text-sm mb-2">العرض الأول</h5>
+                                                    <p className="text-sm text-gray-600">{nationalDayOffer.offer1_title}</p>
+                                                    <p className="text-sm text-gray-600">خصم: {nationalDayOffer.offer1_discount_percentage}%</p>
+                                                    <p className="text-sm text-gray-600">الفئة: {nationalDayOffer.offer1_category_name}</p>
+                                                </div>
+                                                <div className="bg-green-50 p-3 rounded">
+                                                    <h5 className="font-medium text-sm mb-2">العرض الثاني</h5>
+                                                    <p className="text-sm text-gray-600">{nationalDayOffer.offer2_title}</p>
+                                                    <p className="text-sm text-gray-600">خصم: {nationalDayOffer.offer2_discount_percentage}%</p>
+                                                    <p className="text-sm text-gray-600">الفئة: {nationalDayOffer.offer2_category_name}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex gap-2">
+                                                <Link
+                                                    href={route('admin.landing-page.national-day-offer.edit', nationalDayOffer.id)}
+                                                    className="flex-1 text-center py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+                                                >
+                                                    تعديل
+                                                </Link>
+                                                <button
+                                                    onClick={() => toggleNationalDayOfferStatus(nationalDayOffer)}
+                                                    className={`flex-1 py-2 px-3 rounded text-sm ${
+                                                        nationalDayOffer.is_active
+                                                        ? 'bg-red-100 text-red-800 hover:bg-red-200'
+                                                        : 'bg-green-500 text-white hover:bg-green-600'
+                                                    }`}
+                                                >
+                                                    {nationalDayOffer.is_active ? 'غير نشط' : 'نشط'}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteNationalDayOffer(nationalDayOffer.id)}
+                                                    className="flex-1 py-2 px-3 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                                                >
+                                                    حذف
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
 
                             {/* Preparing For Summer Section */}
                             <div className="mt-8">

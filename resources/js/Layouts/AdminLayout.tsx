@@ -40,7 +40,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
     const { auth, user: pageUser, adminNotifications } = usePage<PageProps>().props;
     const currentUser = user || pageUser || auth.user;
     
-    // استخدام notifications من props أو من البيانات المشتركة
     const finalNotifications = notifications || adminNotifications;
     
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -53,7 +52,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'لوحة �
         { name: 'المشاريع', icon: FaPaintBrush, href: route('admin.projects.index'), active: route().current('admin.projects.*'), badge: finalNotifications?.pendingProjects },
         { name: 'التقديمات', icon: FaFileAlt, href: route('admin.applications.index'), active: route().current('admin.applications.*'), badge: finalNotifications?.newApplications },
         { name: 'الفئات', icon: FaTags, href: route('admin.categories.index'), active: route().current('admin.categories.*') },
-        { name: 'العروض', icon: FaGift, href: route('admin.offers.index'), active: route().current('admin.offers.*') },
         { name: 'المقالات', icon: FaNewspaper, href: route('admin.articles.index'), active: route().current('admin.articles.*') },
         { name: 'الوظائف', icon: FaBriefcase, href: route('admin.jobs.index'), active: route().current('admin.jobs.*') },
     ];

@@ -74,7 +74,6 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories = [] }) =
         }
 
         const generateSlug = (title: string) => {
-            // تحويل النص العربي إلى slug مناسب
             return title
             .trim()
             .replace(/\s+/g, '-')
@@ -83,21 +82,14 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories = [] }) =
         };
         const newSlug = generateSlug(data.title);
         
-        // إنشاء كائن البيانات مع slug جديد
         const dataToSend = {
             ...data,
             slug: newSlug
         };
-        
-        // Debug: طباعة البيانات قبل الإرسال
-        console.log('Data being sent:', dataToSend);
-        
-        // إنشاء FormData يدوياً
+
         const formData = new FormData();
         formData.append('_method', 'PUT');
-        
-        // إضافة جميع البيانات للـ FormData
-        formData.append('title', dataToSend.title);
+                formData.append('title', dataToSend.title);
         formData.append('content', dataToSend.content);
         formData.append('excerpt', dataToSend.excerpt || '');
         formData.append('slug', dataToSend.slug);
@@ -112,7 +104,6 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories = [] }) =
         formData.append('is_published', dataToSend.is_published ? '1' : '0');
         formData.append('featured', dataToSend.featured ? '1' : '0');
         
-        // إضافة الصور إذا كانت موجودة
         if (dataToSend.image) {
             formData.append('image', dataToSend.image);
         }
@@ -120,16 +111,9 @@ const EditArticle: React.FC<EditArticleProps> = ({ article, categories = [] }) =
             formData.append('author_image', dataToSend.author_image);
         }
         
-        // إرسال البيانات باستخدام router.post مع _method
         router.post(route('admin.articles.update', article.id), formData, {
             preserveState: true,
             preserveScroll: true,
-            onSuccess: (page: any) => {
-                console.log('Update successful');
-            },
-            onError: (errors: any) => {
-                console.log('Update failed:', errors);
-            }
         });
     };
 

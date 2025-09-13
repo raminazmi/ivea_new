@@ -8,9 +8,6 @@ use App\Models\OffersText;
 
 class OffersTextSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $texts = [

@@ -18,8 +18,6 @@ const CreateSlide: React.FC = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
-        // التأكد من أن العنوان موجود
         if (!data.title.trim()) {
             alert('يرجى إدخال عنوان الشريحة');
             return;
@@ -32,8 +30,6 @@ const CreateSlide: React.FC = () => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             setData('image', file);
-            
-            // إنشاء معاينة للصورة
             const reader = new FileReader();
             reader.onload = (e) => {
                 setImagePreview(e.target?.result as string);
@@ -45,7 +41,6 @@ const CreateSlide: React.FC = () => {
     const removeImage = () => {
         setData('image', null);
         setImagePreview(null);
-        // إعادة تعيين input file
         const fileInput = document.getElementById('image') as HTMLInputElement;
         if (fileInput) {
             fileInput.value = '';

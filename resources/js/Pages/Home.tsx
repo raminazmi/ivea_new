@@ -1,11 +1,10 @@
 import React from 'react';
 import Hero from '@/Components/LandingPage/Hero';
-import FeaturedOffers from '@/Components/LandingPage/FeaturedOffers';
+import NationalDayOffer from '@/Components/LandingPage/NationalDayOffer';
 import PreparingForSummer from '@/Components/LandingPage/PreparingForSummer';
 import CategoryShowcase from '@/Components/LandingPage/CategoryShowcase';
 import ProjectShowcase from '@/Components/LandingPage/ProjectShowcase';
 import AppLayout from '@/Components/LandingPage/Layout/AppLayout';
-import PartnersCarousel from '@/Components/LandingPage/PartnersCarousel';
 import { PageProps } from '@inertiajs/core';
 import ContactUs from '@/Components/LandingPage/ContactUs';
 import SectionTitle from '@/Components/SectionTitle';
@@ -121,13 +120,22 @@ interface PreparingForSummerData {
     is_active: boolean;
 }
 
+interface OffersText {
+    id: number;
+    key: string;
+    title_ar: string;
+    description_ar: string;
+    is_active: boolean;
+    sort_order: number;
+}
+
 interface HomeProps extends PageProps {
     featuredProducts: Product[];
     categories: Category[];
     heroSlides?: HeroSlide[];
     landingPageSections?: LandingPageSection[];
     preparingForSummer?: PreparingForSummerData;
-    featuredOffers?: Offer[];
+    nationalDayOffer?: any;
     latestArticles?: Article[];
 }
 
@@ -136,8 +144,8 @@ const Home: React.FC<HomeProps> = ({
     categories, 
     heroSlides = [], 
     landingPageSections = [], 
-    preparingForSummer,
-    featuredOffers = [], 
+    preparingForSummer, 
+    nationalDayOffer, 
     latestArticles = [] 
 }) => {
     useSEO();
@@ -147,7 +155,7 @@ const Home: React.FC<HomeProps> = ({
             <div className="container mx-auto px-2 sm:px-4 lg:px-8">
                 <Hero categories={categories} heroSlides={heroSlides} />
             </div>
-            <FeaturedOffers offers={featuredOffers} />
+            <NationalDayOffer nationalDayOffer={nationalDayOffer} />
             <PreparingForSummer data={preparingForSummer} />
             <CategoryShowcase featuredProducts={featuredProducts} categories={categories} />
             <div className="container mx-auto px-2 sm:px-4 lg:px-8 xl:px-24">

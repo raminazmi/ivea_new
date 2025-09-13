@@ -50,7 +50,6 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
                 message: successMessage,
                 type: 'success'
             });
-            // إعادة تعيين النموذج عند النجاح
             quizForm.reset();
             setShowQuizResult(true);
             setQuizStep(1);
@@ -105,7 +104,6 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
             onSuccess: () => {
                 setShowQuizResult(true);
                 setErrors({});
-                // سيتم عرض toast في useEffect
             },
             onError: (errors) => {
                 setErrors(errors);

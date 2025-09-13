@@ -61,8 +61,6 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts, c
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef<HTMLDivElement>(null);
     
-    console.log('CategoryShowcase props:', { featuredProducts: featuredProducts.length, categories: categories.length });
-
     const tabs = [
         { id: 'all', label: 'الكل' },
         { id: 'new', label: 'جديد' },
@@ -71,7 +69,6 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts, c
     ];
 
     useEffect(() => {
-        console.log('Active tab changed to:', activeTab);
         if (activeTab === 'all') {
             setProducts(featuredProducts);
             setLoading(false);
@@ -96,20 +93,14 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts, c
                             break;
                     }
                     
-                    console.log('Fetching from URL:', url);
-
                     const response = await fetch(url);
-                    console.log('API Response for', activeTab, ':', response.status);
                     if (response.ok) {
                         const data = await response.json();
-                        console.log('API Data for', activeTab, ':', data);
                         setProducts(Array.isArray(data) ? data : data.data || []);
                     } else {
-                        console.error('Error fetching products:', response.status);
                         setProducts([]);
                     }
                 } catch (error) {
-                    console.error('Error fetching products:', error);
                     setProducts([]);
                 } finally {
                     setLoading(false);

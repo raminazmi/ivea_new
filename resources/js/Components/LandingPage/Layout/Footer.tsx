@@ -1,4 +1,3 @@
-// src/Components/Footer.tsx
 import React from 'react';
 import { Link } from '@inertiajs/react';
 import { FaInstagram, FaSnapchatGhost, FaTiktok } from 'react-icons/fa';
@@ -15,7 +14,7 @@ const Footer: React.FC = () => {
                             className="h-10 md:h-12 w-auto"
                         />
                         <p className="text-gray-300 text-sm leading-relaxed">
-                            خبراؤنا يمكنهم تقديم رؤى قيمة ومساعدتك في تحديد العقارات.
+                            خبراؤنا يمكنهم تقديم رؤى قيمة ومساعدتك في تصميم وتنفيذ منزلك.
                         </p>
                         <div className="flex gap-3 md:gap-4 space-x-reverse">
                             <a href="https://www.instagram.com/ivea.sa" target="_blank" rel="noopener noreferrer" className="text-white hover:text-yellow-400 transition">

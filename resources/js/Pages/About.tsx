@@ -83,7 +83,7 @@ const About: React.FC = () => {
                         <div className="">
                             <div className="mt-6 md:mt-8 flex justify-center">
                                 <img
-                                    src="/images/chair.png"
+                                    src="https://images.unsplash.com/photo-1519710164239-da123dc03ef4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                                     alt="أثاث أنيق"
                                     className="w-full h-64 rounded-lg object-cover"
                                 />

@@ -37,7 +37,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
     const [currentPrice, setCurrentPrice] = useState<number>(0);
     const [priceChanged, setPriceChanged] = useState<boolean>(false);
     const [currentDimensions, setCurrentDimensions] = useState<{ width: number; height: number }>(
-        dimensions || { width: 1, height: 1 } // ثابت 1×1 متر
+        dimensions || { width: 1, height: 1 }
     );
 
     const getDiscountedPrice = (price: number, discount?: number) => {

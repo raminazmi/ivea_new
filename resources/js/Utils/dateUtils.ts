@@ -19,7 +19,7 @@ export const formatDate = (dateString: string, includeTime: boolean = false): st
 };
 
 export const formatSimpleDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleDateString('en-CA'); // YYYY-MM-DD format
+    return new Date(dateString).toLocaleDateString('en-CA');
 };
 
 export const formatDetailedDate = (dateString: string): string => {

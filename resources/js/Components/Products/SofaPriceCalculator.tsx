@@ -23,40 +23,36 @@ const SofaPriceCalculator: React.FC<SofaPriceCalculatorProps> = ({ product, clas
     const [cushionOption, setCushionOption] = useState<string>('high_density_foam');
     const [quantity, setQuantity] = useState<number>(1);
 
-    // معاملات السعر حسب نوع المكان
     const roomTypeMultipliers = {
-        majlis: 1.0,        // مجلس - السعر الأساسي
-        bedroom: 0.9,       // غرفة نوم - خصم 10%
-        living_room: 1.1,   // غرفة جلوس - زيادة 10%
-        guest_room: 1.2,    // غرفة ضيوف - زيادة 20%
-        hall: 1.3           // صالة - زيادة 30%
+        majlis: 1.0,
+        bedroom: 0.9,
+        living_room: 1.1,
+        guest_room: 1.2,
+        hall: 1.3
     };
 
-    // معاملات السعر حسب نوع الكنب
     const sofaTypeMultipliers = {
-        single: 1.0,        // فردية
-        double: 1.8,        // ثنائية
-        triple: 2.5,        // ثلاثية
-        l_shape: 3.2        // زاوية
+        single: 1.0,
+        double: 1.8,
+        triple: 2.5,
+        l_shape: 3.2
     };
 
-    // معاملات السعر حسب نوع القماش
     const fabricTypeMultipliers = {
-        velvet: 1.0,           // مخمل - السعر الأساسي
-        cotton: 0.9,           // كتان - خصم 10%
-        chenille: 1.1,         // شانل - زيادة 10%
-        linen: 1.2,            // لينين - زيادة 20%
-        microfiber: 0.8,       // ميكروفيبر - خصم 20%
-        natural_leather: 2.0,  // جلد طبيعي - ضعف السعر
-        synthetic_leather: 1.5 // جلد صناعي - زيادة 50%
+        velvet: 1.0,
+        cotton: 0.9,
+        chenille: 1.1,
+        linen: 1.2,
+        microfiber: 0.8,
+        natural_leather: 2.0,
+        synthetic_leather: 1.5
     };
 
-    // معاملات السعر حسب نوع الحشو
     const cushionMultipliers = {
-        high_density_foam: 1.0,  // إسفنج عالي الكثافة - السعر الأساسي
-        fiber_foam: 1.1,         // فيبر + إسفنج - زيادة 10%
-        feather: 1.3,            // ريش - زيادة 30%
-        memory_foam: 1.4         // ميموري فوم - زيادة 40%
+        high_density_foam: 1.0,
+        fiber_foam: 1.1,
+        feather: 1.3,
+        memory_foam: 1.4
     };
 
     useEffect(() => {

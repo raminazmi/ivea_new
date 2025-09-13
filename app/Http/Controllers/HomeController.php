@@ -5,11 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Article;
-use App\Models\Offer;
-use App\Models\OffersText;
 use App\Models\HeroSlide;
 use App\Models\LandingPageSection;
 use App\Models\PreparingForSummer;
+use App\Models\NationalDayOffer;
 use App\Services\SeoService;
 use Inertia\Inertia;
 
@@ -32,22 +31,10 @@ class HomeController extends Controller
         });
 
         $categories = Category::active()->whereNull('parent_id')->withCount('products')->ordered()->get();
-
-        // Get hero slides from database
         $heroSlides = HeroSlide::getActiveSlides();
-
-
-        // Get landing page sections
         $landingPageSections = LandingPageSection::getActiveSections();
-
-        // Get preparing for summer section
         $preparingForSummer = PreparingForSummer::getActive();
-
-        // Get latest 2 offers for featured offers section with their texts
-        $featuredOffers = Offer::with('offersText')->ordered()->take(2)->get();
-
-        // Get offers texts
-        $offersTexts = OffersText::getTextsArray();
+        $nationalDayOffer = NationalDayOffer::getActive();
 
         $latestArticles = Article::published()->ordered()->take(6)->get()->map(function ($article) {
             return [
@@ -129,8 +116,7 @@ class HomeController extends Controller
             'heroSlides' => $heroSlides,
             'landingPageSections' => $landingPageSections,
             'preparingForSummer' => $preparingForSummer,
-            'featuredOffers' => $featuredOffers,
-            'offersTexts' => $offersTexts,
+            'nationalDayOffer' => $nationalDayOffer,
             'latestArticles' => $latestArticles,
             'seo' => $seoData,
             'structuredData' => $structuredData,

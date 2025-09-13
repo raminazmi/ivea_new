@@ -35,22 +35,12 @@ const EditSlide: React.FC<EditSlideProps> = ({ slide }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
-        console.log('Form data before submit:', data);
-        
-        // التأكد من أن العنوان موجود
+                
         if (!data.title.trim()) {
             alert('يرجى إدخال عنوان البنر');
             return;
         }
         
-        console.log('Submitting form with data:', {
-            title: data.title,
-            is_active: data.is_active,
-            has_image: !!data.image
-        });
-        
-        // إرسال البيانات - استخدام POST مباشرة
         post(route('admin.landing-page.slides.update.post', slide.id));
     };
 
@@ -58,8 +48,6 @@ const EditSlide: React.FC<EditSlideProps> = ({ slide }) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             setData('image', file);
-            
-            // إنشاء معاينة للصورة
             const reader = new FileReader();
             reader.onload = (e) => {
                 setImagePreview(e.target?.result as string);
@@ -71,7 +59,6 @@ const EditSlide: React.FC<EditSlideProps> = ({ slide }) => {
     const removeImage = () => {
         setData('image', null);
         setImagePreview(null);
-        // إعادة تعيين input file
         const fileInput = document.getElementById('image') as HTMLInputElement;
         if (fileInput) {
             fileInput.value = '';

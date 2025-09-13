@@ -8,12 +8,8 @@ use App\Models\LandingPageSection;
 
 class LandingPageSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Create Hero Slides
         $heroSlides = [
             [
                 'title' => 'إيفيا # تشاركك_ذوقك',
@@ -57,7 +53,6 @@ class LandingPageSeeder extends Seeder
             HeroSlide::create($slide);
         }
 
-        // Create Landing Page Sections
         $sections = [
             [
                 'section_key' => 'preparing-for-summer',

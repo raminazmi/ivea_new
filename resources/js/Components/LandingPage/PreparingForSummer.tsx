@@ -73,7 +73,6 @@ const PreparingForSummer: React.FC<PreparingForSummerProps> = ({ data }) => {
         };
     }, []);
 
-    // إذا لم تكن هناك بيانات، لا تعرض السكشن
     if (!data || !data.is_active) {
         return null;
     }

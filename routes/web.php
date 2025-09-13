@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\LandingPageController;
 use App\Http\Controllers\Admin\OffersTextController;
+use App\Http\Controllers\Admin\NationalDayOfferController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ImageUploadController;
 use App\Http\Controllers\Admin\JobController as AdminJobController;
@@ -158,6 +159,39 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('landing-page/preparing-for-summer/{preparingForSummer}', [LandingPageController::class, 'updatePreparingForSummer'])->name('landing-page.preparing-for-summer.update.post');
     Route::delete('landing-page/preparing-for-summer/{preparingForSummer}', [LandingPageController::class, 'destroyPreparingForSummer'])->name('landing-page.preparing-for-summer.destroy');
 
+    // Featured Offers
+    Route::get('landing-page/featured-offers/create', [LandingPageController::class, 'createFeaturedOffer'])->name('landing-page.featured-offers.create');
+    Route::post('landing-page/featured-offers', [LandingPageController::class, 'storeFeaturedOffer'])->name('landing-page.featured-offers.store');
+    Route::get('landing-page/featured-offers/{offer}/edit', [LandingPageController::class, 'editFeaturedOffer'])->name('landing-page.featured-offers.edit');
+    Route::put('landing-page/featured-offers/{offer}', [LandingPageController::class, 'updateFeaturedOffer'])->name('landing-page.featured-offers.update');
+    Route::post('landing-page/featured-offers/{offer}', [LandingPageController::class, 'updateFeaturedOffer'])->name('landing-page.featured-offers.update.post');
+    Route::delete('landing-page/featured-offers/{offer}', [LandingPageController::class, 'destroyFeaturedOffer'])->name('landing-page.featured-offers.destroy');
+    Route::patch('landing-page/featured-offers/{offer}/status', [LandingPageController::class, 'updateFeaturedOfferStatus'])->name('landing-page.featured-offers.update-status');
+
+    // Featured Offers Settings
+    Route::get('landing-page/featured-offers-settings/create', [LandingPageController::class, 'createFeaturedOffersSettings'])->name('landing-page.featured-offers-settings.create');
+    Route::post('landing-page/featured-offers-settings', [LandingPageController::class, 'storeFeaturedOffersSettings'])->name('landing-page.featured-offers-settings.store');
+    Route::get('landing-page/featured-offers-settings/{featuredOffersSetting}/edit', [LandingPageController::class, 'editFeaturedOffersSettings'])->name('landing-page.featured-offers-settings.edit');
+    Route::put('landing-page/featured-offers-settings/{featuredOffersSetting}', [LandingPageController::class, 'updateFeaturedOffersSettings'])->name('landing-page.featured-offers-settings.update');
+    Route::delete('landing-page/featured-offers-settings/{featuredOffersSetting}', [LandingPageController::class, 'destroyFeaturedOffersSettings'])->name('landing-page.featured-offers-settings.destroy');
+    Route::patch('landing-page/featured-offers-settings/{featuredOffersSetting}/toggle-status', [LandingPageController::class, 'toggleFeaturedOffersSettingStatus'])->name('landing-page.featured-offers-settings.toggle-status');
+
+    // Offers Texts Management
+    Route::get('landing-page/offers-texts/create', [LandingPageController::class, 'createOffersText'])->name('landing-page.offers-texts.create');
+    Route::post('landing-page/offers-texts', [LandingPageController::class, 'storeOffersText'])->name('landing-page.offers-texts.store');
+    Route::get('landing-page/offers-texts/{offersText}/edit', [LandingPageController::class, 'editOffersText'])->name('landing-page.offers-texts.edit');
+    Route::put('landing-page/offers-texts/{offersText}', [LandingPageController::class, 'updateOffersText'])->name('landing-page.offers-texts.update');
+    Route::delete('landing-page/offers-texts/{offersText}', [LandingPageController::class, 'destroyOffersText'])->name('landing-page.offers-texts.destroy');
+    Route::patch('landing-page/offers-texts/{offersText}/toggle-status', [LandingPageController::class, 'toggleOffersTextStatus'])->name('landing-page.offers-texts.toggle-status');
+
+    // National Day Offer Management
+    Route::get('landing-page/national-day-offer/create', [LandingPageController::class, 'createNationalDayOffer'])->name('landing-page.national-day-offer.create');
+    Route::post('landing-page/national-day-offer', [LandingPageController::class, 'storeNationalDayOffer'])->name('landing-page.national-day-offer.store');
+    Route::get('landing-page/national-day-offer/{nationalDayOffer}/edit', [LandingPageController::class, 'editNationalDayOffer'])->name('landing-page.national-day-offer.edit');
+    Route::post('landing-page/national-day-offer/{nationalDayOffer}', [LandingPageController::class, 'updateNationalDayOffer'])->name('landing-page.national-day-offer.update');
+    Route::delete('landing-page/national-day-offer/{nationalDayOffer}', [LandingPageController::class, 'destroyNationalDayOffer'])->name('landing-page.national-day-offer.destroy');
+    Route::patch('landing-page/national-day-offer/{nationalDayOffer}/toggle-status', [LandingPageController::class, 'toggleNationalDayOfferStatus'])->name('landing-page.national-day-offer.toggle-status');
+
     // Projects
     Route::get('projects', [AdminProjectController::class, 'index'])->name('projects.index');
     Route::get('projects/quizzes/{id}', [AdminProjectController::class, 'showQuiz'])->name('projects.quizzes.show');
@@ -178,6 +212,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Offers
     Route::resource('offers', OfferController::class);
+
+    // National Day Offer Management
+    Route::get('national-day-offer', [NationalDayOfferController::class, 'index'])->name('national-day-offer.index');
+    Route::get('national-day-offer/create', [NationalDayOfferController::class, 'create'])->name('national-day-offer.create');
+    Route::post('national-day-offer', [NationalDayOfferController::class, 'store'])->name('national-day-offer.store');
+    Route::get('national-day-offer/{nationalDayOffer}/edit', [NationalDayOfferController::class, 'edit'])->name('national-day-offer.edit');
+    Route::put('national-day-offer/{nationalDayOffer}', [NationalDayOfferController::class, 'update'])->name('national-day-offer.update');
+    Route::delete('national-day-offer/{nationalDayOffer}', [NationalDayOfferController::class, 'destroy'])->name('national-day-offer.destroy');
+    Route::patch('national-day-offer/{nationalDayOffer}/toggle-status', [NationalDayOfferController::class, 'toggleStatus'])->name('national-day-offer.toggle-status');
 });
 
 // Cart

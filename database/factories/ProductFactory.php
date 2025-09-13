@@ -17,7 +17,7 @@ class ProductFactory extends Factory
             'price' => fake()->randomFloat(2, 50, 1000),
             'image' => fake()->imageUrl(300, 200),
             'featured' => fake()->boolean(30),
-            'category_id' => null, // Will be overridden by seeder
+            'category_id' => null,
         ];
     }
 }

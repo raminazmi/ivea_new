@@ -76,22 +76,17 @@ const ToolsAndGuidelines: React.FC<ToolsAndGuidelinesProps> = ({
                 text: mainArticle?.title || 'مقال مثير للاهتمام من موقع ايفيا',
                 url: window.location.href,
             }).catch((error) => {
-                console.log('Error sharing:', error);
-                // Fallback: copy to clipboard
                 copyToClipboard(window.location.href);
             });
         } else {
-            // Fallback: copy to clipboard
             copyToClipboard(window.location.href);
         }
     };
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text).then(() => {
-            // يمكن إضافة toast notification هنا
             alert('تم نسخ رابط المقال إلى الحافظة');
         }).catch(() => {
-            // Fallback for older browsers
             const textArea = document.createElement('textarea');
             textArea.value = text;
             document.body.appendChild(textArea);

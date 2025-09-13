@@ -17,7 +17,6 @@ export default function UpdateProfileInformation({
 }) {
     const user = usePage().props.auth?.user;
 
-    // If no user is available, don't render the form
     if (!user) {
         return null;
     }

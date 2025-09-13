@@ -97,7 +97,6 @@ class Product extends Model
 
     public function scopeNew($query)
     {
-        // المنتجات الجديدة هي التي تم إنشاؤها خلال الأسبوع الماضي
         return $query->where('created_at', '>=', now()->subWeek())
             ->orderBy('created_at', 'desc');
     }
@@ -315,7 +314,6 @@ class Product extends Model
             return $productOptions;
         }
 
-        // إذا كان المنتج ينتمي لفئة الخشبيات، نعيد الخيارات الافتراضية
         if ($this->category && $this->category->slug === 'wooden') {
             return [
                 'quantity' => [

@@ -10,7 +10,6 @@ class ArticleSeeder extends Seeder
 {
     public function run(): void
     {
-        // مقال 1: كيف تختار الستارة المثالية لمساحتك؟
         Article::create([
             'title' => 'كيف تختار الستارة المثالية لمساحتك؟',
             'slug' => 'كيف-تختار-الستارة-المثالية-لمساحتك؟',
@@ -124,7 +123,6 @@ class ArticleSeeder extends Seeder
             'sort_order' => 1
         ]);
 
-        // مقال 2: دليل قياس المساحات للستائر والخزائن
         Article::create([
             'title' => 'دليل قياس المساحات للستائر والخزائن',
             'slug' => 'دليل-قياس-المساحات-للستائر-والخزائن',
@@ -220,7 +218,6 @@ class ArticleSeeder extends Seeder
             'sort_order' => 2
         ]);
 
-        // مقال 3: كيف تفرق بين المودرن والكلاسيك والنيوكلاسيك؟
         Article::create([
             'title' => 'كيف تفرق بين المودرن والكلاسيك والنيوكلاسيك؟',
             'slug' => 'كيف-تفرق-بين-المودرن-والكلاسيك-والنيوكلاسيك؟',
@@ -317,7 +314,6 @@ class ArticleSeeder extends Seeder
             'sort_order' => 3
         ]);
 
-        // مقال 4: خطوات تجهيز مشروعك مع إيفيا
         Article::create([
             'title' => 'خطوات تجهيز مشروعك مع إيفيا',
             'slug' => 'خطوات-تجهيز-مشروعك-مع-إيفيا',
@@ -390,7 +386,6 @@ class ArticleSeeder extends Seeder
             'sort_order' => 4
         ]);
 
-        // مقال 5: لماذا إيفيا؟
         Article::create([
             'title' => 'لماذا إيفيا؟',
             'slug' => 'لماذا-إيفيا؟',

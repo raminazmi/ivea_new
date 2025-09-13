@@ -57,7 +57,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 alert('فشل في رفع الصور: ' + result.message);
             }
         } catch (error) {
-            console.error('Error uploading images:', error);
             alert('حدث خطأ أثناء رفع الصور');
         } finally {
             setUploading(false);

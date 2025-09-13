@@ -26,7 +26,6 @@ class AdminController extends Controller
             'totalContacts' => Contact::count(),
         ];
 
-        // إحصائيات الطلبات للـ notifications
         $orderStatistics = [
             'total' => Order::count(),
             'pending' => Order::where('status', 'pending')->count(),
@@ -38,7 +37,6 @@ class AdminController extends Controller
             'total_amount' => Order::sum('total_amount'),
         ];
 
-        // إحصائيات الرسائل للـ notifications
         $unreadMessages = Contact::where('status', 'pending')->count();
 
         return Inertia::render('Admin/Dashboard', [

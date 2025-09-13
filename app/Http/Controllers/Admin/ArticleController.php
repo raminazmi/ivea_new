@@ -33,18 +33,7 @@ class ArticleController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        \Log::info('Article Creation Started', [
-            'request_data' => $request->all(),
-            'has_image' => $request->hasFile('image'),
-            'has_author_image' => $request->hasFile('author_image')
-        ]);
-
         try {
-            \Log::info('Starting Validation for Creation', [
-                'request_all' => $request->all(),
-                'request_files' => $request->files->all()
-            ]);
-
             $validated = $request->validate([
                 'title' => 'nullable|string|max:255',
                 'slug' => 'nullable|string|max:255|unique:articles,slug',
@@ -63,14 +52,7 @@ class ArticleController extends Controller
                 'author_image' => 'nullable|file|image|max:2048',
                 'date' => 'nullable|date',
             ]);
-
-            \Log::info('Validation Passed for Article Creation', [
-                'validated_data' => $validated
-            ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Validation Failed for Article Creation', [
-                'errors' => $e->errors()
-            ]);
             throw $e;
         }
 
@@ -88,7 +70,6 @@ class ArticleController extends Controller
             $authorImagePath = '/storage/' . $request->file('author_image')->store('authors', 'public');
         }
 
-        // إنشاء slug تلقائي إذا لم يتم توفيره
         $slug = $validated['slug'] ?? '';
         if (empty($slug) && !empty($validated['title'])) {
             $slug = strtolower(trim(preg_replace('/[^a-zA-Z0-9\x{0600}-\x{06FF}\-]+/u', '', str_replace(' ', '-', $validated['title']))));
@@ -113,21 +94,7 @@ class ArticleController extends Controller
             'sort_order' => $sort_order,
         ];
 
-        \Log::info('Creating Article', [
-            'create_data' => $createData
-        ]);
-
         $article = Article::create($createData);
-
-        if (!$article) {
-            \Log::error('Article Creation Failed');
-        } else {
-            \Log::info('Article Created Successfully', [
-                'article_id' => $article->id,
-                'title' => $article->title,
-                'slug' => $article->slug
-            ]);
-        }
 
         return redirect()->route('admin.articles.index')
             ->with('success', 'تم إنشاء المقال بنجاح');
@@ -153,27 +120,9 @@ class ArticleController extends Controller
 
     public function update(Request $request, $id): RedirectResponse
     {
-        \Log::info('Article Update Started', [
-            'article_id' => $id,
-            'request_data' => $request->all(),
-            'has_image' => $request->hasFile('image'),
-            'has_author_image' => $request->hasFile('author_image')
-        ]);
-
         $article = Article::findOrFail($id);
 
-        \Log::info('Article Found', [
-            'article_id' => $article->id,
-            'current_title' => $article->title,
-            'current_slug' => $article->slug
-        ]);
-
         try {
-            \Log::info('Starting Validation', [
-                'request_all' => $request->all(),
-                'request_files' => $request->files->all()
-            ]);
-
             $validated = $request->validate([
                 'title' => 'nullable|string|max:255',
                 'slug' => 'nullable|string|max:255|unique:articles,slug,' . $id,
@@ -192,15 +141,7 @@ class ArticleController extends Controller
                 'author_image' => 'nullable|file|image|max:2048',
                 'date' => 'nullable|date',
             ]);
-
-            \Log::info('Validation Passed', [
-                'validated_data' => $validated
-            ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Validation Failed', [
-                'article_id' => $id,
-                'errors' => $e->errors()
-            ]);
             throw $e;
         }
 
@@ -209,29 +150,18 @@ class ArticleController extends Controller
         $sort_order = (int) $request->input('sort_order', 0);
         $read_time = (int) $request->input('read_time', 0);
 
-        \Log::info('Processing Data', [
-            'is_published' => $is_published,
-            'featured' => $featured,
-            'sort_order' => $sort_order,
-            'read_time' => $read_time
-        ]);
-
         $imagePath = $article->image;
         if ($request->hasFile('image')) {
             $imagePath = '/storage/' . $request->file('image')->store('articles', 'public');
-            \Log::info('Image Uploaded', ['new_image_path' => $imagePath]);
         }
         $authorImagePath = $article->author_image;
         if ($request->hasFile('author_image')) {
             $authorImagePath = '/storage/' . $request->file('author_image')->store('authors', 'public');
-            \Log::info('Author Image Uploaded', ['new_author_image_path' => $authorImagePath]);
         }
 
-        // إنشاء slug تلقائي إذا لم يتم توفيره
         $slug = $validated['slug'] ?? $article->slug;
         if (empty($slug) && !empty($validated['title'])) {
             $slug = strtolower(trim(preg_replace('/[^a-zA-Z0-9\x{0600}-\x{06FF}\-]+/u', '', str_replace(' ', '-', $validated['title']))));
-            \Log::info('Slug Generated', ['new_slug' => $slug, 'from_title' => $validated['title']]);
         }
 
         $updateData = [
@@ -253,18 +183,7 @@ class ArticleController extends Controller
             'sort_order' => $sort_order,
         ];
 
-        \Log::info('Updating Article', [
-            'article_id' => $article->id,
-            'update_data' => $updateData
-        ]);
-
         $article->update($updateData);
-
-        \Log::info('Article Updated Successfully', [
-            'article_id' => $article->id,
-            'new_title' => $article->title,
-            'new_slug' => $article->slug
-        ]);
 
         return redirect()->route('admin.articles.index')
             ->with('success', 'تم تحديث المقال بنجاح');
@@ -272,19 +191,7 @@ class ArticleController extends Controller
 
     public function destroy(Article $article): RedirectResponse
     {
-        \Log::info('Article Deletion Started', [
-            'article_id' => $article->id,
-            'title' => $article->title,
-            'slug' => $article->slug
-        ]);
-
         $article->delete();
-
-        \Log::info('Article Deleted Successfully', [
-            'article_id' => $article->id,
-            'title' => $article->title
-        ]);
-
         return redirect()->route('admin.articles.index')
             ->with('success', 'تم حذف المقال بنجاح');
     }

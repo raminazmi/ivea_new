@@ -48,7 +48,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(route('admin.landing-page.preparing-for-summer.update', preparingForSummer.id), {
-            _method: 'PUT'
+            method: 'put'
         });
     };
 
@@ -56,8 +56,6 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             setData('image_1', file);
-            
-            // إنشاء معاينة للصورة
             const reader = new FileReader();
             reader.onload = (e) => {
                 setImage1Preview(e.target?.result as string);
@@ -70,8 +68,6 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             setData('image_2', file);
-            
-            // إنشاء معاينة للصورة
             const reader = new FileReader();
             reader.onload = (e) => {
                 setImage2Preview(e.target?.result as string);
@@ -120,6 +116,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
                                         value={data.title_ar}
                                         onChange={(e) => setData('title_ar', e.target.value)}
                                         className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        placeholder="أدخل عنوان السكشن"
                                         required
                                     />
                                     <InputError message={errors.title_ar} className="mt-2" />
@@ -134,6 +131,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
                                         onChange={(e) => setData('description_ar', e.target.value)}
                                         rows={4}
                                         className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        placeholder="أدخل وصف السكشن"
                                         required
                                     />
                                     <InputError message={errors.description_ar} className="mt-2" />
@@ -148,6 +146,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
                                         value={data.button_text_ar}
                                         onChange={(e) => setData('button_text_ar', e.target.value)}
                                         className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        placeholder="أدخل نص الزر"
                                         required
                                     />
                                     <InputError message={errors.button_text_ar} className="mt-2" />
@@ -162,6 +161,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
                                         value={data.button_url}
                                         onChange={(e) => setData('button_url', e.target.value)}
                                         className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        placeholder="أدخل رابط الزر"
                                         required
                                     />
                                     <InputError message={errors.button_url} className="mt-2" />
@@ -188,6 +188,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
                                                 type="file"
                                                 accept="image/*"
                                                 className="hidden"
+                                                title="اختر صورة للعرض الأول"
                                                 onChange={handleImage1Change}
                                             />
                                         </label>
@@ -245,6 +246,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
                                         value={data.image_1_alt}
                                         onChange={(e) => setData('image_1_alt', e.target.value)}
                                         className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        placeholder="أدخل النص البديل للصورة الأولى"
                                     />
                                 </div>
 
@@ -256,6 +258,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
                                         value={data.image_1_url}
                                         onChange={(e) => setData('image_1_url', e.target.value)}
                                         className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        placeholder="أدخل رابط الصورة الأولى"
                                     />
                                 </div>
 
@@ -280,6 +283,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
                                                 type="file"
                                                 accept="image/*"
                                                 className="hidden"
+                                                title="اختر صورة للعرض الثاني"
                                                 onChange={handleImage2Change}
                                             />
                                         </label>
@@ -337,6 +341,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
                                         value={data.image_2_alt}
                                         onChange={(e) => setData('image_2_alt', e.target.value)}
                                         className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        placeholder="أدخل النص البديل للصورة الثانية"
                                     />
                                 </div>
 
@@ -348,6 +353,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
                                         value={data.image_2_url}
                                         onChange={(e) => setData('image_2_url', e.target.value)}
                                         className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        placeholder="أدخل رابط الصورة الثانية"
                                     />
                                 </div>
 
@@ -359,6 +365,7 @@ const EditPreparingForSummer: React.FC<EditPreparingForSummerProps> = ({ prepari
                                         className="cursor-pointer rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
                                         checked={data.is_active}
                                         onChange={(e) => setData('is_active', e.target.checked)}
+                                        title="تفعيل أو إلغاء تفعيل السكشن"
                                     />
                                     <InputLabel htmlFor="is_active" value="سكشن نشط" className="ms-2 cursor-pointer" />
                                 </div>

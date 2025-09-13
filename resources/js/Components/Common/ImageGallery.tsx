@@ -26,7 +26,6 @@ const ImageGallery: React.FC<ImageGalleryProps> = React.memo(({
         return validImages[selectedImage] || validImages[0];
     }, [validImages, selectedImage]);
 
-    // عرض فقط 8 صور في الصفوف
     const displayImages = useMemo(() => {
         return validImages.slice(0, 8);
     }, [validImages]);
