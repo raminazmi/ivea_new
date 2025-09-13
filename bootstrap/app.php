@@ -17,12 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SEOMiddleware::class,
         ]);
 
-        if (config('app.debug')) {
-            $middleware->web(append: [
-                \App\Http\Middleware\DebugSessionMiddleware::class,
-            ]);
-        }
-
         $middleware->validateCsrfTokens(except: [
             '/admin/upload/images',
         ]);
@@ -30,7 +24,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'seo' => \App\Http\Middleware\SEOMiddleware::class,
-            'debug.session' => \App\Http\Middleware\DebugSessionMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {})->create();

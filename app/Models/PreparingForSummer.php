@@ -9,7 +9,7 @@ class PreparingForSummer extends Model
 {
     use HasFactory;
 
-    protected $table = 'preparing_for_summers';
+    protected $table = 'preparing_for_summer';
 
     protected $fillable = [
         'title_ar',
