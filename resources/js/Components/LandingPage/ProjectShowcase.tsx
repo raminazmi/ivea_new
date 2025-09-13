@@ -17,28 +17,28 @@ const ProjectShowcase = () => {
     const projects = [
         {
             id: 1,
-            title: "اختر أسلــوب العمــل للمنــازل",
+            title: "تصـميم وتنـفيذ المنازل السكنية",
             subtitle: "ابحث عن اسلوبك",
             buttonText: "إبدأ الإختيار",
             image: "/images/building1.png"
         },
         {
             id: 2,
-            title: "اختر أسلــوب العمــل للمحــلات",
+            title: "تصـميم وتنـفيذ المحلات التجارية",
             subtitle: "ابحث عن اسلوبك",
             buttonText: "إبدأ الإختيار",
             image: "/images/building3.png"
         },
         {
             id: 3,
-            title: "اختر أسلــوب العمــل للمكــاتب",
+            title: "تصـميم وتنـفيذ المكاتب الإدارية",
             subtitle: "ابحث عن اسلوبك",
             buttonText: "إبدأ الإختيار",
             image: "/images/building2.png"
         },
         {
             id: 4,
-            title: "اختر أسلــوب العمــل للفنــادق",
+            title: "تصـميم وتنـفيذ الفنادق والمنتجعات",
             subtitle: "ابحث عن اسلوبك",
             buttonText: "إبدأ الإختيار",
             image: "/images/building4.png"

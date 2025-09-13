@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { HiAtSymbol, HiLockClosed, HiEye, HiEyeOff } from 'react-icons/hi';
 import ApplicationLogo from '@/Components/ApplicationLogo';
+import { createFormErrorHandler, isCsrfError, handleCsrfError } from '@/Utils/csrfHelper';
+import { withCsrfErrorBoundary } from '@/Components/Common/CsrfErrorBoundary';
 
 const Login: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -17,7 +19,20 @@ const Login: React.FC = () => {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/login');
+        post('/login', {
+            onError: (errors) => {
+                console.error('Login errors:', errors);
+                if (isCsrfError(errors)) {
+                    handleCsrfError(errors);
+                } else {
+                    // Handle other validation errors
+                    console.error('Validation errors:', errors);
+                }
+            },
+            onSuccess: () => {
+                console.log('Login successful');
+            }
+        });
     };
 
     return (
@@ -149,4 +164,4 @@ const Login: React.FC = () => {
     );
 };
 
-export default Login;
+export default withCsrfErrorBoundary(Login);

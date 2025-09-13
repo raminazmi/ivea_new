@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import Toast from '@/Components/Common/Toast';
+import { createFormDataWithCsrf, isCsrfError, handleCsrfError } from '@/Utils/csrfHelper';
+import { withCsrfErrorBoundary } from '@/Components/Common/CsrfErrorBoundary';
 
 const ContactForm = () => {
   const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
@@ -108,11 +110,17 @@ const ContactForm = () => {
     router.post('/contact', submitData, {
       onSuccess: () => {
         setIsSubmitting(false);
+        showToast('تم إرسال الرسالة بنجاح!', 'success');
       },
       onError: (errors) => {
-        setErrors(errors);
         setIsSubmitting(false);
-        showToast('حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.', 'error');
+        
+        if (isCsrfError(errors)) {
+          handleCsrfError(errors);
+        } else {
+          setErrors(errors);
+          showToast('حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.', 'error');
+        }
       },
       preserveScroll: true,
       forceFormData: true
@@ -366,4 +374,4 @@ const ContactForm = () => {
   );
 };
 
-export default ContactForm;
+export default withCsrfErrorBoundary(ContactForm);

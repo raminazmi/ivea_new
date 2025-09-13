@@ -6,6 +6,8 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import ScrollToTop from './Components/ScrollToTop';
+import ErrorHandler from './Components/Common/ErrorHandler';
+import CsrfErrorHandler from './Components/Common/CsrfErrorHandler';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -19,8 +21,12 @@ createInertiaApp({
         const root = createRoot(el);
         root.render(
             <Provider store={store}>
-                <ScrollToTop />
-                <App {...props} />
+                <ErrorHandler>
+                    <ScrollToTop />
+                    <CsrfErrorHandler errors={props.initialPage.props.errors}>
+                        <App {...props} />
+                    </CsrfErrorHandler>
+                </ErrorHandler>
             </Provider>
         );
     },

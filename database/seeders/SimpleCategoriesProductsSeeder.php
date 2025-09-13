@@ -10,10 +10,10 @@ class SimpleCategoriesProductsSeeder extends Seeder
 {
     public function run(): void
     {
-        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        // For SQLite, we don't need to disable foreign key checks
+        // Just truncate the tables
         Product::truncate();
         Category::truncate();
-        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $mainCategories = [
             [

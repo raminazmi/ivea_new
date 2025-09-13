@@ -1,5 +1,5 @@
 import { Transition } from '@headlessui/react';
-import { InertiaLinkProps, Link } from '@inertiajs/react';
+import { InertiaLinkProps, Link, router } from '@inertiajs/react';
 import {
     createContext,
     Dispatch,
@@ -8,6 +8,7 @@ import {
     useContext,
     useState,
 } from 'react';
+import { isCsrfError, handleCsrfError } from '@/Utils/csrfHelper';
 
 const DropDownContext = createContext<{
     open: boolean;
@@ -108,11 +109,28 @@ const Content = ({
 const DropdownLink = ({
     className = '',
     children,
+    method = 'get',
     ...props
 }: InertiaLinkProps) => {
+    const handleClick = (e: React.MouseEvent) => {
+        if (method === 'post' || method === 'put' || method === 'patch' || method === 'delete') {
+            e.preventDefault();
+            router.visit(props.href as string, {
+                method,
+                onError: (errors) => {
+                    if (isCsrfError(errors)) {
+                        handleCsrfError(errors);
+                    }
+                }
+            });
+        }
+    };
+
     return (
         <Link
             {...props}
+            method={method}
+            onClick={handleClick}
             className={
                 'block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none ' +
                 className
