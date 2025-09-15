@@ -111,7 +111,7 @@ const ProjectShowcase = () => {
                                 <p className="mb-2 text-xs">{project.subtitle}</p>
                                 <button
                                     onClick={handleStartQuiz}
-                                    className="border border-1 border-black bg-primary-yellow text-black px-4 py-1 rounded-full font-medium text-sm transition-all duration-700 w-fit hover:scale-105">
+                                    className="bg-white text-[#0D1F40] px-4 py-1 rounded-full font-bold text-sm transition-all duration-700 w-fit hover:bg-gray-100 hover:scale-105">
                                     {project.buttonText}
                                 </button>
                             </div>
