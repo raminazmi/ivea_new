@@ -69,7 +69,7 @@ class CategoryCustomizationSeeder extends Seeder
                             'required' => true
                         ],
                         'file_upload' => [
-                            'label' => 'رفع صورة المساحة أو التصميم المطلوب',
+                            'label' => 'رفع صورة المساحة أو التصميم المطلوب (إختياري)',
                             'type' => 'file_upload',
                             'accept' => 'image/*,.pdf',
                             'max_files' => 5,
@@ -155,7 +155,7 @@ class CategoryCustomizationSeeder extends Seeder
                             'required' => true
                         ],
                         'file_upload' => [
-                            'label' => 'رفع صورة المساحة أو التصميم المطلوب',
+                            'label' => 'رفع صورة المساحة أو التصميم المطلوب (إختياري)',
                             'type' => 'file_upload',
                             'accept' => 'image/*,.pdf',
                             'max_files' => 5,
@@ -243,7 +243,7 @@ class CategoryCustomizationSeeder extends Seeder
                             'required' => false
                         ],
                         'file_upload' => [
-                            'label' => 'رفع مخطط أو صورة للتصميم المطلوب',
+                            'label' => '(إختياري) رفع مخطط أو صورة للتصميم المطلوب',
                             'type' => 'file_upload',
                             'accept' => 'image/*,.pdf,.dwg',
                             'max_files' => 5,
@@ -283,7 +283,7 @@ class CategoryCustomizationSeeder extends Seeder
                             'required' => true
                         ],
                         'file_upload' => [
-                            'label' => 'رفع صورة التصميم أو المخطط المطلوب',
+                            'label' => '(إختياري) رفع صورة التصميم أو المخطط المطلوب',
                             'type' => 'file_upload',
                             'accept' => 'image/*,.pdf,.dwg',
                             'max_files' => 5,
