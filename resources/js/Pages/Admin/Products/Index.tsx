@@ -74,7 +74,6 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
                     'Accept': 'application/json',
                 },
                 credentials: 'same-origin'
@@ -88,20 +87,37 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
     };
 
     const handleTabSettings = async (productId: number, field: string, value: boolean) => {
+        console.log('handleTabSettings called:', { productId, field, value });
+        
+        const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content;
+        console.log('CSRF Token:', csrfToken);
+        
         try {
             const response = await fetch(`/admin/products/${productId}/tab-settings`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken || '',
                 },
+                credentials: 'same-origin',
                 body: JSON.stringify({ [field]: value }),
             });
 
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
             if (response.ok) {
+                const responseData = await response.json();
+                console.log('Tab settings updated successfully:', responseData);
                 router.reload();
+            } else {
+                const errorData = await response.text();
+                console.error('Failed to update tab settings:', response.status, response.statusText);
+                console.error('Error response body:', errorData);
             }
         } catch (error) {
+            console.error('Error updating tab settings:', error);
         }
     };
 
@@ -109,12 +125,13 @@ const Products: React.FC<ProductsProps> = ({ products, categories, filters }) =>
         if (selectedProducts.length === 0) return;
 
         try {
-            const response = await fetch('/admin/products/bulk-tab-settings', {
+            const response = await fetch(route('admin.products.bulk-tab-settings'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Accept': 'application/json',
                 },
+                credentials: 'same-origin',
                 body: JSON.stringify({
                     product_ids: selectedProducts,
                     [field]: true,

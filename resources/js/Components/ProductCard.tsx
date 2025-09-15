@@ -20,15 +20,22 @@ interface Props {
 const ProductCard: React.FC<Props> = ({ product }) => {
     return (
         <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-            <div className="bg-gray-200 border-2 border-dashed w-full h-48" />
+            <div className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80">
+                <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                />
+            </div>
 
-            <div className="p-4">
-                <h3 className="font-bold text-lg text-primary-black mb-1">
+            <div className="p-3 sm:p-4 md:p-5">
+                <h3 className="font-bold text-sm sm:text-base md:text-lg lg:text-xl text-primary-black mb-2 sm:mb-3 line-clamp-2">
                     {product.name}
                 </h3>
                 
-                <div className="mb-3">
-                    <div className="flex items-center gap-2">
+                <div className="mb-3 sm:mb-4">
+                    <div className="flex items-center gap-2 flex-wrap">
                         <PriceDisplay
                             price={product.price}
                             finalPrice={product.finalPrice}
@@ -42,7 +49,7 @@ const ProductCard: React.FC<Props> = ({ product }) => {
                 
                 <Link
                     href={`/products/${product.id}`}
-                    className="block w-full bg-primary-yellow text-primary-black text-center py-2 rounded-lg hover:bg-opacity-90 transition"
+                    className="block w-full bg-primary-yellow text-primary-black text-center py-2 sm:py-3 rounded-lg hover:bg-opacity-90 transition text-sm sm:text-base font-medium"
                 >
                     أضف إلى السلة
                 </Link>

@@ -21,7 +21,7 @@ class ProductRequest extends FormRequest
             'discount' => 'nullable|integer|min:0|max:100',
             'image' => 'required|string',
             'rating' => 'nullable|integer|min:1|max:5',
-            'tab' => 'required|in:all,new,offers,bestsellers',
+            'tab' => 'nullable|in:all,new,offers,bestsellers,featured',
             'category_id' => 'required|exists:categories,id',
             'colors' => 'nullable|array',
             'colors.*' => 'string|regex:/^#[0-9A-F]{6}$/i',
@@ -64,8 +64,7 @@ class ProductRequest extends FormRequest
             'rating.min' => 'التقييم لا يمكن أن يكون أقل من 1',
             'rating.max' => 'التقييم لا يمكن أن يتجاوز 5',
 
-            'tab.required' => 'التصنيف مطلوب',
-            'tab.in' => 'التصنيف يجب أن يكون: الكل، جديد، عروض، الأكثر مبيعاً',
+            'tab.in' => 'التصنيف يجب أن يكون: الكل، جديد، عروض، الأكثر مبيعاً، مميز',
 
             'category_id.required' => 'الفئة مطلوبة',
             'category_id.exists' => 'الفئة المحددة غير موجودة',

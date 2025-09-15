@@ -50,6 +50,7 @@
     <meta name="theme-color" content="#0a0a0a">
     <meta name="msapplication-TileColor" content="#F59E0B">
     <meta name="msapplication-config" content="/browserconfig.xml">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preload" href="/fonts/IBMPlexSansArabic-Regular.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="preload" href="/fonts/IBMPlexSansArabic-Bold.ttf" as="font" type="font/ttf" crossorigin>
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

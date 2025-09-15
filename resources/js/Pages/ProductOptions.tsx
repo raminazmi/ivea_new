@@ -91,7 +91,9 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
     const isCurtainsOrCabinets = categoryName?.includes('ستا') || categoryName?.includes('خزا');
     const isSofaOrWood = categoryName?.includes('كنب') || categoryName?.includes('خشب') || categoryName?.includes('مودرن') || categoryName?.includes('كلاسيك');
     const isRomanOrRollerCurtains = product.category?.slug === 'roman-curtains' || product.category?.slug === 'roller-curtains';
-    const isWoodProducts = categoryName?.includes('خشب') || categoryName?.includes('مودرن') || categoryName?.includes('كلاسيك');
+    const isWoodProducts = categoryName?.includes('خشب') || categoryName?.includes('مودرن');
+    const isSofaOnly = categoryName?.includes('كنب');
+    const isClassicSofa = categoryName?.includes('كلاسيك') && categoryName?.includes('كنب');
     const priorityFields = ['quantity', 'dimensions', 'dimensions_3d'];
     const mainFields: Record<string, any> = {};
     const extraFields: Record<string, any> = {};
@@ -253,8 +255,10 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
 
     const handleFileUpload = async (files: FileList | null) => {
         if (files) {
+            console.log('Starting file upload:', files.length, 'files');
             const formData = new FormData();
             Array.from(files).forEach(file => {
+                console.log('Adding file to FormData:', file.name, file.size, file.type);
                 formData.append('files[]', file);
             });
 
@@ -263,17 +267,28 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-                    }
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
+                    },
+                    credentials: 'same-origin',
                 });
+
+                console.log('Upload response status:', response.status);
+                console.log('Upload response headers:', response.headers);
 
                 if (response.ok) {
                     const result = await response.json();
+                    console.log('Upload result:', result);
                     if (result.success) {
                         setUploadedFiles(prev => [...prev, ...result.files]);
+                        console.log('Files uploaded successfully');
                     }
+                } else {
+                    const errorText = await response.text();
+                    console.error('Upload failed:', response.status, response.statusText, errorText);
                 }
             } catch (error) {
+                console.error('Upload error:', error);
             }
         }
     };
@@ -879,56 +894,56 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                     <div className="flex items-start justify-start gap-12">
                                         <div className="flex items-center gap-3">
                                             <div>
-                                            {isCurtainsOrCabinets ? (
-                                                <div className="flex flex-col gap-2">
-                                                    <PriceDisplay
-                                                        price={product.price}
-                                                        finalPrice={product.finalPrice}
-                                                        hasDiscount={product.hasDiscount}
-                                                        discount={product.discount}
-                                                        showLabel={true}
-                                                        label="سعر المتر المربع يبدأ من"
-                                                        className=""
-                                                    />
-                                                </div>
-                                            ) : isSofaOrWood ? (
-                                                <div className="flex flex-col gap-2">
-                                                    <PriceDisplay
-                                                        price={product.price}
-                                                        finalPrice={product.finalPrice}
-                                                        hasDiscount={product.hasDiscount}
-                                                        discount={product.discount}
-                                                        showLabel={true}
-                                                        label="سعر المتر المربع يبدأ من"
-                                                        className=""
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <div className="flex flex-col gap-2">
-                                                    <PriceDisplay
-                                                        price={product.price}
-                                                        finalPrice={product.finalPrice}
-                                                        hasDiscount={product.hasDiscount}
-                                                        discount={product.discount}
-                                                        showLabel={true}
-                                                        label="سعر المتر المربع يبدأ من"
-                                                        className=""
-                                                    />
-                                                </div>
-                                            )}
-                                            <div className="w-fit bg-blue-50 text-blue-700 px-2 py-1 rounded-lg text-xs font-medium mt-4">
-                                                {product.brand || 'IVEA'}
+                                                {isCurtainsOrCabinets ? (
+                                                    <div className="flex flex-col gap-2">
+                                                        <PriceDisplay
+                                                            price={product.price}
+                                                            finalPrice={product.finalPrice}
+                                                            hasDiscount={product.hasDiscount}
+                                                            discount={product.discount}
+                                                            showLabel={true}
+                                                            label="سعر المتر المربع يبدأ من"
+                                                            className=""
+                                                        />
+                                                    </div>
+                                                ) : isSofaOrWood ? (
+                                                    <div className="flex flex-col gap-2">
+                                                        <PriceDisplay
+                                                            price={product.price}
+                                                            finalPrice={product.finalPrice}
+                                                            hasDiscount={product.hasDiscount}
+                                                            discount={product.discount}
+                                                            showLabel={true}
+                                                            label="سعر المتر المربع يبدأ من"
+                                                            className=""
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col gap-2">
+                                                        <PriceDisplay
+                                                            price={product.price}
+                                                            finalPrice={product.finalPrice}
+                                                            hasDiscount={product.hasDiscount}
+                                                            discount={product.discount}
+                                                            showLabel={true}
+                                                            label="سعر المتر المربع يبدأ من"
+                                                            className=""
+                                                        />
+                                                    </div>
+                                                )}
+                                                <div className="w-fit bg-blue-50 text-blue-700 px-2 py-1 rounded-lg text-xs font-medium mt-4">
+                                                    {product.brand || 'IVEA'}
                                                 </div>
                                             </div>
                                         </div>
-                                            <div className="mt-8 text-xs text-gray-500 text-right flex justify-start items-center gap-1">
-                                                <span>قسط دفعاتك مع</span>
-                                                <img
-                                                    src="/images/tabby.png"
-                                                    alt="ريال"
-                                                    className="w-14 h-14"
-                                                />
-                                            </div>
+                                        <div className="mt-8 text-xs text-gray-500 text-right flex justify-start items-center gap-1">
+                                            <span>قسط دفعاتك مع</span>
+                                            <img
+                                                src="/images/tabby.png"
+                                                alt="ريال"
+                                                className="w-14 h-14"
+                                            />
+                                        </div>
                                     </div>
 
                                     <div className="text-sm md:text-base text-gray-600 leading-relaxed">
@@ -964,8 +979,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                             >
                                                                 <div
                                                                     className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 ${selectedColor === index && !useCustomColor
-                                                                            ? 'border-primary-yellow scale-110'
-                                                                            : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
+                                                                        ? 'border-primary-yellow scale-110'
+                                                                        : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
                                                                         }`}
                                                                     style={{ backgroundColor: color } as React.CSSProperties}
                                                                 >
@@ -993,8 +1008,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                         >
                                                             <div
                                                                 className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 flex items-center justify-center ${useCustomColor
-                                                                        ? 'border-primary-yellow scale-110'
-                                                                        : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
+                                                                    ? 'border-primary-yellow scale-110'
+                                                                    : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
                                                                     }`}
                                                                 style={{ backgroundColor: customColor } as React.CSSProperties}
                                                             >
@@ -1086,7 +1101,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                             اختر اللون المخصص
                                                         </label>
                                                         <div className="flex items-center gap-2">
-                                                            <div 
+                                                            <div
                                                                 className="w-6 h-6 rounded border border-gray-300 shadow-sm"
                                                                 style={{ backgroundColor: customColor } as React.CSSProperties}
                                                             ></div>
@@ -1095,14 +1110,14 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div className="flex justify-center items-center gap-4 w-full">
-                                                            <ChromePicker
-                                                                color={customColor}
-                                                                onChange={handleColorPickerChange}
-                                                                disableAlpha={true}
-                                                                width="200px"
-                                                            />
+                                                        <ChromePicker
+                                                            color={customColor}
+                                                            onChange={handleColorPickerChange}
+                                                            disableAlpha={true}
+                                                            width="200px"
+                                                        />
                                                     </div>
                                                 </div>
                                             </div>
@@ -1133,8 +1148,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                             >
                                                                 <div
                                                                     className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 ${selectedColor === index && !useCustomColor
-                                                                            ? 'border-primary-yellow scale-110'
-                                                                            : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
+                                                                        ? 'border-primary-yellow scale-110'
+                                                                        : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
                                                                         }`}
                                                                     style={{ backgroundColor: color } as React.CSSProperties}
                                                                 >
@@ -1162,8 +1177,8 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                         >
                                                             <div
                                                                 className={`w-7 h-7 rounded-full border-3 shadow-md transition-all duration-200 flex items-center justify-center ${useCustomColor
-                                                                        ? 'border-primary-yellow scale-110'
-                                                                        : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
+                                                                    ? 'border-primary-yellow scale-110'
+                                                                    : 'border-gray-300 hover:border-primary-yellow hover:scale-105'
                                                                     }`}
                                                                 style={{ backgroundColor: customColor } as React.CSSProperties}
                                                             >
@@ -1256,7 +1271,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                             اختر اللون المخصص
                                                         </label>
                                                         <div className="flex items-center gap-2">
-                                                            <div 
+                                                            <div
                                                                 className="w-6 h-6 rounded border border-gray-300 shadow-sm"
                                                                 style={{ backgroundColor: customColor } as React.CSSProperties}
                                                             ></div>
@@ -1265,7 +1280,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div className="flex flex-col lg:flex-row gap-4">
                                                         <div className="flex-1">
                                                             <ChromePicker
@@ -1280,7 +1295,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                             </div>
                                         )}
 
-                                        {/* إخفاء حاسبة الأبعاد والأسعار للخشبيات */}
+                                        {/* إخفاء حاسبة الأبعاد والأسعار للخشبيات فقط */}
                                         {!isWoodProducts && (
                                             <div className="space-y-4 md:space-y-6">
                                                 <h3 className="text-base md:text-lg font-semibold text-gray-900">
@@ -1456,11 +1471,11 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                                             );
                                         })}
 
-                                                        </div>
+                                    </div>
                                 )}
 
 
-                                {/* إخفاء زر خيارات المنتج للستائر الروماني والرول والخشبيات */}
+                                {/* إخفاء زر خيارات المنتج للستائر الروماني والرول والخشبيات فقط */}
                                 {isSofaOrWood && Object.keys(customizationFields).length > 0 && !(product.category?.slug === 'roman-curtains' || product.category?.slug === 'roller-curtains') && !isWoodProducts && (
                                     <div className="mb-4 flex justify-start">
                                         <button

@@ -32,7 +32,6 @@ const Dashboard: React.FC<DashboardProps> = ({ stats, notifications }) => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
                     'Accept': 'application/json',
                 },
                 credentials: 'same-origin'

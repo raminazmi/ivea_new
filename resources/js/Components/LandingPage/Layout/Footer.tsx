@@ -43,7 +43,7 @@ const Footer: React.FC = () => {
                         <div className="space-y-2 md:space-y-3 text-gray-300 text-sm">
                             <p>info@ivea.sa</p>
                             <p>541444066 (966+)</p>
-                            <p>المملكة العربية السعودية -الرياض -  شارع أنس بن مالك</p>
+                            <p>المملكة العربية السعودية -الرياض -  طريق أنس بن مالك</p>
                         </div>
                     </div>
 

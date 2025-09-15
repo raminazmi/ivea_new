@@ -39,9 +39,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             const response = await fetch(route('admin.upload.images'), {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
             });
 
             const result = await response.json();

@@ -10,6 +10,12 @@ class FileUploadController extends Controller
 {
     public function upload(Request $request)
     {
+        \Log::info('File upload request received', [
+            'has_files' => $request->hasFile('files'),
+            'files_count' => $request->hasFile('files') ? count($request->file('files')) : 0,
+            'all_data' => $request->all()
+        ]);
+
         $request->validate([
             'files' => 'required|array',
             'files.*' => 'file|max:10240',
@@ -30,6 +36,8 @@ class FileUploadController extends Controller
                 'uuid' => pathinfo($fileName, PATHINFO_FILENAME)
             ];
         }
+
+        \Log::info('Files uploaded successfully', ['uploaded_files' => $uploadedFiles]);
 
         return response()->json([
             'success' => true,

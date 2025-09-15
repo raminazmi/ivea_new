@@ -41,27 +41,30 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
     );
 
     const getDiscountedPrice = (price: number, discount?: number) => {
-        if (!discount || discount <= 0) return price;
+        if (!discount || discount <= 0) return originalPrice;
         return price - (price * discount / 100);
     };
 
     const calculatePrice = (width: number, height: number) => {
-        const discountedBasePrice = getDiscountedPrice(product.price, product.discount);
                 const categoryName = product.category?.name?.toLowerCase();
         const isCurtainsOrCabinets = categoryName?.includes('ستا') || categoryName?.includes('خزا');
+        
                 if (!isCurtainsOrCabinets) {
-            return discountedBasePrice;
+            return getDiscountedPrice(product.price, product.discount);
         }
+        
         const baseArea = 1;
                 if (width === 1 && height === 1) {
-            return discountedBasePrice;
+            return getDiscountedPrice(product.price, product.discount);
         }
 
         const newArea = width * height;
         const additionalArea = newArea - baseArea;
         
-        const additionalCost = additionalArea * discountedBasePrice;
-        return discountedBasePrice + additionalCost;
+        // استخدم نفس المعادلة في كلا الحالتين
+        const discountedPrice = getDiscountedPrice(product.price, product.discount);
+        const additionalCost = additionalArea * discountedPrice;
+        return discountedPrice + additionalCost;
     };
 
     useEffect(() => {
@@ -131,18 +134,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
     };
 
     return (
-        <div className="group transition-all duration-300 hover:-translate-y-1">
-            <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group-hover:shadow-lg">
+        <div className="group transition-all duration-300 hover:-translate-y-1 h-full">
+            <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group-hover:shadow-lg h-full flex flex-col">
                 <Link href={`/products/${product.id}/options`} className="block">
-                    <div className="relative h-36 sm:h-40 md:h-52 bg-white rounded-t-xl overflow-hidden">
+                    <div className="relative h-56 md:h-52 bg-white rounded-t-xl overflow-hidden">
                         <img
                             src={product.image}
                             alt={product.name}
                             className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                         />
 
-                        {displayDiscount && (
-                            <div className="absolute top-2 right-2 bg-primary-yellow text-white rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center text-xs font-bold">
+                        {displayDiscount && displayDiscount > 0 && (
+                            <div className="absolute top-2 right-2 bg-primary-yellow text-white rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold">
                                 %{displayDiscount}
                             </div>
                         )}
@@ -166,7 +169,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                     </div>
                 </Link>
 
-                <div className="p-3 sm:p-4 text-start">
+                <div className="p-3 sm:p-4 text-start flex-1 flex flex-col">
                     <Link href={`/products/${product.id}/options`} className="block">
                         <h3 className="font-bold text-base sm:text-sm text-[#0D1F40] hover:text-[#0D1D25] transition-colors">
                             {product.name}
@@ -188,7 +191,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                         ))}
                     </div>
 
-                    <div className="mt-2 flex justify-between items-center">
+                    <div className="mt-2 flex justify-between items-center mt-auto">
                         <div className='flex flex-col'>
                             <span className="text-xs sm:text-sm text-[#64748B]">{getPriceDisplayText()}</span>
                             <div className="flex justify-start items-center gap-1 sm:gap-2">
@@ -201,7 +204,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                                             <div className="flex flex-col items-start gap-1">
                                                 <div className="flex items-center gap-1">
                                                     <p className={`text-sm sm:text-base md:text-lg font-bold transition-all duration-300 text-green-600 ${priceChanged ? 'scale-105' : ''}`}>
-                                                        {currentPrice.toFixed(2)}
+                                                        {Number(currentPrice || 0).toFixed(2)}
                                                     </p>
                                                     <img
                                                         src="/images/sar-currency(black).svg"
@@ -219,7 +222,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                                             <div className="flex flex-col items-start gap-1">
                                                 <div className="flex items-center gap-1">
                                                     <p className={`text-sm sm:text-base md:text-lg font-bold transition-all duration-300 ${priceChanged ? 'scale-105' : ''}`}>
-                                                        {discountedPrice.toFixed(2)}
+                                                        {Number(discountedPrice || 0).toFixed(2)}
                                 </p>
                                 <img
                                     src="/images/sar-currency(black).svg"
@@ -228,9 +231,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                                 />
                                                 </div>
                                                 
+                                                {displayDiscount && displayDiscount > 0 && (
                                                 <div className="flex items-center gap-1">
                                                     <span className="text-[16px] sm:text-xs text-gray-500 line-through">
-                                                        {originalPrice.toFixed(2)}
+                                                            {Number(originalPrice || 0).toFixed(2)}
                                                     </span>
                                                     <img
                                                         src="/images/sar-currency(black).svg"
@@ -238,6 +242,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dimensions, onDimens
                                                         className="w-2 h-2 md:w-3 md:h-3 opacity-50"
                                                     />
                                                 </div>
+                                                )}
                                             </div>
                                         );
                                     }

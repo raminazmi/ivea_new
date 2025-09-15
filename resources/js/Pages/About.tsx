@@ -11,7 +11,7 @@ const About: React.FC = () => {
             <Head title="من نحن" />
 
             <CoverSection
-                imageUrl="/images/who_cover.png"
+                imageUrl="/images/who_cover.jpeg"
                 title="في إيفيا فنشتر، الجمال يبدأ من التفاصيل."
                 socialLinks={{
                     instagram: 'https://www.instagram.com/ivea.sa',

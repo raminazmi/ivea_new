@@ -80,7 +80,7 @@ class ProductController extends Controller
             'image' => 'nullable|string',
             'images' => 'nullable|array',
             'images.*' => 'string',
-            'tab' => 'required|string|in:all,featured,new,bestsellers,offers',
+            'tab' => 'nullable|string|in:all,featured,new,bestsellers,offers',
             'category_id' => 'required|exists:categories,id',
             'colors' => 'nullable|array',
             'colors.*' => 'string',
@@ -118,7 +118,8 @@ class ProductController extends Controller
 
         // تحديث الحقول بناءً على قيمة التبويب
         $tabUpdates = [];
-        switch ($validated['tab']) {
+        $tab = $validated['tab'] ?? 'all';
+        switch ($tab) {
             case 'featured':
                 $tabUpdates = ['featured' => true, 'is_offer' => false, 'is_bestseller' => false, 'is_new' => false];
                 break;
@@ -136,6 +137,9 @@ class ProductController extends Controller
                 $tabUpdates = ['featured' => false, 'is_offer' => false, 'is_bestseller' => false, 'is_new' => false];
                 break;
         }
+
+        // إضافة قيمة tab الافتراضية إذا لم يتم تحديدها
+        $validated['tab'] = $tab;
 
         Product::create(array_merge($validated, $tabUpdates));
 
@@ -181,7 +185,7 @@ class ProductController extends Controller
             'image' => 'nullable|string',
             'images' => 'nullable|array',
             'images.*' => 'string',
-            'tab' => 'required|string|in:all,featured,new,bestsellers,offers',
+            'tab' => 'nullable|string|in:all,featured,new,bestsellers,offers',
             'category_id' => 'required|exists:categories,id',
             'colors' => 'nullable|array',
             'colors.*' => 'string',
@@ -209,7 +213,8 @@ class ProductController extends Controller
 
         // تحديث الحقول بناءً على قيمة التبويب
         $tabUpdates = [];
-        switch ($validated['tab']) {
+        $tab = $validated['tab'] ?? 'all';
+        switch ($tab) {
             case 'featured':
                 $tabUpdates = ['featured' => true, 'is_offer' => false, 'is_bestseller' => false, 'is_new' => false];
                 break;
@@ -227,6 +232,9 @@ class ProductController extends Controller
                 $tabUpdates = ['featured' => false, 'is_offer' => false, 'is_bestseller' => false, 'is_new' => false];
                 break;
         }
+
+        // إضافة قيمة tab الافتراضية إذا لم يتم تحديدها
+        $validated['tab'] = $tab;
 
         $product->update(array_merge($validated, $tabUpdates));
 
@@ -271,25 +279,43 @@ class ProductController extends Controller
 
     public function updateTabSettings(Request $request, $id)
     {
+        \Log::info('updateTabSettings called', ['id' => $id, 'request' => $request->all()]);
         $product = Product::findOrFail($id);
 
         $request->validate([
-            'featured' => 'boolean',
-            'is_offer' => 'boolean',
-            'is_bestseller' => 'boolean',
-            'is_new' => 'boolean',
-            'sales_count' => 'integer|min:0',
+            'featured' => 'nullable|boolean',
+            'is_offer' => 'nullable|boolean',
+            'is_bestseller' => 'nullable|boolean',
+            'is_new' => 'nullable|boolean',
+            'sales_count' => 'nullable|integer|min:0',
             'published_at' => 'nullable|date',
         ]);
 
-        $product->update([
+        $updateData = [
             'featured' => $request->featured ?? false,
             'is_offer' => $request->is_offer ?? false,
             'is_bestseller' => $request->is_bestseller ?? false,
             'is_new' => $request->is_new ?? false,
             'sales_count' => $request->sales_count ?? 0,
             'published_at' => $request->published_at,
-        ]);
+        ];
+
+        \Log::info('Updating product with data:', ['product_id' => $id, 'update_data' => $updateData]);
+
+        $result = $product->update($updateData);
+
+        \Log::info('Update result:', ['result' => $result, 'product_after_update' => $product->fresh()->toArray()]);
+
+        \Log::info('Product updated successfully', ['product_id' => $id, 'updated_fields' => $request->all()]);
+
+        // إرجاع JSON response للـ AJAX requests
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'تم تحديث إعدادات التبويب بنجاح',
+                'product' => $product->fresh()
+            ]);
+        }
 
         return redirect()->back()->with('success', 'تم تحديث إعدادات التبويب بنجاح');
     }

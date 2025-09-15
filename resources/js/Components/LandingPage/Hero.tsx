@@ -436,7 +436,7 @@ const Hero: React.FC<HeroProps> = ({ categories: dbCategories = [], heroSlides =
                                         <h3 className="font-bold text-sm sm:text-base md:text-lg text-[#0D1D25] transition-all duration-700 group-hover:text-[#0D1D25]/80">
                                             {category.name}
                                         </h3>
-                                        <p className="text-xs sm:text-sm text-[#616161] mt-1 bg-white rounded-full py-1.5 sm:py-2 px-3 sm:px-4 transition-all duration-700 group-hover:bg-gray-50 hover:bg-primary-yellow hover:text-black">
+                                        <p className="text-xs sm:text-sm border border-1 border-black  bg-primary-yellow text-black mt-2 rounded-full py-1 sm:py-1.5 px-2 sm:px-2 transition-all duration-700 hover:bg-primary-yellow hover:text-black hover:scale-105 font-medium">
                                             {category.subtitle}
                                         </p>
                                     </div>

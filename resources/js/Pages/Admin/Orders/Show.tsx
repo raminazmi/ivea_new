@@ -274,18 +274,86 @@ const OrderShow: React.FC<OrderShowProps> = ({ order }) => {
                                                     {item.uploadedFiles && item.uploadedFiles.length > 0 && (
                                                         <div className="md:col-span-2">
                                                             <span className="font-medium text-gray-700">الملفات المرفوعة:</span>
-                                                            <div className="mt-2 space-y-1">
-                                                                {item.uploadedFiles.map((file: any, fileIndex: number) => (
-                                                                    <div key={fileIndex} className="flex items-center gap-2 text-xs bg-white p-2 rounded border">
-                                                                        <span>📎</span>
-                                                                        <span className="font-medium">{file.name || file}</span>
+                                                            <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                                                {item.uploadedFiles.map((file: any, fileIndex: number) => {
+                                                                    const isImage = file.type?.startsWith('image/') || 
+                                                                                   file.name?.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+                                                                    const fileUrl = file.url || file.path;
+                                                                    
+                                                                    return (
+                                                                        <div key={fileIndex} className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                                                                            {isImage && fileUrl ? (
+                                                                                <div className="space-y-2">
+                                                                                    <div className="relative group">
+                                                                                        <img
+                                                                                            src={fileUrl}
+                                                                                            alt={file.name || `صورة ${fileIndex + 1}`}
+                                                                                            className="w-full h-32 object-cover rounded-md border border-gray-200"
+                                                                                            onError={(e) => {
+                                                                                                e.currentTarget.style.display = 'none';
+                                                                                                e.currentTarget.nextElementSibling.style.display = 'flex';
+                                                                                            }}
+                                                                                        />
+                                                                                        <div 
+                                                                                            className="hidden w-full h-32 bg-gray-100 rounded-md border border-gray-200 items-center justify-center"
+                                                                                        >
+                                                                                            <span className="text-gray-400 text-sm">خطأ في تحميل الصورة</span>
+                                                                                        </div>
+                                                                                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 rounded-md flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                                                                            <a
+                                                                                                href={fileUrl}
+                                                                                                target="_blank"
+                                                                                                rel="noopener noreferrer"
+                                                                                                className="bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-800 px-3 py-1 rounded-md text-sm font-medium transition-all duration-200"
+                                                                                            >
+                                                                                                عرض كامل
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="text-center">
+                                                                                        <p className="text-xs font-medium text-gray-700 truncate" title={file.name || `ملف ${fileIndex + 1}`}>
+                                                                                            {file.name || `صورة ${fileIndex + 1}`}
+                                                                                        </p>
+                                                                                        {file.size && (
+                                                                                            <p className="text-xs text-gray-500">
+                                                                                                {(file.size / 1024).toFixed(1)} KB
+                                                                                            </p>
+                                                                                        )}
+                                                                                    </div>
+                                                                                </div>
+                                                                            ) : (
+                                                                                <div className="space-y-2">
+                                                                                    <div className="w-full h-32 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center">
+                                                                                        <div className="text-center">
+                                                                                            <span className="text-2xl">📄</span>
+                                                                                            <p className="text-xs text-gray-500 mt-1">ملف</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="text-center">
+                                                                                        <p className="text-xs font-medium text-gray-700 truncate" title={file.name || `ملف ${fileIndex + 1}`}>
+                                                                                            {file.name || `ملف ${fileIndex + 1}`}
+                                                                                        </p>
                                                                         {file.size && (
-                                                                            <span className="text-gray-500">
-                                                                                ({(file.size / 1024).toFixed(1)} KB)
-                                                                            </span>
+                                                                                            <p className="text-xs text-gray-500">
+                                                                                                {(file.size / 1024).toFixed(1)} KB
+                                                                                            </p>
+                                                                                        )}
+                                                                                        {fileUrl && (
+                                                                                            <a
+                                                                                                href={fileUrl}
+                                                                                                target="_blank"
+                                                                                                rel="noopener noreferrer"
+                                                                                                className="inline-block mt-1 text-xs text-blue-600 hover:text-blue-800 underline"
+                                                                                            >
+                                                                                                تحميل
+                                                                                            </a>
+                                                                                        )}
+                                                                                    </div>
+                                                                                </div>
                                                                         )}
                                                                     </div>
-                                                                ))}
+                                                                    );
+                                                                })}
                                                             </div>
                                                         </div>
                                                     )}

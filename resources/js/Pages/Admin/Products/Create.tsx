@@ -30,7 +30,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
         discount: product?.discount?.toString() || '',
         image: product?.image || '',
         images: product?.images || [] as string[],
-        tab: product?.tab || 'all',
+        tab: product?.tab || '',
         category_id: product?.category_id?.toString() || '',
         colors: product?.colors || [] as string[],
         stock: product?.stock?.toString() || '',
@@ -230,14 +230,15 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                     </div>
 
                                     <div>
-                                        <InputLabel htmlFor="tab" value="التبويب" />
+                                        <InputLabel htmlFor="tab" value="التبويب (اختياري)" />
                                         <select
                                             id="tab"
                                             className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                             value={data.tab}
                                             onChange={(e) => setData('tab', e.target.value)}
-                                            title="اختر تبويب المنتج"
+                                            title="اختر تبويب المنتج (اختياري)"
                                         >
+                                            <option value="">بدون تصنيف</option>
                                             <option value="all">الكل</option>
                                             <option value="featured">مميز</option>
                                             <option value="new">جديد</option>
