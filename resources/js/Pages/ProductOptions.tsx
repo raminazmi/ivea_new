@@ -872,7 +872,7 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ product }) => {
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
                             <div className="col-span-1">
                                 <div className="text-xs md:text-sm text-gray-500 mb-3 md:mb-4">
-                                    قد يختلف المنتج الفعلي قليلاً عن الصور المعروضة
+                                    الصورة مثال ✨ فريقنا ينفذ حسب طلبك أو يقترح تصاميم تناسبك.
                                 </div>
 
                                 <ImageGallery
