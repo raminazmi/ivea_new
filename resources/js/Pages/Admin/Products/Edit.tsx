@@ -235,7 +235,6 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                                 required
                                             title="اختر تبويب المنتج"
                                         >
-                                            <option value="all">الكل</option>
                                             <option value="featured">مميز</option>
                                             <option value="new">جديد</option>
                                             <option value="bestsellers">الأكثر مبيعاً</option>
@@ -368,7 +367,7 @@ const EditProduct: React.FC<EditProductProps> = ({ product, categories }) => {
                                                 <strong>الكمية:</strong> {data.stock}
                                                 </div>
                                                 <div>
-                                                <strong>التبويب:</strong> {data.tab === 'all' ? 'الكل' : data.tab === 'featured' ? 'مميز' : data.tab === 'new' ? 'جديد' : data.tab === 'bestsellers' ? 'الأكثر مبيعاً' : 'العروض'}
+                                                <strong>التبويب:</strong> {data.tab === 'featured' ? 'مميز' : data.tab === 'new' ? 'جديد' : data.tab === 'bestsellers' ? 'الأكثر مبيعاً' : 'العروض'}
                                             </div>
                                         </div>
                                     </div>

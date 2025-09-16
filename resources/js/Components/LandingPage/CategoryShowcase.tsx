@@ -55,14 +55,13 @@ interface CategoryShowcaseProps {
 }
 
 const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts, categories = [] }) => {
-    const [activeTab, setActiveTab] = useState('all');
+    const [activeTab, setActiveTab] = useState('featured');
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef<HTMLDivElement>(null);
     
     const tabs = [
-        { id: 'all', label: 'الكل' },
         { id: 'featured', label: 'المميزة' },
         { id: 'new', label: 'جديد' },
         { id: 'offers', label: 'عروض' },
@@ -70,7 +69,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts, c
     ];
 
     useEffect(() => {
-        if (activeTab === 'all') {
+        if (activeTab === 'featured') {
             setProducts(featuredProducts);
             setLoading(false);
         } else {
@@ -80,9 +79,6 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ featuredProducts, c
                     let url = '';
 
                     switch (activeTab) {
-                        case 'featured':
-                            url = '/api/products/featured';
-                            break;
                         case 'new':
                             url = '/api/products/new';
                             break;

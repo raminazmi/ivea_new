@@ -239,7 +239,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({ categories, product, isEd
                                             title="اختر تبويب المنتج (اختياري)"
                                         >
                                             <option value="">بدون تصنيف</option>
-                                            <option value="all">الكل</option>
                                             <option value="featured">مميز</option>
                                             <option value="new">جديد</option>
                                             <option value="bestsellers">الأكثر مبيعاً</option>

@@ -121,7 +121,7 @@ const Projects: React.FC<ProjectsPageProps> = ({ spaceTypes, productNeeds, prefe
             <Head title="المشاريع" />
 
             <CoverSection
-                imageUrl="/images/projects_cover.jpg"
+                imageUrl="/images/projects_cover.png"
                 title="تصفح  المشاريــــــــع"
                 subtitle="اكتشف إبداعاتنا في التصميم والتأثيث"
                 description="مجموعة متنوعة من المشاريع المنجزة"
